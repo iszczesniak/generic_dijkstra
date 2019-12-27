@@ -3,7 +3,6 @@
 
 #include "adaptive_units.hpp"
 #include "graph.hpp"
-#include "routing.hpp"
 
 template <typename Label>
 auto
@@ -55,7 +54,7 @@ struct generic_tracer
     // Get the number of units required.
     int units = adaptive_units<COST>::units(m_ncu, get_cost(l));
     // Get the CU for the path.
-    p.first = m_units = {routing::select_cu(get_units(l), units)};
+    p.first = m_units;
     // Return the iterator to the first (and the only) label.
     return ls.begin();
   }
