@@ -54,7 +54,7 @@ struct generic_tracer
     // Get the number of units required.
     int units = adaptive_units<COST>::units(m_ncu, get_cost(l));
     // Get the CU for the path.
-    p.first = m_units;
+    p.first = m_units = get_units(l);
     // Return the iterator to the first (and the only) label.
     return ls.begin();
   }
