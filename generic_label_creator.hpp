@@ -4,6 +4,7 @@
 #include "adaptive_units.hpp"
 #include "generic_label.hpp"
 #include "graph.hpp"
+#include "units.hpp"
 
 #include <list>
 #include <optional>
@@ -24,17 +25,16 @@ class generic_label_creator
   // The graph.
   const Graph &m_g;
 
-  // The number of contiguous units initially requested.
-  int m_ncu;
-
 public:
-  generic_label_creator(const Graph &g, int ncu):
-    m_g(g), m_ncu(ncu)
+  generic_label_creator(const Graph &g):
+    m_g(g)
   {
   }
 
+  //template <Callable<Cost, SU> F = EmptyCallable<Cost, SU>>
+  template <Callable<Cost, SU> F>
   std::list<Label>
-  operator()(const Edge<Graph> &e, const Label &l) const
+  operator()(const Edge<Graph> &e, const Label &l, F f = {}) const
   {
     // The cost of the edge.
     Cost ec = boost::get(boost::edge_weight, m_g, e);
@@ -46,9 +46,11 @@ public:
     // The units available on the edge.
     const auto &e_su = boost::get(boost::edge_su, m_g, e);
     // The candidate SU: the su of label l that can be carried by
-    // edge e, and that has at least ncu contiguous units.
+    // edge e.
     auto c_su = intersection(SU{l_units}, e_su);
-    c_su.remove(adaptive_units<COST>::units(m_ncu, c_c));
+
+    // Filter the SU if needed.
+    f(c_c, c_su);
 
     std::list<Label> ls;
 
