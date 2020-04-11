@@ -1,7 +1,6 @@
 #ifndef GENERIC_TRACER_HPP
 #define GENERIC_TRACER_HPP
 
-#include "adaptive_units.hpp"
 #include "graph.hpp"
 
 template <typename Label>
@@ -51,8 +50,6 @@ struct generic_tracer
     assert(!std::empty(ls));
     // We just take the first label.
     const auto &l = ls.front();
-    // Get the number of units required.
-    int units = adaptive_units<COST>::units(m_ncu, get_cost(l));
     // Get the CU for the path.
     p.first = m_units = get_units(l);
     // Return the iterator to the first (and the only) label.
