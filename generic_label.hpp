@@ -5,12 +5,6 @@
 #include <set>
 #include <tuple>
 
-template <typename Graph>
-using Vertex = typename Graph::vertex_descriptor;
-
-template <typename Graph>
-using Edge = typename Graph::edge_descriptor;
-
 // The label is a tuple (c, S, e, v) of cost c, SU S, edge descriptor
 // e, and vertex descriptor v.  The label stores cost c and SU S of
 // using edge e to get to vertex v.
