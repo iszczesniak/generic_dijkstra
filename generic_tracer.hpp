@@ -15,8 +15,7 @@ template <typename Label>
 auto
 get_edge(const Label &);
 
-template <typename Graph, typename Path, typename Permanent,
-          typename Units>
+template <typename Path, typename Permanent, typename Units>
 struct generic_tracer
 {
   // That's the label type we're using.
@@ -26,17 +25,14 @@ struct generic_tracer
   // The path type.  The trace function needs it.
   using path_t = Path;
 
-  // The graph.
-  const Graph &m_g;
-
   // The number of contigous units.
   int m_ncu;
 
   // The units of the path.
   Units m_units;
 
-  generic_tracer(const Graph &g, int ncu):
-    m_g(g), m_ncu(ncu), m_units()
+  generic_tracer(int ncu):
+    m_ncu(ncu), m_units()
   {
   }
 
@@ -85,9 +81,9 @@ struct generic_tracer
     // This is the edge of the label.
     const auto &e = get_edge(l);
     // The edge cost.
-    auto ec = boost::get(boost::edge_weight, m_g, e);
+    auto ec = cost(e);
     // The edge source.
-    const auto &s = boost::source(e, m_g);
+    const auto &s = source(e);
 
     // Find the labels at node s.
     const auto &ls = P[s];

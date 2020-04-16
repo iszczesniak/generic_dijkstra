@@ -26,12 +26,12 @@ move_label(generic_tentative<Graph, Cost, Units> &T,
 template <typename Graph, typename Cost, typename Units>
 bool
 has_better_or_equal(const generic_permanent<Graph, Cost, Units> &P,
-		    const generic_label<Graph, Cost, Units> &j)
+		    const generic_label<Cost, Units, Edge<Graph>> &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
   // fact that the elements in the vector are sorted by cost first.
-  for (const auto &i: P[get_target(j)])
+  for (const auto &i: P[key(get_target(j))])
     {
       // Stop searching when we reach a label with a higher cost.  If
       // the cost of label i is higher than the cost of label j, then
@@ -54,14 +54,14 @@ has_better_or_equal(const generic_permanent<Graph, Cost, Units> &P,
 template <typename Graph, typename Cost, typename Units>
 bool
 has_better_or_equal(const generic_tentative<Graph, Cost, Units> &T,
-		    const generic_label<Graph, Cost, Units> &j)
+		    const generic_label<Cost, Units, Edge<Graph>> &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
   // fact that the elements in the set are sorted by cost first.
 
   // Iterate over all tentative labels.
-  for (const auto &i: T[get_target(j)])
+  for (const auto &i: T[key(get_target(j))])
     {
       // Stop searching when we reach a label with a higher cost.  If
       // the cost of label i is higher than the cost of label j, then
@@ -84,9 +84,9 @@ has_better_or_equal(const generic_tentative<Graph, Cost, Units> &T,
 template <typename Graph, typename Cost, typename Units>
 void
 purge_worse(generic_tentative<Graph, Cost, Units> &T,
-	    const generic_label<Graph, Cost, Units> &j)
+	    const generic_label<Cost, Units, Edge<Graph>> &j)
 {
-  auto &Tt = T[get_target(j)];
+  auto &Tt = T[key(get_target(j))];
 
   // We could go for the easy implementation where we iterate for each
   // label i and compare it to j.  But we take advantage of the fact

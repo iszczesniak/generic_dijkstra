@@ -10,10 +10,10 @@
 // can have many labels or none, so we store them in a container.
 template <typename Graph, typename Cost, typename Units>
 struct generic_permanent:
-  std::vector<std::vector<generic_label<Graph, Cost, Units>>>
+  std::vector<std::vector<generic_label<Cost, Units, Edge<Graph>>>>
 {
   // That's the label type we're using.
-  using label_t = generic_label<Graph, Cost, Units>;
+  using label_t = generic_label<Cost, Units, Edge<Graph>>;
   // The type of data a vertex has.
   using vd_t = std::vector<label_t>;
   // The type of the vector of vertex data.
@@ -31,12 +31,12 @@ struct generic_permanent:
   const label_t &
   push(T &&l)
   {
-    // The target vertex of the label.
-    const auto &t = get_target(l);
+    // The key of the target vertex of the label.
+    const auto &tk = key(get_target(l));
     // Push the label back.
-    base::operator[](t).push_back(std::forward<T>(l));
+    base::operator[](tk).push_back(std::forward<T>(l));
 
-    return base::operator[](t).back();
+    return base::operator[](tk).back();
   }
 };
 

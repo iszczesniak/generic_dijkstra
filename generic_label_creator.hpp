@@ -2,7 +2,6 @@
 #define GENERIC_LABEL_CREATOR_HPP
 
 #include "generic_label.hpp"
-#include "graph.hpp"
 #include "units.hpp"
 
 #include <list>
@@ -16,34 +15,25 @@ template <typename Label>
 auto
 get_units(const Label &);
 
-template <typename Graph, typename Cost, typename Units>
+template <typename Cost, typename Units, typename Edge>
 class generic_label_creator
 {
-  using Label = generic_label<Graph, Cost, Units>;
-
-  // The graph.
-  const Graph &m_g;
+  using Label = generic_label<Cost, Units, Edge>;
 
 public:
-  generic_label_creator(const Graph &g):
-    m_g(g)
-  {
-  }
-
-  //template <Callable<Cost, SU> F = EmptyCallable<Cost, SU>>
-  template <Callable<Cost, SU> F>
+  template <Callable<Cost, SU &> F = EmptyCallable<Cost, SU &>>
   std::list<Label>
-  operator()(const Edge<Graph> &e, const Label &l, F f = {}) const
+  operator()(const Edge &e, const Label &l, F f = {}) const
   {
     // The cost of the edge.
-    Cost ec = boost::get(boost::edge_weight, m_g, e);
+    Cost ec = cost(e);
     // Candidate cost.
     Cost c_c = get_cost(l) + ec;
 
     // The label units.
     const Units &l_units = get_units(l);
     // The units available on the edge.
-    const auto &e_su = boost::get(boost::edge_su, m_g, e);
+    const auto &e_su = units(e);
     // The candidate SU: the su of label l that can be carried by
     // edge e.
     auto c_su = intersection(SU{l_units}, e_su);
@@ -55,7 +45,7 @@ public:
 
     for (auto &cu: c_su)
       // The candidate label.
-      ls.push_back(Label(c_c, std::move(cu), e, target(e, m_g)));
+      ls.push_back(Label(c_c, std::move(cu), e));
 
     return ls;
   }

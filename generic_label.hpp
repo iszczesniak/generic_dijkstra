@@ -1,39 +1,29 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
-#include <ostream>
-#include <set>
 #include <tuple>
 
-// The label is a tuple (c, S, e, v) of cost c, SU S, edge descriptor
-// e, and vertex descriptor v.  The label stores cost c and SU S of
-// using edge e to get to vertex v.
+// The label is a tuple (c, u, e) of cost c, units u, and edge e.  The
+// label stores cost c and units u of using edge e.
 //
 // In the tuple we store an edge descriptor, not a vertex descriptor,
 // so that we can allow for multigraphs (i.e. graphs with parallel
 // edges).
-//
-// For a label we need to tell the target vertex v, which we could
-// figure out from the edge, but for that we would have to store a
-// reference to the graph.  It's faster to store just the vertex.
 
-template <typename Graph, typename Cost, typename Units>
+template <typename Cost, typename Units, typename Edge>
 struct generic_label
 {
   Cost m_c;
   Units m_u;
-  Edge<Graph> m_e;
-  Vertex<Graph> m_t;
+  Descriptor<const Edge> m_ed;
 
-  generic_label(const Cost &c, const Units &u, const Edge<Graph> &e,
-                const Vertex<Graph> &t):
-    m_c(c), m_u(u), m_e(e), m_t(t)
+  generic_label(const Cost &c, const Units &u, const Edge &e):
+    m_c(c), m_u(u), m_ed(desc(e))
   {
   }
 
-  generic_label(const Cost &c, Units &&u, const Edge<Graph> &e,
-                const Vertex<Graph> &t):
-    m_c(c), m_u(std::move(u)), m_e(e), m_t(t)
+  generic_label(const Cost &c, Units &&u, const Edge &e):
+    m_c(c), m_u(std::move(u)), m_ed(desc(e))
   {
   }
 
@@ -47,18 +37,18 @@ struct generic_label
   bool
   operator == (const generic_label &j) const
   {
-    return std::tie(m_c, m_t, m_e, m_u) ==
-      std::tie(j.m_c, j.m_t, j.m_e, j.m_u);
+    // We compare first the cost and target, since they are the most
+    // likely to differ.  We compare the units at the very end,
+    // because that comparison is time-consuming.
+    return std::tie(m_c, m_ed, m_u) ==
+      std::tie(j.m_c, j.m_ed, j.m_u);
   }
 
   bool
   operator != (const generic_label &j) const
   {
-    // We compare first the cost and target, since they are the most
-    // likely to differ.  We compare the units at the very end,
-    // because that comparison is time-consuming.
-    return std::tie(m_c, m_t, m_e, m_u) !=
-      std::tie(j.m_c, j.m_t, j.m_e, j.m_u);
+    return std::tie(m_c, m_ed, m_u) !=
+      std::tie(j.m_c, j.m_ed, j.m_u);
   }
 
   // This operator is used by containers to establish the order
@@ -75,11 +65,12 @@ struct generic_label
   bool
   operator < (const generic_label &j) const
   {
-    return std::tie(m_c, m_u, m_e, m_t) <
-      std::tie(j.m_c, j.m_u, j.m_e, j.m_t);
+    return std::tie(m_c, m_u, m_ed) <
+      std::tie(j.m_c, j.m_u, j.m_ed);
   }
 
-  // This operator is used by our algorithm.
+  // This "better than or equal to" operator is used by the
+  // implementation of the generic Dijkstra algorithm
   bool
   operator <= (const generic_label &j) const
   {
@@ -87,42 +78,32 @@ struct generic_label
   }
 };
 
-template <typename Graph, typename Cost, typename Units>
-std::ostream &
-operator << (std::ostream &os,
-             const generic_label<Graph, Cost, Units> &l)
-{
-  os << "generic_label(" << l.m_c << ", " << l.m_u
-     << ", " << l.m_e << ", " << l.m_t << ')';
-  return os;
-}
-
-template <typename Graph, typename Cost, typename Units>
+template <typename Cost, typename Units, typename Edge>
 auto
-get_cost(const generic_label<Graph, Cost, Units> &l)
+get_cost(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_c;
 }
 
-template <typename Graph, typename Cost, typename Units>
+template <typename Cost, typename Units, typename Edge>
 auto
-get_units(const generic_label<Graph, Cost, Units> &l)
+get_units(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_u;
 }
 
-template <typename Graph, typename Cost, typename Units>
+template <typename Cost, typename Units, typename Edge>
 auto
-get_edge(const generic_label<Graph, Cost, Units> &l)
+get_edge(const generic_label<Cost, Units, Edge> &l)
 {
-  return l.m_e;
+  return *l.m_ed;
 }
 
-template <typename Graph, typename Cost, typename Units>
+template <typename Cost, typename Units, typename Edge>
 auto
-get_target(const generic_label<Graph, Cost, Units> &l)
+get_target(const generic_label<Cost, Units, Edge> &l)
 {
-  return l.m_t;
+  return target(*l.m_ed);
 }
 
 #endif // GENERIC_LABEL_HPP

@@ -13,10 +13,10 @@
 // labels, because we create a weak_ptr in the priority queue.
 template <typename Graph, typename Cost, typename Units>
 struct generic_tentative:
-  std::vector<std::set<generic_label<Graph, Cost, Units>>>
+  std::vector<std::set<generic_label<Cost, Units, Edge<Graph>>>>
 {
   // That's the label type we're using.
-  using label_t = generic_label<Graph, Cost, Units>;
+  using label_t = generic_label<Cost, Units, Edge<Graph>>;
   // The type of data a vertex has.
   using vd_t = std::set<label_t>;
   // The type of the vector of vertex data.
@@ -24,10 +24,10 @@ struct generic_tentative:
   // The size type of the vovd_t.
   using size_type = typename base::size_type;
   // The type of the vertex descriptor.
-  using vertex_t = Vertex<Graph>;
+  using key_type = Key<Vertex<Graph>>;
 
   // The priority queue element type.
-  using pqet = std::pair<Cost, vertex_t>;
+  using pqet = std::pair<Cost, key_type>;
 
   // The priority queue.
   std::set<pqet> m_pq;
@@ -45,20 +45,21 @@ struct generic_tentative:
   void
   push(T &&l)
   {
-    vertex_t t = get_target(l);
+    // The key of the target vertex.
+    key_type tk = key(get_target(l));
     Cost c = get_cost(l);
-    auto &vd = this->operator[](t);
+    auto &vd = this->operator[](tk);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
     if (i == vd.begin())
       {
-        // There already can be an element in the queue for t.
-        auto &o = m_v2c[t];
+        // There already can be an element in the queue for tk.
+        auto &o = m_v2c[tk];
         if (o)
           // Erase the former element from the queue.
-          m_pq.erase({*o, t});
-        m_pq.insert({c, t});
+          m_pq.erase({*o, tk});
+        m_pq.insert({c, tk});
         o = c;
       }
   }
@@ -73,19 +74,19 @@ struct generic_tentative:
   pop()
   {
     assert(!m_pq.empty());
-    const auto [c, t] = *m_pq.begin();
+    const auto [c, tk] = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    auto &vd = this->operator[](t);
+    auto &vd = this->operator[](tk);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
     assert(get_cost(nh.value()) == c);
-    auto &o = m_v2c[t];
-    // If there is other label for t, put it into the queue.
+    auto &o = m_v2c[tk];
+    // If there is other label for tk, put it into the queue.
     if (!vd.empty())
       {
         const auto &nc = get_cost(*vd.begin());
-        assert(get_target(*vd.begin()) == t);
-        m_pq.insert({nc, t});
+        assert(get_target(*vd.begin()) == tk);
+        m_pq.insert({nc, tk});
         o = nc;
       }
     else
