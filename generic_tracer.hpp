@@ -46,7 +46,7 @@ struct generic_tracer
     assert(!std::empty(ls));
     // We just take the first label.
     const auto &l = ls.front();
-    // Get the CU for the path.
+    // Get the units for the path.
     p.first = m_units = get_units(l);
     // Return the iterator to the first (and the only) label.
     return ls.begin();
