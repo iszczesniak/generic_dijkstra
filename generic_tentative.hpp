@@ -46,7 +46,7 @@ struct generic_tentative:
   push(T &&l)
   {
     // The key of the target vertex.
-    key_type tk = key(get_target(l));
+    key_type tk = key(target(l));
     Cost c = get_cost(l);
     auto &vd = this->operator[](tk);
     auto [i, s] = vd.insert(std::forward<T>(l));
@@ -85,7 +85,7 @@ struct generic_tentative:
     if (!vd.empty())
       {
         const auto &nc = get_cost(*vd.begin());
-        assert(get_target(*vd.begin()) == tk);
+        assert(target(*vd.begin()) == tk);
         m_pq.insert({nc, tk});
         o = nc;
       }

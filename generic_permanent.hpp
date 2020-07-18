@@ -32,7 +32,7 @@ struct generic_permanent:
   push(T &&l)
   {
     // The key of the target vertex of the label.
-    const auto &tk = key(get_target(l));
+    const auto &tk = key(target(l));
     // Push the label back.
     base::operator[](tk).push_back(std::forward<T>(l));
 
