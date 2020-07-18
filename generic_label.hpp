@@ -94,7 +94,7 @@ units(const generic_label<Cost, Units, Edge> &l)
 
 template <typename Cost, typename Units, typename Edge>
 auto
-get_edge(const generic_label<Cost, Units, Edge> &l)
+edge(const generic_label<Cost, Units, Edge> &l)
 {
   return *l.m_ed;
 }

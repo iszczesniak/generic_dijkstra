@@ -49,7 +49,7 @@ struct generic_tracer
     // This is the label we process.
     const auto &l = *li;
     // The edge of the label.
-    const auto &e = get_edge(l);
+    const auto &e = edge(l);
     // Add the label's edge to the path.
     p.second.push_front(e);
   }
@@ -67,7 +67,7 @@ struct generic_tracer
     // The cost of the label.
     const auto &c = cost(l);
     // This is the edge of the label.
-    const auto &e = get_edge(l);
+    const auto &e = edge(l);
     // The edge cost.
     auto ec = cost(e);
     // The edge source.
