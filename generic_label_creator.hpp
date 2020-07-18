@@ -2,8 +2,8 @@
 #define GENERIC_LABEL_CREATOR_HPP
 
 #include "generic_label.hpp"
-#include "units.hpp"
 
+#include <concepts>
 #include <list>
 #include <optional>
 
@@ -13,7 +13,7 @@ class generic_label_creator
   using Label = generic_label<Cost, Units, Edge>;
 
 public:
-  template <Callable<Cost, SU &> F = EmptyCallable<Cost, SU &>>
+  template <std::invocable<Cost, Units &> F = EmptyCallable<Cost, Units &>>
   std::list<Label>
   operator()(const Edge &e, const Label &l, F f = {}) const
   {
