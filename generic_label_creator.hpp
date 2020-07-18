@@ -7,14 +7,6 @@
 #include <list>
 #include <optional>
 
-template <typename Label>
-auto
-cost(const Label &);
-
-template <typename Label>
-auto
-get_units(const Label &);
-
 template <typename Cost, typename Units, typename Edge>
 class generic_label_creator
 {
@@ -31,7 +23,7 @@ public:
     Cost c_c = cost(l) + ec;
 
     // The label units.
-    const Units &l_units = get_units(l);
+    const Units &l_units = units(l);
     // The units available on the edge.
     const auto &e_su = units(e);
     // The candidate SU: the su of label l that can be carried by

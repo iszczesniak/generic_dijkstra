@@ -3,18 +3,6 @@
 
 #include "graph.hpp"
 
-template <typename Label>
-auto
-cost(const Label &);
-
-template <typename Label>
-auto
-get_units(const Label &);
-
-template <typename Label>
-auto
-get_edge(const Label &);
-
 template <typename Path, typename Permanent, typename Units>
 struct generic_tracer
 {
@@ -47,7 +35,7 @@ struct generic_tracer
     // We just take the first label.
     const auto &l = ls.front();
     // Get the units for the path.
-    p.first = m_units = get_units(l);
+    p.first = m_units = units(l);
     // Return the iterator to the first (and the only) label.
     return ls.begin();
   }
@@ -105,7 +93,7 @@ struct generic_tracer
       // And this will be fine:
       //
       //  cost(*j) + ec == c
-      if (cost(*j) + ec == c && get_units(*j).includes(m_units))
+      if (cost(*j) + ec == c && units(*j).includes(m_units))
         // This is the next label iterator.
         return j;
 

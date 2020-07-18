@@ -108,8 +108,7 @@ purge_worse(generic_tentative<Graph, Cost, Units> &T,
       // assertion here, because we are not inserting equal labels
       // into the priority queue.  We need this assertion here, so
       // that we can sefely use the <= operator below.
-      assert(!(cost(i) == cost(j) &&
-               get_units(i) == get_units(j)));
+      assert(!(cost(i) == cost(j) && units(i) == units(j)));
 
       // To check whether label i is worse then j, we use the <=
       // operator, because we made sure the labels are not equal.
