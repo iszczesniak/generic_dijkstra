@@ -9,7 +9,7 @@
 
 template <typename Label>
 auto
-get_cost(const Label &);
+cost(const Label &);
 
 template <typename Label>
 auto
@@ -28,7 +28,7 @@ public:
     // The cost of the edge.
     Cost ec = cost(e);
     // Candidate cost.
-    Cost c_c = get_cost(l) + ec;
+    Cost c_c = cost(l) + ec;
 
     // The label units.
     const Units &l_units = get_units(l);

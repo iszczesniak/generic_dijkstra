@@ -5,7 +5,7 @@
 
 template <typename Label>
 auto
-get_cost(const Label &);
+cost(const Label &);
 
 template <typename Label>
 auto
@@ -77,7 +77,7 @@ struct generic_tracer
     // This is the label we process.
     const auto &l = *li;
     // The cost of the label.
-    const auto &c = get_cost(l);
+    const auto &c = cost(l);
     // This is the edge of the label.
     const auto &e = get_edge(l);
     // The edge cost.
@@ -100,12 +100,12 @@ struct generic_tracer
       // addition only.  Since we might be dealing with floating point
       // numbers (i.e., cost may be float or double), this could fail:
       //
-      //  ec == c - get_cost(*j)
+      //  ec == c - cost(*j)
       //
       // And this will be fine:
       //
-      //  get_cost(*j) + ec == c
-      if (get_cost(*j) + ec == c && get_units(*j).includes(m_units))
+      //  cost(*j) + ec == c
+      if (cost(*j) + ec == c && get_units(*j).includes(m_units))
         // This is the next label iterator.
         return j;
 

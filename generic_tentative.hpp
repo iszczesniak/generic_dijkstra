@@ -47,7 +47,7 @@ struct generic_tentative:
   {
     // The key of the target vertex.
     key_type tk = key(target(l));
-    Cost c = get_cost(l);
+    Cost c = cost(l);
     auto &vd = this->operator[](tk);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
@@ -79,12 +79,12 @@ struct generic_tentative:
     auto &vd = this->operator[](tk);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
-    assert(get_cost(nh.value()) == c);
+    assert(cost(nh.value()) == c);
     auto &o = m_v2c[tk];
     // If there is other label for tk, put it into the queue.
     if (!vd.empty())
       {
-        const auto &nc = get_cost(*vd.begin());
+        const auto &nc = cost(*vd.begin());
         assert(target(*vd.begin()) == tk);
         m_pq.insert({nc, tk});
         o = nc;

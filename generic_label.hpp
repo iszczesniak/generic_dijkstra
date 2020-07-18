@@ -80,7 +80,7 @@ struct generic_label
 
 template <typename Cost, typename Units, typename Edge>
 auto
-get_cost(const generic_label<Cost, Units, Edge> &l)
+cost(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_c;
 }
