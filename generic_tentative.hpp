@@ -16,18 +16,18 @@ struct generic_tentative:
   std::vector<std::set<generic_label<Cost, Units, Edge<Graph>>>>
 {
   // That's the label type we're using.
-  using label_t = generic_label<Cost, Units, Edge<Graph>>;
+  using label_type = generic_label<Cost, Units, Edge<Graph>>;
   // The type of data a vertex has.
-  using vd_t = std::set<label_t>;
+  using vd_t = std::set<label_type>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_t>;
-  // The size type of the vovd_t.
+  // The size_type of the base.
   using size_type = typename base::size_type;
-  // The type of the vertex descriptor.
-  using key_type = Key<Vertex<Graph>>;
+  // The type of the vertex index.
+  using index_type = Index<Vertex<Graph>>;
 
   // The priority queue element type.
-  using pqet = std::pair<Cost, key_type>;
+  using pqet = std::pair<Cost, index_type>;
 
   // The priority queue.
   std::set<pqet> m_pq;
@@ -45,15 +45,15 @@ struct generic_tentative:
   void
   push(T &&l)
   {
-    // The key of the target vertex.
-    key_type tk = key(target(l));
-    Cost c = cost(l);
-    auto &vd = this->operator[](tk);
+    // The index of the target vertex.
+    auto ti = index(target(l));
+    auto &vd = this->operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
     if (i == vd.begin())
       {
+        Cost c = cost(l);
         // There already can be an element in the queue for tk.
         auto &o = m_v2c[tk];
         if (o)
@@ -70,7 +70,7 @@ struct generic_tentative:
     return m_pq.empty();
   }
 
-  label_t
+  label_type
   pop()
   {
     assert(!m_pq.empty());

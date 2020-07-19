@@ -31,7 +31,7 @@ has_better_or_equal(const generic_permanent<Graph, Cost, Units> &P,
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
   // fact that the elements in the vector are sorted by cost first.
-  for (const auto &i: P[key(target(j))])
+  for (const auto &i: P[index(target(j))])
     {
       // Stop searching when we reach a label with a higher cost.  If
       // the cost of label i is higher than the cost of label j, then
@@ -61,7 +61,7 @@ has_better_or_equal(const generic_tentative<Graph, Cost, Units> &T,
   // fact that the elements in the set are sorted by cost first.
 
   // Iterate over all tentative labels.
-  for (const auto &i: T[key(target(j))])
+  for (const auto &i: T[index(target(j))])
     {
       // Stop searching when we reach a label with a higher cost.  If
       // the cost of label i is higher than the cost of label j, then
@@ -86,7 +86,7 @@ void
 purge_worse(generic_tentative<Graph, Cost, Units> &T,
 	    const generic_label<Cost, Units, Edge<Graph>> &j)
 {
-  auto &Tt = T[key(target(j))];
+  auto &Tt = T[index(target(j))];
 
   // We could go for the easy implementation where we iterate for each
   // label i and compare it to j.  But we take advantage of the fact
