@@ -55,11 +55,11 @@ struct generic_tentative:
       {
         Cost c = cost(l);
         // There already can be an element in the queue for tk.
-        auto &o = m_v2c[tk];
+        auto &o = m_v2c[ti];
         if (o)
           // Erase the former element from the queue.
-          m_pq.erase({*o, tk});
-        m_pq.insert({c, tk});
+          m_pq.erase({*o, ti});
+        m_pq.insert({c, ti});
         o = c;
       }
   }
