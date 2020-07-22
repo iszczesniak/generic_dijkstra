@@ -74,19 +74,19 @@ struct generic_tentative:
   pop()
   {
     assert(!m_pq.empty());
-    const auto [c, tk] = *m_pq.begin();
+    const auto [c, ti] = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    auto &vd = this->operator[](tk);
+    auto &vd = this->operator[](ti);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
     assert(cost(nh.value()) == c);
-    auto &o = m_v2c[tk];
-    // If there is other label for tk, put it into the queue.
+    auto &o = m_v2c[ti];
+    // If there is other label for ti, put it into the queue.
     if (!vd.empty())
       {
         const auto &nc = cost(*vd.begin());
-        assert(target(*vd.begin()) == tk);
-        m_pq.insert({nc, tk});
+        assert(index(target(*vd.begin())) == ti);
+        m_pq.insert({nc, ti});
         o = nc;
       }
     else
