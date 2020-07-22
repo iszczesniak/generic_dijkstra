@@ -15,15 +15,15 @@ struct generic_label
 {
   Cost m_c;
   Units m_u;
-  Descriptor<const Edge> m_ed;
+  Edge m_e;
 
   generic_label(const Cost &c, const Units &u, const Edge &e):
-    m_c(c), m_u(u), m_ed(desc(e))
+    m_c(c), m_u(u), m_e(e)
   {
   }
 
   generic_label(const Cost &c, Units &&u, const Edge &e):
-    m_c(c), m_u(std::move(u)), m_ed(desc(e))
+    m_c(c), m_u(std::move(u)), m_e(e)
   {
   }
 
@@ -40,15 +40,15 @@ struct generic_label
     // We compare first the cost and target, since they are the most
     // likely to differ.  We compare the units at the very end,
     // because that comparison is time-consuming.
-    return std::tie(m_c, m_ed, m_u) ==
-      std::tie(j.m_c, j.m_ed, j.m_u);
+    return std::tie(m_c, m_e, m_u) ==
+      std::tie(j.m_c, j.m_e, j.m_u);
   }
 
   bool
   operator != (const generic_label &j) const
   {
-    return std::tie(m_c, m_ed, m_u) !=
-      std::tie(j.m_c, j.m_ed, j.m_u);
+    return std::tie(m_c, m_e, m_u) !=
+      std::tie(j.m_c, j.m_e, j.m_u);
   }
 
   // This operator is used by containers to establish the order
@@ -65,8 +65,8 @@ struct generic_label
   bool
   operator < (const generic_label &j) const
   {
-    return std::tie(m_c, m_u, m_ed) <
-      std::tie(j.m_c, j.m_u, j.m_ed);
+    return std::tie(m_c, m_u, m_e) <
+      std::tie(j.m_c, j.m_u, j.m_e);
   }
 
   // This "better than or equal to" operator is used by the
@@ -95,17 +95,17 @@ units(const generic_label<Cost, Units, Edge> &l)
 }
 
 template <typename Cost, typename Units, typename Edge>
-auto
+const Edge &
 edge(const generic_label<Cost, Units, Edge> &l)
 {
-  return *l.m_ed;
+  return l.m_e;
 }
 
 template <typename Cost, typename Units, typename Edge>
 auto
 target(const generic_label<Cost, Units, Edge> &l)
 {
-  return target(*l.m_ed);
+  return target(l.m_e);
 }
 
 #endif // GENERIC_LABEL_HPP
