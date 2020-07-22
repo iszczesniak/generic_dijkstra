@@ -74,7 +74,9 @@ struct generic_label
   bool
   operator <= (const generic_label &j) const
   {
-    return m_c <= j.m_c && m_u.includes(j.m_u);
+    return m_c <= j.m_c &&
+      std::includes(m_u.begin(), m_u.end(),
+                    j.m_u.begin(), j.m_u.end());
   }
 };
 
