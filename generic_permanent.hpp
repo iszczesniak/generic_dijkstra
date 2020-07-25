@@ -15,9 +15,9 @@ struct generic_permanent:
   // That's the label type we're using.
   using label_type = generic_label<Cost, Units, Edge<Graph>>;
   // The type of data a vertex has.
-  using vd_t = std::vector<label_type>;
+  using vd_type = std::vector<label_type>;
   // The type of the vector of vertex data.
-  using base = std::vector<vd_t>;
+  using base = std::vector<vd_type>;
   // The size type of the base.
   using size_type = typename base::size_type;
 

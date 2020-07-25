@@ -9,7 +9,7 @@ struct generic_tracer
   // That's the label type we're using.
   using label_t = typename Permanent::label_t;
   // The type of vertex data.
-  using vd_t = typename Permanent::vd_t;
+  using vd_type = typename Permanent::vd_type;
   // The path type.  The trace function needs it.
   using path_t = Path;
 
@@ -28,7 +28,7 @@ struct generic_tracer
    * Initialize the tracing.
    */
   auto
-  init(path_t &p, const vd_t &ls)
+  init(path_t &p, const vd_type &ls)
   {
     // Make sure there is at least one label.
     assert(!std::empty(ls));
@@ -44,7 +44,7 @@ struct generic_tracer
    * Push the label to the path.
    */
   void
-  push(path_t &p, typename vd_t::const_iterator li)
+  push(path_t &p, typename vd_type::const_iterator li)
   {
     // This is the label we process.
     const auto &l = *li;
@@ -60,7 +60,7 @@ struct generic_tracer
    * the previous label on the path.
    */
   auto
-  advance(const Permanent &P, typename vd_t::const_iterator li)
+  advance(const Permanent &P, typename vd_type::const_iterator li)
   {
     // This is the label we process.
     const auto &l = *li;
