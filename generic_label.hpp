@@ -1,6 +1,7 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
+#include <ostream>
 #include <tuple>
 
 // The label is a tuple (c, u, e) of cost c, units u, and edge e.  The
@@ -79,6 +80,18 @@ struct generic_label
                     j.m_u.begin(), j.m_u.end());
   }
 };
+
+template <typename Cost, typename Units, typename Edge>
+std::ostream &
+operator<<(std::ostream &out,
+           const generic_label<Cost, Units, Edge> &l)
+{
+  out << "label(cost = " << cost(l)
+      << ", units = " << units(l)
+      << ", edge = " << edge(l) << ")";
+
+    return out;
+}
 
 template <typename Cost, typename Units, typename Edge>
 auto
