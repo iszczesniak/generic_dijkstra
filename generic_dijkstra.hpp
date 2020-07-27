@@ -37,7 +37,7 @@ has_better_or_equal(const generic_permanent<Graph, Cost, Units> &P,
       // the cost of label i is higher than the cost of label j, then
       // label i (and the labels in the vector that follow) cannot be
       // better or equal (they can be incomparable or worse).
-      if (cost(i) > cost(j))
+      if (get_cost(i) > get_cost(j))
         break;
 
       // Is label i better than or equal to label j?
@@ -67,7 +67,7 @@ has_better_or_equal(const generic_tentative<Graph, Cost, Units> &T,
       // the cost of label i is higher than the cost of label j, then
       // label i (and the labels in the vector that follow) cannot be
       // better or equal (they can be incomparable or worse).
-      if (cost(i) > cost(j))
+      if (get_cost(i) > get_cost(j))
         break;
 
       // Is label i better than or equal to label j?
@@ -101,14 +101,15 @@ purge_worse(generic_tentative<Graph, Cost, Units> &T,
       // the cost of label j, then label i (and the labels in the set
       // that follow) cannot be worse (they can be better or
       // incomparable).
-      if (cost(i) < cost(j))
+      if (get_cost(i) < get_cost(j))
         break;
 
       // Make sure labels i and j are not equal.  We can make this
       // assertion here, because we are not inserting equal labels
       // into the priority queue.  We need this assertion here, so
       // that we can sefely use the <= operator below.
-      assert(!(cost(i) == cost(j) && units(i) == units(j)));
+      assert(!(get_cost(i) == get_cost(j) &&
+               get_units(i) == get_units(j)));
 
       // To check whether label i is worse then j, we use the <=
       // operator, because we made sure the labels are not equal.

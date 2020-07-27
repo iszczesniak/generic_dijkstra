@@ -18,14 +18,14 @@ public:
   operator()(const Edge &e, const Label &l, F f = {}) const
   {
     // The cost of the edge.
-    Cost ec = cost(e);
+    Cost ec = get_cost(e);
     // Candidate cost.
-    Cost c_c = cost(l) + ec;
+    Cost c_c = get_cost(l) + ec;
 
     // The label units.
-    const Units &l_units = units(l);
+    const Units &l_units = get_units(l);
     // The units available on the edge.
-    const auto &e_su = units(e);
+    const auto &e_su = get_units(e);
     // The candidate SU: the su of label l that can be carried by
     // edge e.
     auto c_su = intersection(SU{l_units}, e_su);

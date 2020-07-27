@@ -35,7 +35,7 @@ struct generic_tracer
     // We just take the first label.
     const auto &l = ls.front();
     // Get the units for the path.
-    p.first = m_units = units(l);
+    p.first = m_units = get_units(l);
     // Return the iterator to the first (and the only) label.
     return ls.begin();
   }
@@ -49,7 +49,7 @@ struct generic_tracer
     // This is the label we process.
     const auto &l = *li;
     // The edge of the label.
-    const auto &e = edge(l);
+    const auto &e = get_edge(l);
     // Add the label's edge to the path.
     p.second.push_front(e);
   }
@@ -65,11 +65,11 @@ struct generic_tracer
     // This is the label we process.
     const auto &l = *li;
     // The cost of the label.
-    const auto &c = cost(l);
+    const auto &c = get_cost(l);
     // This is the edge of the label.
-    const auto &e = edge(l);
+    const auto &e = get_edge(l);
     // The edge cost.
-    auto ec = cost(e);
+    auto ec = get_cost(e);
     // The edge source.
     const auto &s = source(e);
 
@@ -88,12 +88,12 @@ struct generic_tracer
       // addition only.  Since we might be dealing with floating point
       // numbers (i.e., cost may be float or double), this could fail:
       //
-      //  ec == c - cost(*j)
+      //  ec == c - get_cost(*j)
       //
       // And this will be fine:
       //
-      //  cost(*j) + ec == c
-      if (cost(*j) + ec == c && units(*j).includes(m_units))
+      //  get_cost(*j) + ec == c
+      if (get_cost(*j) + ec == c && get_units(*j).includes(m_units))
         // This is the next label iterator.
         return j;
 
