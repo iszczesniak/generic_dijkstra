@@ -82,6 +82,34 @@ struct generic_label
 };
 
 template <typename Cost, typename Units, typename Edge>
+const auto &
+cost(const generic_label<Cost, Units, Edge> &l)
+{
+  return l.m_c;
+}
+
+template <typename Cost, typename Units, typename Edge>
+const auto &
+units(const generic_label<Cost, Units, Edge> &l)
+{
+  return l.m_u;
+}
+
+template <typename Cost, typename Units, typename Edge>
+const auto &
+edge(const generic_label<Cost, Units, Edge> &l)
+{
+  return l.m_e;
+}
+
+template <typename Cost, typename Units, typename Edge>
+const auto &
+target(const generic_label<Cost, Units, Edge> &l)
+{
+  return target(l.m_e);
+}
+
+template <typename Cost, typename Units, typename Edge>
 std::ostream &
 operator<<(std::ostream &out,
            const generic_label<Cost, Units, Edge> &l)
@@ -91,34 +119,6 @@ operator<<(std::ostream &out,
       << ", edge = " << edge(l) << ")";
 
     return out;
-}
-
-template <typename Cost, typename Units, typename Edge>
-auto
-cost(const generic_label<Cost, Units, Edge> &l)
-{
-  return l.m_c;
-}
-
-template <typename Cost, typename Units, typename Edge>
-auto
-units(const generic_label<Cost, Units, Edge> &l)
-{
-  return l.m_u;
-}
-
-template <typename Cost, typename Units, typename Edge>
-const Edge &
-edge(const generic_label<Cost, Units, Edge> &l)
-{
-  return l.m_e;
-}
-
-template <typename Cost, typename Units, typename Edge>
-auto
-target(const generic_label<Cost, Units, Edge> &l)
-{
-  return target(l.m_e);
 }
 
 #endif // GENERIC_LABEL_HPP
