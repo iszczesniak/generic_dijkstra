@@ -86,37 +86,37 @@ std::ostream &
 operator<<(std::ostream &out,
            const generic_label<Cost, Units, Edge> &l)
 {
-  out << "label(cost = " << get_cost(l)
-      << ", units = " << get_units(l)
-      << ", edge = " << get_edge(l) << ")";
+  out << "label(cost = " << cost(l)
+      << ", units = " << units(l)
+      << ", edge = " << edge(l) << ")";
 
     return out;
 }
 
 template <typename Cost, typename Units, typename Edge>
-const auto &
-get_cost(const generic_label<Cost, Units, Edge> &l)
+auto
+cost(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_c;
 }
 
 template <typename Cost, typename Units, typename Edge>
-const auto &
-get_units(const generic_label<Cost, Units, Edge> &l)
+auto
+units(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_u;
 }
 
 template <typename Cost, typename Units, typename Edge>
 const Edge &
-get_edge(const generic_label<Cost, Units, Edge> &l)
+edge(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_e;
 }
 
 template <typename Cost, typename Units, typename Edge>
-const auto &
-get_target(const generic_label<Cost, Units, Edge> &l)
+auto
+target(const generic_label<Cost, Units, Edge> &l)
 {
   return target(l.m_e);
 }

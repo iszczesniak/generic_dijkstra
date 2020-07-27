@@ -53,7 +53,7 @@ struct generic_tentative:
     assert(s);
     if (i == vd.begin())
       {
-        Cost c = get_cost(l);
+        Cost c = cost(l);
         // There already can be an element in the queue for tk.
         auto &o = m_v2c[ti];
         if (o)
@@ -79,12 +79,12 @@ struct generic_tentative:
     auto &vd = this->operator[](ti);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
-    assert(get_cost(nh.value()) == c);
+    assert(cost(nh.value()) == c);
     auto &o = m_v2c[ti];
     // If there is other label for ti, put it into the queue.
     if (!vd.empty())
       {
-        const auto &nc = get_cost(*vd.begin());
+        const auto &nc = cost(*vd.begin());
         assert(index(target(*vd.begin())) == ti);
         m_pq.insert({nc, ti});
         o = nc;
