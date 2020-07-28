@@ -1,8 +1,6 @@
 #ifndef GENERIC_TENTATIVE_HPP
 #define GENERIC_TENTATIVE_HPP
 
-#include "generic_label.hpp"
-
 #include <cassert>
 #include <set>
 #include <vector>
@@ -11,14 +9,12 @@
 // vertex can have many shared (with the priority queue) labels or
 // none.  For each vertex we store a container or shared_ptrs to
 // labels, because we create a weak_ptr in the priority queue.
-template <typename Graph, typename Cost, typename Units>
+template <typename Label>
 struct generic_tentative:
-  std::vector<std::set<generic_label<Cost, Units, Edge<Graph>>>>
+  std::vector<std::set<Label>>
 {
-  // That's the label type we're using.
-  using label_type = generic_label<Cost, Units, Edge<Graph>>;
   // The type of data a vertex has.
-  using vd_type = std::set<label_type>;
+  using vd_type = std::set<Label>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
   // The size_type of the base.
@@ -70,7 +66,7 @@ struct generic_tentative:
     return m_pq.empty();
   }
 
-  label_type
+  Label
   pop()
   {
     assert(!m_pq.empty());

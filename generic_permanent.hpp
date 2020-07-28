@@ -1,21 +1,17 @@
 #ifndef GENERIC_PERMANENT_HPP
 #define GENERIC_PERMANENT_HPP
 
-#include "generic_label.hpp"
-
 #include <utility>
 #include <vector>
 
 // The container type for storing permanent generic labels.  A vertex
 // can have many labels or none, so we store them in a container.
-template <typename Graph, typename Cost, typename Units>
+template <typename Label>
 struct generic_permanent:
-  std::vector<std::vector<generic_label<Cost, Units, Edge<Graph>>>>
+  std::vector<std::vector<Label>>
 {
-  // That's the label type we're using.
-  using label_type = generic_label<Cost, Units, Edge<Graph>>;
   // The type of data a vertex has.
-  using vd_type = std::vector<label_type>;
+  using vd_type = std::vector<Label>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
   // The size type of the base.
@@ -27,7 +23,7 @@ struct generic_permanent:
 
   // Pushes a new label, and returns a reference to it.
   template <typename T>
-  const label_type &
+  const Label &
   push(T &&l)
   {
     // The index of the target vertex of the label.
