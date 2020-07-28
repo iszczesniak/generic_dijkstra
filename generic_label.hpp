@@ -4,12 +4,11 @@
 #include <ostream>
 #include <tuple>
 
-// The label is a tuple (c, u, e) of cost c, units u, and edge e.  The
-// label stores cost c and units u of using edge e.
+// The label has cost c, units u, and edge e.  The label stores cost c
+// and units u of using edge e.
 //
-// In the tuple we store an edge descriptor, not a vertex descriptor,
-// so that we can allow for multigraphs (i.e. graphs with parallel
-// edges).
+// We store an edge, not a vertex, so that we can allow for
+// multigraphs (i.e. graphs with parallel edges).
 
 template <typename Cost, typename Units, typename Edge>
 struct generic_label
@@ -18,13 +17,8 @@ struct generic_label
   Units m_u;
   Edge m_e;
 
-  generic_label(const Cost &c, const Units &u, const Edge &e):
+  generic_label(Cost c, Units u, Edge e):
     m_c(c), m_u(u), m_e(e)
-  {
-  }
-
-  generic_label(const Cost &c, Units &&u, const Edge &e):
-    m_c(c), m_u(std::move(u)), m_e(e)
   {
   }
 
