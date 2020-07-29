@@ -9,9 +9,10 @@
 
 // Move the best label from T to P, and return a reference to the
 // label in the new place.
-template <typename Label>
+template <typename Label, template<typename> typename C>
 auto
-move_label(generic_tentative<Label> &T, generic_permanent<Label> &P)
+move_label(generic_tentative<Label> &T,
+           generic_permanent<Label, C> &P)
 {
   return P.push(T.pop());
 }
@@ -22,9 +23,10 @@ move_label(generic_tentative<Label> &T, generic_permanent<Label> &P)
  * there are the labels, which are the most likely to be better or
  * equal to label j, so in this way we return the fastest.
  */
-template <typename Label>
+template <typename Label, template<typename> typename C>
 bool
-has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
+has_better_or_equal(const generic_permanent<Label, C> &P,
+                    const Label &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
