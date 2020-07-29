@@ -115,4 +115,22 @@ operator<<(std::ostream &out,
     return out;
 }
 
+// *******************************************************************
+// The cost traits
+
+template <typename Cost, typename Units, typename Edge>
+struct cost_traits<generic_label<Cost, Units, Edge>>
+{
+  using type = Cost;
+};
+
+// *******************************************************************
+// The edge traits
+
+template <typename Cost, typename Units, typename Edge>
+struct edge_traits<generic_label<Cost, Units, Edge>>
+{
+  using type = Edge;
+};
+
 #endif // GENERIC_LABEL_HPP

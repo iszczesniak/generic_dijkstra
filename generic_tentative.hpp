@@ -19,17 +19,19 @@ struct generic_tentative:
   using base = std::vector<vd_type>;
   // The size_type of the base.
   using size_type = typename base::size_type;
-  // The type of the vertex index.
-  using index_type = Index<Vertex<Graph>>;
+  // The cost type of the label.
+  using cost_type = Cost<Label>;
+  // The index type of the vertex.
+  using index_type = Index<Vertex<Edge<Label>>>;
 
   // The priority queue element type.
-  using pqet = std::pair<Cost, index_type>;
+  using pqet = std::pair<cost_type, index_type>;
 
   // The priority queue.
   std::set<pqet> m_pq;
 
   // Vetext to cost reverse look up of the priority queue elements.
-  std::vector<std::optional<Cost>> m_v2c;
+  std::vector<std::optional<cost_type>> m_v2c;
 
   // The constructor builds a vector of data for each vertex.
   generic_tentative(size_type count): base(count), m_v2c(count)
@@ -49,7 +51,7 @@ struct generic_tentative:
     assert(s);
     if (i == vd.begin())
       {
-        Cost c = cost(l);
+        auto c = cost(l);
         // There already can be an element in the queue for tk.
         auto &o = m_v2c[ti];
         if (o)
