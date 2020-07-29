@@ -118,19 +118,31 @@ operator<<(std::ostream &out,
 // *******************************************************************
 // The cost traits
 
+template<typename>
+struct cost_traits;
+
 template <typename Cost, typename Units, typename Edge>
 struct cost_traits<generic_label<Cost, Units, Edge>>
 {
   using type = Cost;
 };
 
+template <typename T>
+using Cost = typename cost_traits<T>::type;
+
 // *******************************************************************
 // The edge traits
+
+template<typename>
+struct edge_traits;
 
 template <typename Cost, typename Units, typename Edge>
 struct edge_traits<generic_label<Cost, Units, Edge>>
 {
   using type = Edge;
 };
+
+template <typename T>
+using Edge = typename edge_traits<T>::type;
 
 #endif // GENERIC_LABEL_HPP
