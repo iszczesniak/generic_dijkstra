@@ -10,8 +10,10 @@ template <typename Label>
 struct generic_permanent:
   std::vector<std::vector<Label>>
 {
+  // The label type
+  using label_type = Label;
   // The type of data a vertex has.
-  using vd_type = std::vector<Label>;
+  using vd_type = std::vector<label_type>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
   // The size type of the base.
@@ -23,7 +25,7 @@ struct generic_permanent:
 
   // Pushes a new label, and returns a reference to it.
   template <typename T>
-  const Label &
+  const label_type &
   push(T &&l)
   {
     // The index of the target vertex of the label.

@@ -13,16 +13,18 @@ template <typename Label>
 struct generic_tentative:
   std::vector<std::set<Label>>
 {
+  // The label type
+  using label_type = Label;
   // The type of data a vertex has.
-  using vd_type = std::set<Label>;
+  using vd_type = std::set<label_type>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
   // The size_type of the base.
   using size_type = typename base::size_type;
   // The cost type of the label.
-  using cost_type = Cost<Label>;
+  using cost_type = Cost<label_type>;
   // The index type of the vertex.
-  using index_type = Index<Vertex<Edge<Label>>>;
+  using index_type = Index<Vertex<Edge<label_type>>>;
 
   // The priority queue element type.
   using pqet = std::pair<cost_type, index_type>;
@@ -68,7 +70,7 @@ struct generic_tentative:
     return m_pq.empty();
   }
 
-  Label
+  label_type
   pop()
   {
     assert(!m_pq.empty());
