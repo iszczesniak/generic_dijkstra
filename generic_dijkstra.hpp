@@ -49,7 +49,7 @@ has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
 /**
  * Is there in T a label that is better than or equal to label j?
  */
-Etemplate <typename Label>
+template <typename Label>
 bool
 has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 {
