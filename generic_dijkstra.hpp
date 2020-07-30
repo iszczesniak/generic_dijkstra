@@ -10,7 +10,7 @@
 // Move the best label from T to P, and return a reference to the
 // label in the new place.
 template <typename Label, template<typename> typename C>
-auto
+const Label &
 move_label(generic_tentative<Label> &T,
            generic_permanent<Label, C> &P)
 {
