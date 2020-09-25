@@ -1,6 +1,7 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
+#include <algorithm>
 #include <ostream>
 #include <tuple>
 
