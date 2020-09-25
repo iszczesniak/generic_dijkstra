@@ -31,13 +31,13 @@ has_better_or_equal(const generic_permanent<Label, C> &P,
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
   // fact that the elements in the vector are sorted by cost first.
-  for (const auto &i: P[index(target(j))])
+  for (const auto &i: P[index(get_target(j))])
     {
       // Stop searching when we reach a label with a higher cost.  If
       // the cost of label i is higher than the cost of label j, then
       // label i (and the labels in the vector that follow) cannot be
       // better or equal (they can be incomparable or worse).
-      if (cost(i) > cost(j))
+      if (get_cost(i) > get_cost(j))
         break;
 
       // Is label i better than or equal to label j?
@@ -60,13 +60,13 @@ has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
   // fact that the elements in the set are sorted by cost first.
 
   // Iterate over all tentative labels.
-  for (const auto &i: T[index(target(j))])
+  for (const auto &i: T[index(get_target(j))])
     {
       // Stop searching when we reach a label with a higher cost.  If
       // the cost of label i is higher than the cost of label j, then
       // label i (and the labels in the vector that follow) cannot be
       // better or equal (they can be incomparable or worse).
-      if (cost(i) > cost(j))
+      if (get_cost(i) > get_cost(j))
         break;
 
       // Is label i better than or equal to label j?
@@ -84,7 +84,7 @@ template <typename Label>
 void
 purge_worse(generic_tentative<Label> &T, const Label &j)
 {
-  auto &Tt = T[index(target(j))];
+  auto &Tt = T[index(get_target(j))];
 
   // We could go for the easy implementation where we iterate for each
   // label i and compare it to j.  But we take advantage of the fact
@@ -99,14 +99,15 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
       // the cost of label j, then label i (and the labels in the set
       // that follow) cannot be worse (they can be better or
       // incomparable).
-      if (cost(i) < cost(j))
+      if (get_cost(i) < get_cost(j))
         break;
 
       // Make sure labels i and j are not equal.  We can make this
       // assertion here, because we are not inserting equal labels
       // into the priority queue.  We need this assertion here, so
       // that we can sefely use the <= operator below.
-      assert(!(cost(i) == cost(j) && units(i) == units(j)));
+      assert(!(get_cost(i) == get_cost(j) &&
+               get_units(i) == get_units(j)));
 
       // To check whether label i is worse then j, we use the <=
       // operator, because we made sure the labels are not equal.

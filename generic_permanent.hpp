@@ -29,7 +29,7 @@ struct generic_permanent:
   push(T &&l)
   {
     // The index of the target vertex of the label.
-    const auto &ti = index(target(l));
+    const auto &ti = index(get_target(l));
     // Push the label back.
     base::operator[](ti).push_back(std::forward<T>(l));
 

@@ -46,14 +46,14 @@ struct generic_tentative:
   push(T &&l)
   {
     // The index of the target vertex.
-    auto ti = index(target(l));
+    auto ti = index(get_target(l));
     auto &vd = this->operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
     if (i == vd.begin())
       {
-        auto c = cost(l);
+        auto c = get_cost(l);
         // There already can be an element in the queue for tk.
         auto &o = m_v2c[ti];
         if (o)
@@ -79,13 +79,13 @@ struct generic_tentative:
     auto &vd = this->operator[](ti);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
-    assert(cost(nh.value()) == c);
+    assert(get_cost(nh.value()) == c);
     auto &o = m_v2c[ti];
     // If there is other label for ti, put it into the queue.
     if (!vd.empty())
       {
-        const auto &nc = cost(*vd.begin());
-        assert(index(target(*vd.begin())) == ti);
+        const auto &nc = get_cost(*vd.begin());
+        assert(index(get_target(*vd.begin())) == ti);
         m_pq.insert({nc, ti});
         o = nc;
       }
