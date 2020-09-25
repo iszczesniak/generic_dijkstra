@@ -101,7 +101,7 @@ template <typename Cost, typename Units, typename Edge>
 const auto &
 get_target(const generic_label<Cost, Units, Edge> &l)
 {
-  return target(l.m_e);
+  return get_target(l.m_e);
 }
 
 template <typename Cost, typename Units, typename Edge>

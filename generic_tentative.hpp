@@ -46,7 +46,7 @@ struct generic_tentative:
   push(T &&l)
   {
     // The index of the target vertex.
-    auto ti = index(get_target(l));
+    auto ti = get_index(get_target(l));
     auto &vd = this->operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
@@ -85,7 +85,7 @@ struct generic_tentative:
     if (!vd.empty())
       {
         const auto &nc = get_cost(*vd.begin());
-        assert(index(get_target(*vd.begin())) == ti);
+        assert(get_index(get_target(*vd.begin())) == ti);
         m_pq.insert({nc, ti});
         o = nc;
       }
