@@ -1,6 +1,7 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
+#include <algorithm>
 #include <ostream>
 #include <tuple>
 
@@ -77,30 +78,30 @@ struct generic_label
 
 template <typename Cost, typename Units, typename Edge>
 const auto &
-cost(const generic_label<Cost, Units, Edge> &l)
+get_cost(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_c;
 }
 
 template <typename Cost, typename Units, typename Edge>
 const auto &
-units(const generic_label<Cost, Units, Edge> &l)
+get_units(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_u;
 }
 
 template <typename Cost, typename Units, typename Edge>
 const auto &
-edge(const generic_label<Cost, Units, Edge> &l)
+get_edge(const generic_label<Cost, Units, Edge> &l)
 {
   return l.m_e;
 }
 
 template <typename Cost, typename Units, typename Edge>
 const auto &
-target(const generic_label<Cost, Units, Edge> &l)
+get_target(const generic_label<Cost, Units, Edge> &l)
 {
-  return target(l.m_e);
+  return get_target(l.m_e);
 }
 
 template <typename Cost, typename Units, typename Edge>
@@ -108,9 +109,9 @@ std::ostream &
 operator<<(std::ostream &out,
            const generic_label<Cost, Units, Edge> &l)
 {
-  out << "label(cost = " << cost(l)
-      << ", units = " << units(l)
-      << ", edge = " << edge(l) << ")";
+  out << "label(cost = " << get_cost(l)
+      << ", units = " << get_units(l)
+      << ", edge = " << get_edge(l) << ")";
 
     return out;
 }
