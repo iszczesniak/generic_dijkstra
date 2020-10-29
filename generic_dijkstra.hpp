@@ -105,7 +105,7 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
       // Make sure labels i and j are not equal.  We can make this
       // assertion here, because we are not inserting equal labels
       // into the priority queue.  We need this assertion here, so
-      // that we can sefely use the <= operator below.
+      // that we can safely use the <= operator below.
       assert(!(cost(i) == cost(j) && units(i) == units(j)));
 
       // To check whether label i is worse then j, we use the <=
