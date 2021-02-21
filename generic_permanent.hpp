@@ -7,8 +7,7 @@
 // The container type for storing permanent generic labels.  A vertex
 // can have many labels or none, so we store them in a container.
 template <typename Label>
-struct generic_permanent:
-  std::vector<std::vector<Label>>
+struct generic_permanent: std::vector<std::vector<Label>>
 {
   // The label type
   using label_type = Label;

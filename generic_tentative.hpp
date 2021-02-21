@@ -10,8 +10,7 @@
 // none.  For each vertex we store a container or shared_ptrs to
 // labels, because we create a weak_ptr in the priority queue.
 template <typename Label>
-struct generic_tentative:
-  std::vector<std::set<Label>>
+struct generic_tentative: std::vector<std::set<Label>>
 {
   // The label type
   using label_type = Label;
