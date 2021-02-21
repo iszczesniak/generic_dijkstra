@@ -39,9 +39,10 @@ struct generic_tentative: std::vector<std::set<Label>>
   {
   }
 
-  // This function pushes a new label.
+  // This function pushes a new label, and returns a reference to it
+  // in the container.
   template <typename T>
-  void
+  const auto &
   push(T &&l)
   {
     // The index of the target vertex.
@@ -50,6 +51,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
+
     if (i == vd.begin())
       {
         auto c = get_cost(l);
@@ -61,6 +63,8 @@ struct generic_tentative: std::vector<std::set<Label>>
         m_pq.insert({c, ti});
         o = c;
       }
+
+    return *i;
   }
 
   bool

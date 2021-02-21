@@ -7,16 +7,6 @@
 
 #include <utility>
 
-// Move the best label from T to P, and return a reference to the
-// label in the new place.
-template <typename Label>
-const Label &
-move_label(generic_tentative<Label> &T,
-           generic_permanent<Label> &P)
-{
-  return P.push(T.pop());
-}
-
 /**
  * Is there in P a label that is better than or equal to label j?
  * Here we iterate over the labels in P from the beginning, because
