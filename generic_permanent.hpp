@@ -36,4 +36,35 @@ struct generic_permanent: std::vector<std::vector<Label>>
   }
 };
 
+/**
+ * Is there in P a label that is better than or equal to label j?
+ * Here we iterate over the labels in P from the beginning, because
+ * there are the labels, which are the most likely to be better or
+ * equal to label j, so in this way we return the fastest.
+ */
+template <typename Label>
+bool
+has_better_or_equal(const generic_permanent<Label> &P,
+                    const Label &j)
+{
+  // We could go for the easy implementation where we iterate for each
+  // label i, and compare it to label j.  But we take advantage of the
+  // fact that the elements in the vector are sorted by cost first.
+  for (const auto &i: P[get_index(get_target(j))])
+    {
+      // Stop searching when we reach a label with a higher cost.  If
+      // the cost of label i is higher than the cost of label j, then
+      // label i (and the labels in the vector that follow) cannot be
+      // better or equal (they can be incomparable or worse).
+      if (get_cost(i) > get_cost(j))
+        break;
+
+      // Is label i better than or equal to label j?
+      if (i <= j)
+        return true;
+    }
+
+  return false;
+}
+
 #endif // GENERIC_PERMANENT_HPP
