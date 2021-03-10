@@ -38,9 +38,6 @@ struct generic_permanent: std::vector<std::vector<Label>>
 
 /**
  * Is there in P a label that is better than or equal to label j?
- * Here we iterate over the labels in P from the beginning, because
- * there are the labels, which are the most likely to be better or
- * equal to label j, so in this way we return the fastest.
  */
 template <typename Label>
 bool
