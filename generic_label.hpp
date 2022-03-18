@@ -1,147 +1,42 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
-#include <algorithm>
-#include <ostream>
-#include <tuple>
+// The label has cost c, and resources r.
 
-// The label has cost c, units u, and edge e.  The label stores cost c
-// and units u of using edge e.
-//
-// We store an edge, not a vertex, so that we can allow for
-// multigraphs (i.e. graphs with parallel edges).
-
-template <typename Cost, typename Units, typename Edge>
+template <typename Cost, typename Resources>
 struct generic_label
 {
   Cost m_c;
-  Units m_u;
-  Edge m_e;
+  Resources m_r;
 
-  generic_label(Cost c, Units u, Edge e):
-    m_c(c), m_u(u), m_e(e)
+  generic_label(Cost c, Resources r):
+    m_c(c), m_r(r)
   {
-  }
-
-  generic_label(const generic_label &) = default;
-
-  generic_label(generic_label &&) = default;
-
-  generic_label &
-  operator = (generic_label &&) = default;
-
-  bool
-  operator == (const generic_label &j) const
-  {
-    // We compare first the cost and target, since they are the most
-    // likely to differ.  We compare the units at the very end,
-    // because that comparison is time-consuming.
-    return std::tie(m_c, m_e, m_u) ==
-      std::tie(j.m_c, j.m_e, j.m_u);
-  }
-
-  bool
-  operator != (const generic_label &j) const
-  {
-    return std::tie(m_c, m_e, m_u) !=
-      std::tie(j.m_c, j.m_e, j.m_u);
-  }
-
-  // This operator is used by containers to establish the order
-  // between labels.  All we really care about is the cost, and the
-  // units.  The order of units matters, because it influences the
-  // spectrum allocation policy.  Here the units are sorted by their
-  // increasing min() numbers (the < operator of cunits), and so the
-  // specturm allocation policy is the first-fit.
-  //
-  // To distinguish different labels, we need to take into account the
-  // other label properties, and to this end we use the operator < of
-  // a tuple.  Tuple should be optimized out, so there is no overhead
-  // in using the tuple here.
-  bool
-  operator < (const generic_label &j) const
-  {
-    return std::tie(m_c, m_u, m_e) <
-      std::tie(j.m_c, j.m_u, j.m_e);
-  }
-
-  // This "better than or equal to" operator is used by the
-  // implementation of the generic Dijkstra algorithm
-  bool
-  operator <= (const generic_label &j) const
-  {
-    return m_c <= j.m_c && includes(m_u, j.m_u);
   }
 };
 
-template <typename Cost, typename Units, typename Edge>
+template <typename Cost, typename Resources>
 const auto &
-get_cost(const generic_label<Cost, Units, Edge> &l)
+get_cost(const generic_label<Cost, Resources> &l)
 {
   return l.m_c;
 }
 
-template <typename Cost, typename Units, typename Edge>
+template <typename Cost, typename Resources>
 const auto &
-get_units(const generic_label<Cost, Units, Edge> &l)
+get_resource(const generic_label<Cost, Resources> &l)
 {
   return l.m_u;
 }
 
-template <typename Cost, typename Units, typename Edge>
-const auto &
-get_edge(const generic_label<Cost, Units, Edge> &l)
+// This "better or equal" function.
+template <typename Cost, typename Resources>
+bool
+boe(const generic_label<Cost, Resources> &i,
+    const generic_label<Cost, Resources> &j)
 {
-  return l.m_e;
+  return get_cost(i) <= get_cost(j) &&
+    includes(get_resources(i), get_resources(j));
 }
-
-template <typename Cost, typename Units, typename Edge>
-const auto &
-get_target(const generic_label<Cost, Units, Edge> &l)
-{
-  return get_target(l.m_e);
-}
-
-template <typename Cost, typename Units, typename Edge>
-std::ostream &
-operator<<(std::ostream &out,
-           const generic_label<Cost, Units, Edge> &l)
-{
-  out << "label(cost = " << get_cost(l)
-      << ", units = " << get_units(l)
-      << ", edge = " << get_edge(l) << ")";
-
-    return out;
-}
-
-// *******************************************************************
-// The cost traits
-
-template<typename>
-struct cost_traits;
-
-template <typename Cost, typename Units, typename Edge>
-struct cost_traits<generic_label<Cost, Units, Edge>>
-{
-  using type = Cost;
-};
-
-template <typename T>
-using Cost = typename cost_traits<T>::type;
-
-// *******************************************************************
-// The edge traits
-
-template<typename>
-struct edge_traits;
-
-template <typename Cost, typename Units, typename Edge>
-struct edge_traits<generic_label<Cost, Units, Edge>>
-{
-  using type = Edge;
-};
-
-template <typename T>
-using Edge = typename edge_traits<T>::type;
 
 #endif // GENERIC_LABEL_HPP
