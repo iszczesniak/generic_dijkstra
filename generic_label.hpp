@@ -1,6 +1,8 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
+#include <compare>
+
 // The label has cost c, and resources r.
 
 template <typename Cost, typename Resources>
@@ -13,6 +15,9 @@ struct generic_label
     m_c(c), m_r(r)
   {
   }
+
+  std::strong_ordering
+  operator <=> (const generic_label &) const = default;
 };
 
 template <typename Cost, typename Resources>
@@ -26,7 +31,7 @@ template <typename Cost, typename Resources>
 const auto &
 get_resource(const generic_label<Cost, Resources> &l)
 {
-  return l.m_u;
+  return l.m_r;
 }
 
 // This "better or equal" function.
