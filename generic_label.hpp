@@ -29,7 +29,7 @@ get_cost(const generic_label<Cost, Resources> &l)
 
 template <typename Cost, typename Resources>
 const auto &
-get_resource(const generic_label<Cost, Resources> &l)
+get_resources(const generic_label<Cost, Resources> &l)
 {
   return l.m_r;
 }
