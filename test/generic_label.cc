@@ -26,6 +26,23 @@ worse_CU(const CU &ri)
   return l;
 }
 
+list<CU>
+better_CU(const CU &ri)
+{
+  list<CU> l;
+
+  // For case 2.a.
+  l.push_back(CU(ri.min(), ri.max() + 1));
+  // For case 3.a.
+  l.push_back(CU(ri.min() - 1, ri.max() - 1));
+  // For case 3.b.
+  l.push_back(CU(ri.min() - 1, ri.max()));
+  // For case 3.c.
+  l.push_back(CU(ri.min() - 1, ri.max() + 1));
+
+  return l;
+}
+
 void
 test_relations()
 {
@@ -153,10 +170,18 @@ test_relations()
 
   // Row 2, column 4.
   {
+    // li < lj
     for(const auto &cu: worse_CU(get_resources(li)))
       {
         label lj(get_cost(li), cu);
         assert(li < lj);
+      }
+
+    // li > lj
+    for(const auto &cu: better_CU(get_resources(li)))
+      {
+        label lj(get_cost(li), cu);
+        assert(li > lj);
       }
   }
 }
