@@ -184,6 +184,82 @@ test_relations()
         assert(li > lj);
       }
   }
+
+  // -----------------------------------------------------------------
+  // Row 3, column 1.
+  {
+    label lj1(get_cost(li) - 1,
+              {get_resources(li).min() + 1,
+               get_resources(li).max()});
+    assert(li > lj1);
+
+    label lj2(get_cost(li) - 1,
+              {get_resources(li).min(),
+               get_resources(li).max() - 1});
+    assert(li > lj2);
+
+    label lj3(get_cost(li) - 1,
+              {get_resources(li).min() + 1,
+               get_resources(li).max() - 1});
+    assert(li > lj3);
+  }
+
+  // Row 3, column 2.
+  {
+    label lj(get_cost(li) - 1, get_resources(li));
+    assert(li > lj);
+  }
+
+  // Row 3, column 3.
+  {
+    label lj1(get_cost(li) - 1,
+              {get_resources(li).min() - 1,
+               get_resources(li).max()});
+    assert(li > lj1);
+
+    label lj2(get_cost(li) - 1,
+              {get_resources(li).min(),
+               get_resources(li).max() + 1});
+    assert(li > lj2);
+
+    label lj3(get_cost(li) - 1,
+              {get_resources(li).min() - 1,
+               get_resources(li).max() + 1});
+    assert(li > lj3);
+  }
+
+  // Row 3, column 4.
+  {
+    label lj1(get_cost(li) - 1,
+              {get_resources(li).min() - 1,
+               get_resources(li).max() - 1});
+    assert(li > lj1);
+
+    label lj2(get_cost(li) - 1,
+              {get_resources(li).min() + 1,
+               get_resources(li).max() + 1});
+    assert(li > lj2);
+
+    label lj3(get_cost(li) - 1,
+              {get_resources(li).min() - 1,
+               get_resources(li).min()});
+    assert(li > lj3);
+
+    label lj4(get_cost(li) - 1,
+              {get_resources(li).max(),
+               get_resources(li).max() + 1});
+    assert(li > lj4);
+
+    label lj5(get_cost(li) - 1,
+              {get_resources(li).min() - 2,
+               get_resources(li).min() - 1});
+    assert(li > lj5);
+
+    label lj6(get_cost(li) - 1,
+              {get_resources(li).max() + 1,
+               get_resources(li).max() + 2});
+    assert(li > lj6);
+  }
 }
 
 // *****************************************************************
