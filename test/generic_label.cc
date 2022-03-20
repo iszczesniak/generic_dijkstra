@@ -43,6 +43,42 @@ better_CU(const CU &ri)
   return l;
 }
 
+// Make sure that li < lj.
+void
+lt(const label &li, const label &lj)
+{
+  assert(li < lj);
+  assert(li <= lj);
+  assert(li != lj);
+  assert(!(li == lj));
+  assert(!(li > lj));
+  assert(!(li >= lj));
+}
+
+// Make sure that li == lj.
+void
+eq(const label &li, const label &lj)
+{
+  assert(li == lj);
+  assert(!(li != lj));
+  assert(li <= lj);
+  assert(li >= lj);
+  assert(!(li < lj));
+  assert(!(li > lj));
+}
+
+// Make sure that li > lj.
+void
+gt(const label &li, const label &lj)
+{
+  assert(li > lj);
+  assert(li >= lj);
+  assert(li != lj);
+  assert(!(li == lj));
+  assert(!(li < lj));
+  assert(!(li <= lj));
+}
+
 void
 test_relations()
 {
@@ -55,23 +91,23 @@ test_relations()
     label lj1(get_cost(li) + 1,
               {get_resources(li).min() + 1,
                get_resources(li).max()});
-    assert(li < lj1);
+    lt(li, lj1);
 
     label lj2(get_cost(li) + 1,
               {get_resources(li).min(),
                get_resources(li).max() - 1});
-    assert(li < lj2);
+    lt(li, lj2);
 
     label lj3(get_cost(li) + 1,
               {get_resources(li).min() + 1,
                get_resources(li).max() - 1});
-    assert(li < lj3);
+    lt(li, lj3);
   }
 
   // Row 1, column 2.
   {
     label lj(get_cost(li) + 1, get_resources(li));
-    assert(li < lj);
+    lt(li, lj);
   }
 
   // Row 1, column 3.
@@ -79,17 +115,17 @@ test_relations()
     label lj1(get_cost(li) + 1,
               {get_resources(li).min() - 1,
                get_resources(li).max()});
-    assert(li < lj1);
+    lt(li, lj1);
 
     label lj2(get_cost(li) + 1,
               {get_resources(li).min(),
                get_resources(li).max() + 1});
-    assert(li < lj2);
+    lt(li, lj2);
 
     label lj3(get_cost(li) + 1,
               {get_resources(li).min() - 1,
                get_resources(li).max() + 1});
-    assert(li < lj3);
+    lt(li, lj3);
   }
 
   // Row 1, column 4.
@@ -97,32 +133,32 @@ test_relations()
     label lj1(get_cost(li) + 1,
               {get_resources(li).min() - 1,
                get_resources(li).max() - 1});
-    assert(li < lj1);
+    lt(li, lj1);
 
     label lj2(get_cost(li) + 1,
               {get_resources(li).min() + 1,
                get_resources(li).max() + 1});
-    assert(li < lj2);
+    lt(li, lj2);
 
     label lj3(get_cost(li) + 1,
               {get_resources(li).min() - 1,
                get_resources(li).min()});
-    assert(li < lj3);
+    lt(li, lj3);
 
     label lj4(get_cost(li) + 1,
               {get_resources(li).max(),
                get_resources(li).max() + 1});
-    assert(li < lj4);
+    lt(li, lj4);
 
     label lj5(get_cost(li) + 1,
               {get_resources(li).min() - 2,
                get_resources(li).min() - 1});
-    assert(li < lj5);
+    lt(li, lj5);
 
     label lj6(get_cost(li) + 1,
               {get_resources(li).max() + 1,
                get_resources(li).max() + 2});
-    assert(li < lj6);
+    lt(li, lj6);
   }
 
   // -----------------------------------------------------------------
@@ -131,23 +167,23 @@ test_relations()
     label lj1(get_cost(li),
               {get_resources(li).min() + 1,
                get_resources(li).max()});
-    assert(li < lj1);
+    lt(li, lj1);
 
     label lj2(get_cost(li),
               {get_resources(li).min(),
                get_resources(li).max() - 1});
-    assert(li < lj2);
+    lt(li, lj2);
 
     label lj3(get_cost(li),
               {get_resources(li).min() + 1,
                get_resources(li).max() - 1});
-    assert(li < lj3);
+    lt(li, lj3);
   }
 
   // Row 2, column 2.
   {
     label lj(get_cost(li), get_resources(li));
-    assert(li == lj);
+    eq(li, lj);
   }
 
   // Row 2, column 3.
@@ -155,17 +191,17 @@ test_relations()
     label lj1(get_cost(li),
               {get_resources(li).min() - 1,
                get_resources(li).max()});
-    assert(li > lj1);
+    gt(li, lj1);
 
     label lj2(get_cost(li),
               {get_resources(li).min(),
                get_resources(li).max() + 1});
-    assert(li > lj2);
+    gt(li, lj2);
 
     label lj3(get_cost(li),
               {get_resources(li).min() - 1,
                get_resources(li).max() + 1});
-    assert(li > lj3);
+    gt(li, lj3);
   }
 
   // Row 2, column 4.
@@ -174,14 +210,14 @@ test_relations()
     for(const auto &cu: worse_CU(get_resources(li)))
       {
         label lj(get_cost(li), cu);
-        assert(li < lj);
+        lt(li, lj);
       }
 
     // li > lj
     for(const auto &cu: better_CU(get_resources(li)))
       {
         label lj(get_cost(li), cu);
-        assert(li > lj);
+        gt(li, lj);
       }
   }
 
@@ -191,23 +227,23 @@ test_relations()
     label lj1(get_cost(li) - 1,
               {get_resources(li).min() + 1,
                get_resources(li).max()});
-    assert(li > lj1);
+    gt(li, lj1);
 
     label lj2(get_cost(li) - 1,
               {get_resources(li).min(),
                get_resources(li).max() - 1});
-    assert(li > lj2);
+    gt(li, lj2);
 
     label lj3(get_cost(li) - 1,
               {get_resources(li).min() + 1,
                get_resources(li).max() - 1});
-    assert(li > lj3);
+    gt(li, lj3);
   }
 
   // Row 3, column 2.
   {
     label lj(get_cost(li) - 1, get_resources(li));
-    assert(li > lj);
+    gt(li, lj);
   }
 
   // Row 3, column 3.
@@ -215,17 +251,17 @@ test_relations()
     label lj1(get_cost(li) - 1,
               {get_resources(li).min() - 1,
                get_resources(li).max()});
-    assert(li > lj1);
+    gt(li, lj1);
 
     label lj2(get_cost(li) - 1,
               {get_resources(li).min(),
                get_resources(li).max() + 1});
-    assert(li > lj2);
+    gt(li, lj2);
 
     label lj3(get_cost(li) - 1,
               {get_resources(li).min() - 1,
                get_resources(li).max() + 1});
-    assert(li > lj3);
+    gt(li, lj3);
   }
 
   // Row 3, column 4.
@@ -233,32 +269,32 @@ test_relations()
     label lj1(get_cost(li) - 1,
               {get_resources(li).min() - 1,
                get_resources(li).max() - 1});
-    assert(li > lj1);
+    gt(li, lj1);
 
     label lj2(get_cost(li) - 1,
               {get_resources(li).min() + 1,
                get_resources(li).max() + 1});
-    assert(li > lj2);
+    gt(li, lj2);
 
     label lj3(get_cost(li) - 1,
               {get_resources(li).min() - 1,
                get_resources(li).min()});
-    assert(li > lj3);
+    gt(li, lj3);
 
     label lj4(get_cost(li) - 1,
               {get_resources(li).max(),
                get_resources(li).max() + 1});
-    assert(li > lj4);
+    gt(li, lj4);
 
     label lj5(get_cost(li) - 1,
               {get_resources(li).min() - 2,
                get_resources(li).min() - 1});
-    assert(li > lj5);
+    gt(li, lj5);
 
     label lj6(get_cost(li) - 1,
               {get_resources(li).max() + 1,
                get_resources(li).max() + 2});
-    assert(li > lj6);
+    gt(li, lj6);
   }
 }
 
