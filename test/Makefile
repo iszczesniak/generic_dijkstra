@@ -1,9 +1,11 @@
 TESTS = generic_label
 
-#CXXFLAGS = -g -Wno-deprecated
-CXXFLAGS = -O3 -Wno-deprecated
+CXXFLAGS = -g -Wno-deprecated
+#CXXFLAGS = -O3 -Wno-deprecated
 
-CXXFLAGS := -std=c++20 -I ../ -I units
+CXXFLAGS := $(CXXFLAGS) -std=c++20
+CXXFLAGS := $(CXXFLAGS) -I ../
+CXXFLAGS := $(CXXFLAGS) -I units
 
 # Run the tests.
 run: $(TESTS)

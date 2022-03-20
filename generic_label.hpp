@@ -2,6 +2,7 @@
 #define GENERIC_LABEL_HPP
 
 #include <compare>
+#include <iostream>
 
 // The label has cost c, and resources r.
 
@@ -42,6 +43,17 @@ boe(const generic_label<Cost, Resources> &i,
 {
   return get_cost(i) <= get_cost(j) &&
     includes(get_resources(i), get_resources(j));
+}
+
+template <typename Cost, typename Resources>
+std::ostream &
+operator<<(std::ostream &out,
+           const generic_label<Cost, Resources> &l)
+{
+  out << "label(cost = " << get_cost(l)
+      << ", resources = " << get_resources(l) << ")";
+
+    return out;
 }
 
 #endif // GENERIC_LABEL_HPP

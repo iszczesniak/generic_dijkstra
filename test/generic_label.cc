@@ -1,6 +1,8 @@
 #include "generic_label.hpp"
 #include "units.hpp"
 
+#include <set>
+
 using label = generic_label<double, CU>;
 
 using namespace std;
@@ -302,12 +304,85 @@ test_relations()
 // transitivity
 // *****************************************************************
 
-list<label>
+set<label>
 worse(const label &li)
 {
-  list<label> l;
+  set<label> s;
 
-  return l;
+  // -----------------------------------------------------------------
+  // Row 1, column 1.
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() + 1,
+               get_resources(li).max()));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min(),
+               get_resources(li).max() - 1));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() + 1,
+               get_resources(li).max() - 1));
+
+  // Row 1, column 2.
+  s.emplace(get_cost(li) + 1, get_resources(li));
+
+  // Row 1, column 3.
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() - 1,
+               get_resources(li).max()));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min(),
+               get_resources(li).max() + 1));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() - 1,
+               get_resources(li).max() + 1));
+
+  // Row 1, column 4.
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() - 1,
+               get_resources(li).max() - 1));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() + 1,
+               get_resources(li).max() + 1));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() - 3,
+               get_resources(li).min()));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).max(),
+               get_resources(li).max() + 4));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).min() - 4,
+               get_resources(li).min() - 1));
+
+  s.emplace(get_cost(li) + 1,
+            CU(get_resources(li).max() + 1,
+               get_resources(li).max() + 4));
+
+  // -----------------------------------------------------------------
+  // Row 2, column 1.
+  s.emplace(get_cost(li),
+            CU(get_resources(li).min() + 1,
+               get_resources(li).max()));
+
+  s.emplace(get_cost(li),
+            CU(get_resources(li).min(),
+               get_resources(li).max() - 1));
+
+  s.emplace(get_cost(li),
+            CU(get_resources(li).min() + 1,
+               get_resources(li).max() - 1));
+
+  // Row 2, column 4.
+  for(const auto &cu: worse_CU(get_resources(li)))
+    s.emplace(get_cost(li), cu);
+  
+  return s;
 }
 
 void
@@ -335,7 +410,6 @@ test_transitivity()
         assert(lk >= li);
       }
 }
-
 
 int
 main()
