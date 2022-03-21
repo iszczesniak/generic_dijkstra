@@ -388,7 +388,7 @@ worse(const label &li)
 void
 test_transitivity()
 {
-  // This label could be any.
+  // This label could be any, but at least with three units.
   label li(10, {10, 20});
 
   for(const auto &lj: worse(li))
@@ -408,6 +408,36 @@ test_transitivity()
         // Test the default implementation of >=.
         assert(lk >= lj && lj >= li);
         assert(lk >= li);
+      }
+}
+
+// Test the better-or-equal incomparability.  Specifically, the reason
+// why this relation is intransitive.  The relation is transitive if
+// labels are of different cost, but it is intransitive for labels of
+// equal cost and incomparable RIs.
+void
+boe_incomparability()
+{
+  label li(10, {10, 20});
+
+  for(const auto &lj: incomparable1(li))
+    for(const auto &lk: incomparable1(lj))
+      {
+        // li || lj
+        assert(!(li == lj));
+        assert(li != lj)
+        assert(!(li < lj) && !(li > lj));
+        assert(!(li <= lj) && !(li >= lj));
+        // lj || lk
+        assert(!(lj == lk));
+        assert(lj != lk)
+        assert(!(lj < lk) && !(lj > lk));
+        assert(!(lj <= lk) && !(lj >= lk));
+        // li || lk
+        assert(!(li == lk));
+        assert(li != lk)
+        assert(!(li < lk) && !(li > lk));
+        assert(!(li <= lk) && !(li >= lk));
       }
 }
 
