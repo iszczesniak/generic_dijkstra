@@ -392,7 +392,7 @@ worse(const label &li)
 void
 test_transitivity()
 {
-  // This label could be any, but at least with three units.
+  // This label could be any, but with at least three units.
   label li(10, {10, 20});
 
   for(const auto &lj: worse(li))
