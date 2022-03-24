@@ -11,57 +11,6 @@ using namespace std;
 // Helper function.
 // *****************************************************************
 
-list<CU>
-better_RI(const CU &ri)
-{
-  list<CU> l;
-
-  // For case 2.a.
-  l.push_back(CU(ri.min(), ri.max() + 1));
-  // For case 3.a.
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
-  // For case 3.b.
-  l.push_back(CU(ri.min() - 1, ri.max()));
-  // For case 3.c.
-  l.push_back(CU(ri.min() - 1, ri.max() + 1));
-
-  return l;
-}
-
-list<CU>
-incomparable_RI(const CU &ri)
-{
-  list<CU> l;
-
-  l.push_back(CU(ri.min() + 1, ri.max() + 1));
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
-
-  l.push_back(CU(ri.max(), ri.max() + ri.size()));
-  l.push_back(CU(ri.min() - ri.size(), ri.min()));
-
-  l.push_back(CU(ri.max() + 1, ri.max() + ri.size() + 1));
-  l.push_back(CU(ri.min() - ri.size() - 1, ri.min() - 1));
-
-  return l;
-}
-
-list<CU>
-worse_RI(const CU &ri)
-{
-  list<CU> l;
-
-  // For case 1.a.
-  l.push_back(CU(ri.min() + 1, ri.max() + 1));
-  // For case 1.b.
-  l.push_back(CU(ri.min() + 1, ri.max()));
-  // For case 1.c.
-  l.push_back(CU(ri.min() + 1, ri.max() - 1));
-  // For case 2.c.
-  l.push_back(CU(ri.min(), ri.max() - 1));
-
-  return l;
-}
-
 // Make sure that li < lj.
 void
 lt(const label &li, const label &lj)
@@ -98,6 +47,86 @@ gt(const label &li, const label &lj)
   assert(!(li <= lj));
 }
 
+// Make sure that li || lj.
+void
+ic(const label &li, const label &lj)
+{
+  assert(!(li < lj));
+  assert(!(li > lj));
+  assert(!(li <= lj));
+  assert(!(li >= lj));
+  assert(li != lj);
+  assert(!(li == lj));
+}
+
+// Returns RIs rj such that: ri < rj
+auto
+lt_RIs(const CU &ri)
+{
+  list<CU> l;
+
+  // For case 1.a.
+  l.push_back(CU(ri.min() + 1, ri.max() + 1));
+  assert(ri < l.back());
+
+  // For case 1.b.
+  l.push_back(CU(ri.min() + 1, ri.max()));
+  assert(ri < l.back());
+
+  // For case 1.c.
+  l.push_back(CU(ri.min() + 1, ri.max() - 1));
+  assert(ri < l.back());
+
+  // For case 2.c.
+  l.push_back(CU(ri.min(), ri.max() - 1));
+  assert(ri < l.back());
+
+  return l;
+}
+
+// Returns RIs rj such that: ri > rj
+auto
+gt_RIs(const CU &ri)
+{
+  list<CU> l;
+
+  // For case 2.a.
+  l.push_back(CU(ri.min(), ri.max() + 1));
+  assert(ri > l.back());
+
+  // For case 3.a.
+  l.push_back(CU(ri.min() - 1, ri.max() - 1));
+  assert(ri > l.back());
+
+  // For case 3.b.
+  l.push_back(CU(ri.min() - 1, ri.max()));
+  assert(ri > l.back());
+
+  // For case 3.c.
+  l.push_back(CU(ri.min() - 1, ri.max() + 1));
+  assert(ri > l.back());
+
+  return l;
+}
+
+// Returns RIs rj such that: ri || rj
+auto
+ic_RIs(const CU &ri)
+{
+  list<CU> l;
+
+  l.push_back(CU(ri.min() + 1, ri.max() + 1));
+  l.push_back(CU(ri.min() - 1, ri.max() - 1));
+
+  l.push_back(CU(ri.max(), ri.max() + ri.size()));
+  l.push_back(CU(ri.min() - ri.size(), ri.min()));
+
+  l.push_back(CU(ri.max() + 1, ri.max() + ri.size() + 1));
+  l.push_back(CU(ri.min() - ri.size() - 1, ri.min() - 1));
+
+  return l;
+}
+
 // *****************************************************************
 // Test all relations
 // *****************************************************************
@@ -106,7 +135,7 @@ void
 test_relations()
 {
   // This label could be any.
-  label li(10, {10, 20});
+  label li(10, {100, 120});
 
   // -----------------------------------------------------------------
   // Row 1, column 1.
@@ -230,14 +259,14 @@ test_relations()
   // Row 2, column 4.
   {
     // li < lj
-    for(const auto &cu: worse_RI(get_resources(li)))
+    for(const auto &cu: gt_RIs(get_resources(li)))
       {
         label lj(get_cost(li), cu);
         lt(li, lj);
       }
 
     // li > lj
-    for(const auto &cu: better_RI(get_resources(li)))
+    for(const auto &cu: lt_RIs(get_resources(li)))
       {
         label lj(get_cost(li), cu);
         gt(li, lj);
@@ -400,7 +429,7 @@ worse(const label &li)
                get_resources(li).max() - 1));
 
   // Row 2, column 4.
-  for(const auto &cu: worse_RI(get_resources(li)))
+  for(const auto &cu: gt_RIs(get_resources(li)))
     s.emplace(get_cost(li), cu);
   
   return s;
@@ -414,7 +443,7 @@ void
 test_transitivity()
 {
   // This label could be any, but with at least three units.
-  label li(10, {10, 20});
+  label li(10, {100, 120});
 
   for(const auto &lj: worse(li))
     for(const auto &lk: worse(lj))
@@ -446,7 +475,7 @@ test_transitivity()
 void
 test_boe_incomparability()
 {
-  label li(10, {10, 20});
+  label li(10, {100, 120});
 
   // Check this: li < lj < lk
   //
@@ -454,13 +483,14 @@ test_boe_incomparability()
   // The second relation is: lj < lk
 
   // First relation: row 1, column 3
-  for (const auto &rj: better_RI(get_resources(li)))
+  for (const auto &rj: lt_RIs(get_resources(li)))
     {
       // The cost is be higher, the CU better.
       label lj(get_cost(li) + 1, rj);
 
+      
       // Second relation: row 1, column 4
-      for (const auto &rk: incomparable_RI(get_resources(lj)))
+      for (const auto &rk: ic_RIs(get_resources(lj)))
         {
           // The cost is higher, the CU incomparable.
           label lj(get_cost(lj) + 1, rk);
