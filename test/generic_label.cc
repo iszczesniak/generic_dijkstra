@@ -109,22 +109,42 @@ gt_RIs(const CU &ri)
   return l;
 }
 
-// Returns RIs rj such that: ri || rj
+// Returns RIs rj such that ri || rj, rj is on the left of ri.
 auto
-ic_RIs(const CU &ri)
+icl_RIs(const CU &ri)
+{
+  list<CU> l;
+
+  l.push_back(CU(ri.min() - 1, ri.max() - 1));
+  l.push_back(CU(ri.min() - ri.size(), ri.min()));
+  l.push_back(CU(ri.min() - ri.size() - 1, ri.min() - 1));
+
+  return l;
+}
+
+// Returns RIs rj such that ri || rj, rj is on the right of ri.
+auto
+icr_RIs(const CU &ri)
 {
   list<CU> l;
 
   l.push_back(CU(ri.min() + 1, ri.max() + 1));
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
-
   l.push_back(CU(ri.max(), ri.max() + ri.size()));
-  l.push_back(CU(ri.min() - ri.size(), ri.min()));
-
   l.push_back(CU(ri.max() + 1, ri.max() + ri.size() + 1));
-  l.push_back(CU(ri.min() - ri.size() - 1, ri.min() - 1));
 
   return l;
+}
+
+// Returns RIs rj such that: ri || rj
+auto
+ic_RIs(const CU &ri)
+{
+  list<CU> l1 = icl_RIs(ri);
+  list<CU> l2 = icr_RIs(ri);
+
+  l1.insert(l1.end(), l2.begin(), l2.end());
+
+  return l1;
 }
 
 // *****************************************************************
