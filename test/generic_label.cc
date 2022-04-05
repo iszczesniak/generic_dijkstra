@@ -230,78 +230,33 @@ worse(const label &li)
   set<label> s;
 
   // -----------------------------------------------------------------
-  // Row 1, column 1.
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() + 1,
-               get_resources(li).max()));
+  // Column 1.
+  for(auto &rj: worse_RIs(get_resources(li)))
+    {
+      // Row 1.
+      s.emplace(get_cost(li) + 1, rj);
+      // Row 2.
+      s.emplace(get_cost(li), rj);
+    }
 
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min(),
-               get_resources(li).max() - 1));
-
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() + 1,
-               get_resources(li).max() - 1));
-
-  // Row 1, column 2.
+  // Column 2. Row 1.
   s.emplace(get_cost(li) + 1, get_resources(li));
 
-  // Row 1, column 3.
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() - 1,
-               get_resources(li).max()));
+  // Column 3. Row 1.
+  for(auto &rj: better_RIs(get_resources(li)))
+    s.emplace(get_cost(li) + 1, rj);
 
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min(),
-               get_resources(li).max() + 1));
+  // Column 4.
+  for(auto &rj: incomparable_RIs(get_resources(li)))
+    {
+      // Row 1.
+      s.emplace(get_cost(li) + 1, rj);
 
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() - 1,
-               get_resources(li).max() + 1));
+      // Row 2.
+      if (get_resources(li) < rj)
+        s.emplace(get_cost(li), rj);
+    }
 
-  // Row 1, column 4.
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() - 1,
-               get_resources(li).max() - 1));
-
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() + 1,
-               get_resources(li).max() + 1));
-
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() - 3,
-               get_resources(li).min()));
-
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).max(),
-               get_resources(li).max() + 4));
-
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).min() - 4,
-               get_resources(li).min() - 1));
-
-  s.emplace(get_cost(li) + 1,
-            CU(get_resources(li).max() + 1,
-               get_resources(li).max() + 4));
-
-  // -----------------------------------------------------------------
-  // Row 2, column 1.
-  s.emplace(get_cost(li),
-            CU(get_resources(li).min() + 1,
-               get_resources(li).max()));
-
-  s.emplace(get_cost(li),
-            CU(get_resources(li).min(),
-               get_resources(li).max() - 1));
-
-  s.emplace(get_cost(li),
-            CU(get_resources(li).min() + 1,
-               get_resources(li).max() - 1));
-
-  // Row 2, column 4.
-  for(const auto &cu: worse_RIs(get_resources(li)))
-    s.emplace(get_cost(li), cu);
-  
   return s;
 }
 
