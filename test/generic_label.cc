@@ -273,20 +273,9 @@ test_transitivity()
   for(const auto &lj: worse(li))
     for(const auto &lk: worse(lj))
       {
-        assert(li < lj && lj < lk);
-        assert(li < lk);
-
-        // Test the default implementation of >.
-        assert(lk > lj && lj > li);
-        assert(lk > li);
-
-        // Test the default implementation of <=.
-        assert(li <= lj && lj <= lk);
-        assert(li <= lk);
-
-        // Test the default implementation of >=.
-        assert(lk >= lj && lj >= li);
-        assert(lk >= li);
+        better(li, lj);
+        better(lj, lk);
+        better(li, lk);
       }
 }
 
