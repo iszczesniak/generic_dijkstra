@@ -46,12 +46,10 @@ worse(const label &li, const label &lj)
 void
 incomparable(const label &li, const label &lj)
 {
-  assert(!(li < lj));
-  assert(!(li > lj));
-  assert(!(li <= lj));
-  assert(!(li >= lj));
-  assert(li != lj);
-  assert(!(li == lj));
+  // li \preceq lj does not hold.
+  assert(!(boe(li, lj)));
+  // lj \preceq li does not hold.
+  assert(!(boe(lj, li)));
 }
 
 // Returns RIs rj such that: ri < rj
