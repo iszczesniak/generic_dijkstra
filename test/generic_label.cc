@@ -55,19 +55,19 @@ worse_RIs(const CU &ri)
 {
   list<CU> l;
 
-  // For case 1.a.
+  // Row 1.  Column 1.
   l.push_back(CU(ri.min() + 1, ri.max() + 1));
   assert(ri < l.back());
 
-  // For case 1.b.
+  // Row 1.  Column 2.
   l.push_back(CU(ri.min() + 1, ri.max()));
   assert(ri < l.back());
 
-  // For case 1.c.
+  // Row 1.  Column 3.
   l.push_back(CU(ri.min() + 1, ri.max() - 1));
   assert(ri < l.back());
 
-  // For case 2.c.
+  // Row 2.  Column 3.
   l.push_back(CU(ri.min(), ri.max() - 1));
   assert(ri < l.back());
 
@@ -80,20 +80,20 @@ better_RIs(const CU &ri)
 {
   list<CU> l;
 
-  // For case 2.a.
+  // Row 2.  Column 1.
   l.push_back(CU(ri.min(), ri.max() + 1));
   assert(ri > l.back());
 
-  // For case 3.a.
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
+  // Row 3.  Column 1.
+  l.push_back(CU(ri.min() - 1, ri.max() + 1));
   assert(ri > l.back());
 
-  // For case 3.b.
+  // Row 3.  Column 2.
   l.push_back(CU(ri.min() - 1, ri.max()));
   assert(ri > l.back());
 
-  // For case 3.c.
-  l.push_back(CU(ri.min() - 1, ri.max() + 1));
+  // Row 3.  Column 3.
+  l.push_back(CU(ri.min() - 1, ri.max() - 1));
   assert(ri > l.back());
 
   return l;
