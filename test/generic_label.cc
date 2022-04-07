@@ -42,14 +42,11 @@ worse(const label &li, const label &lj)
   better(lj, li);
 }
 
-// Make sure that li || lj.
-void
+bool
 incomparable(const label &li, const label &lj)
 {
-  // li \preceq lj does not hold.
-  assert(!(boe(li, lj)));
-  // lj \preceq li does not hold.
-  assert(!(boe(lj, li)));
+  // Neither li \preceq lj nor lj \preceq li holds.
+  return !(boe(li, lj)) && !(boe(lj, li));
 }
 
 // Returns RIs rj such that: ri < rj
@@ -284,29 +281,57 @@ test_transitivity()
 //
 // * labels are of different cost, but it is intransitive for labels of
 // equal cost and incomparable RIs.
+
+set<label>
+incomparable_labels(const label &li)
+{
+  set<label> s;
+
+  int count = 0;
+
+  // Column 1. Row 3.
+  for(auto &rj: worse_RIs(get_resources(li)))
+    {
+      s.emplace(get_cost(li) - 1, rj);
+      ++count;
+    }
+
+  // Column 3. Row 1.
+  for(auto &rj: better_RIs(get_resources(li)))
+    {
+      s.emplace(get_cost(li) + 1, rj);
+      ++count;
+    }
+
+  // Column 4.
+  for(auto &rj: incomparable_RIs(get_resources(li)))
+    {
+      // Row 1.
+      s.emplace(get_cost(li) + 1, rj);
+      // Row 2.
+      s.emplace(get_cost(li), rj);
+      // Row 3.
+      s.emplace(get_cost(li) - 1, rj);
+
+      count += 3;
+    }
+
+  assert(s.size() == count);
+  
+  return s;
+}
+
 void
-test_boe_incomparability()
+test_intran_boe_incomp()
 {
   label li(10, {100, 120});
 
-  // Check this: li < lj < lk
-  //
-  // The first relation is: li < lj
-  // The second relation is: lj < lk
-
-  // First relation: row 1, column 3
-  for (const auto &rj: better_RIs(get_resources(li)))
-    {
-      // The cost is be higher, the CU better.
-      label lj(get_cost(li) + 1, rj);
-
-      // Second relation: row 1, column 4
-      for (const auto &rk: incomparable_RIs(get_resources(lj)))
-        {
-          // The cost is higher, the CU incomparable.
-          label lj(get_cost(lj) + 1, rk);
-        }
-    }
+  for (const auto &lj: incomparable_labels(li))
+    for (const auto &lk: incomparable_labels(lj))
+      {
+        assert(incomparable(li, lj));
+        assert(incomparable(lj, lk));
+      }
 }
 
 int
@@ -314,5 +339,5 @@ main()
 {
   test_relations();
   test_transitivity();
-  test_boe_incomparability();
+  test_intran_boe_incomp();
 }
