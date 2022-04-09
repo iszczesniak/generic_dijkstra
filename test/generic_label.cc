@@ -1,6 +1,7 @@
 #include "generic_label.hpp"
 #include "units.hpp"
 
+#include <list>
 #include <set>
 
 using label = generic_label<double, CU>;
@@ -13,7 +14,7 @@ using namespace std;
 
 // Make sure that li < lj.
 void
-better(const label &li, const label &lj)
+test_less(const label &li, const label &lj)
 {
   assert(li < lj);
   assert(li <= lj);
@@ -25,7 +26,7 @@ better(const label &li, const label &lj)
 
 // Make sure that li == lj.
 void
-equal(const label &li, const label &lj)
+test_equal(const label &li, const label &lj)
 {
   assert(li == lj);
   assert(!(li != lj));
@@ -37,9 +38,9 @@ equal(const label &li, const label &lj)
 
 // Make sure that li > lj.
 void
-worse(const label &li, const label &lj)
+test_greater(const label &li, const label &lj)
 {
-  better(lj, li);
+  test_less(lj, li);
 }
 
 bool
@@ -49,15 +50,11 @@ incomparable(const label &li, const label &lj)
   return !(boe(li, lj)) && !(boe(lj, li));
 }
 
-// Returns RIs rj such that: ri < rj
+// Returns RIs rj such that: rj subset ri
 auto
-worse_RIs(const CU &ri)
+sub_RIs(const CU &ri)
 {
   list<CU> l;
-
-  // Row 1.  Column 1.
-  l.push_back(CU(ri.min() + 1, ri.max() + 1));
-  assert(ri < l.back());
 
   // Row 1.  Column 2.
   l.push_back(CU(ri.min() + 1, ri.max()));
@@ -74,9 +71,9 @@ worse_RIs(const CU &ri)
   return l;
 }
 
-// Returns RIs rj such that: ri > rj
+// Returns RIs rj such that: rj supset ri
 auto
-better_RIs(const CU &ri)
+sup_RIs(const CU &ri)
 {
   list<CU> l;
 
@@ -90,10 +87,6 @@ better_RIs(const CU &ri)
 
   // Row 3.  Column 2.
   l.push_back(CU(ri.min() - 1, ri.max()));
-  assert(ri > l.back());
-
-  // Row 3.  Column 3.
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
   assert(ri > l.back());
 
   return l;
@@ -149,50 +142,50 @@ test_relations()
 
   // -----------------------------------------------------------------
   // Column 1.
-  for(auto &rj: worse_RIs(get_resources(li)))
+  for(auto &rj: sub_RIs(get_resources(li)))
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
-      better(li, lj1);
+      test_less(li, lj1);
 
       // Row 2.
       label lj2(get_cost(li), rj);
-      better(li, lj2);
+      test_less(li, lj2);
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
-      worse(li, lj3);
+      test_greater(li, lj3);
     }
 
   // Column 2.
   {
     // Row 1.
     label lj1(get_cost(li) + 1, get_resources(li));
-    better(li, lj1);
+    test_less(li, lj1);
 
     // Row 2.
     label lj2(get_cost(li), get_resources(li));
-    equal(li, lj2);
+    test_equal(li, lj2);
 
     // Row 3.
     label lj3(get_cost(li) - 1, get_resources(li));
-    worse(li, lj3);
+    test_greater(li, lj3);
   }
 
   // Column 3.
-  for(auto &rj: better_RIs(get_resources(li)))
+  for(auto &rj: sup_RIs(get_resources(li)))
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
-      better(li, lj1);
+      test_less(li, lj1);
 
       // Row 2.
       label lj2(get_cost(li), rj);
-      worse(li, lj2);
+      test_greater(li, lj2);
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
-      worse(li, lj3);
+      test_greater(li, lj3);
     }
 
   // Column 4.
@@ -200,18 +193,18 @@ test_relations()
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
-      better(li, lj1);
+      test_less(li, lj1);
 
       // Row 2.
       label lj2(get_cost(li), rj);
       if (get_resources(li) < rj)
-        better(li, lj2);
+        test_less(li, lj2);
       else
-        worse(li, lj2);
+        test_greater(li, lj2);
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
-      worse(li, lj3);
+      test_greater(li, lj3);
     }
 }
 
@@ -220,13 +213,13 @@ test_relations()
 // *****************************************************************
 
 set<label>
-worse(const label &li)
+worse_labels(const label &li)
 {
   set<label> s;
 
   // -----------------------------------------------------------------
   // Column 1.
-  for(auto &rj: worse_RIs(get_resources(li)))
+  for(auto &rj: sub_RIs(get_resources(li)))
     {
       // Row 1.
       s.emplace(get_cost(li) + 1, rj);
@@ -238,7 +231,7 @@ worse(const label &li)
   s.emplace(get_cost(li) + 1, get_resources(li));
 
   // Column 3. Row 1.
-  for(auto &rj: better_RIs(get_resources(li)))
+  for(auto &rj: sup_RIs(get_resources(li)))
     s.emplace(get_cost(li) + 1, rj);
 
   // Column 4.
@@ -265,12 +258,12 @@ test_transitivity()
   // This label could be any, but with at least three units.
   label li(10, {100, 120});
 
-  for(const auto &lj: worse(li))
-    for(const auto &lk: worse(lj))
+  for(const auto &lj: worse_labels(li))
+    for(const auto &lk: worse_labels(lj))
       {
-        better(li, lj);
-        better(lj, lk);
-        better(li, lk);
+        test_less(li, lj);
+        test_less(lj, lk);
+        test_less(li, lk);
       }
 }
 
@@ -290,14 +283,14 @@ incomparable_labels(const label &li)
   int count = 0;
 
   // Column 1. Row 3.
-  for(auto &rj: worse_RIs(get_resources(li)))
+  for(auto &rj: sub_RIs(get_resources(li)))
     {
       s.emplace(get_cost(li) - 1, rj);
       ++count;
     }
 
   // Column 3. Row 1.
-  for(auto &rj: better_RIs(get_resources(li)))
+  for(auto &rj: sup_RIs(get_resources(li)))
     {
       s.emplace(get_cost(li) + 1, rj);
       ++count;
@@ -316,6 +309,7 @@ incomparable_labels(const label &li)
       count += 3;
     }
 
+  // The cases are disjoint.
   assert(s.size() == count);
   
   return s;
