@@ -6,6 +6,7 @@ CXXFLAGS = -g -Wno-deprecated
 CXXFLAGS := $(CXXFLAGS) -std=c++20
 CXXFLAGS := $(CXXFLAGS) -I ../
 CXXFLAGS := $(CXXFLAGS) -I units
+CXXFLAGS := $(CXXFLAGS) -I units/test
 
 # Run the tests.
 run: $(TESTS)

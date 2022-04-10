@@ -1,3 +1,5 @@
+#include "helpers.hpp"
+
 #include "generic_label.hpp"
 #include "units.hpp"
 
@@ -12,43 +14,11 @@ using namespace std;
 // Helper functions.
 // *****************************************************************
 
-// Make sure that li < lj.
-void
-assert_less(const label &li, const label &lj)
-{
-  assert(li < lj);
-  assert(li <= lj);
-  assert(li != lj);
-  assert(!(li == lj));
-  assert(!(li > lj));
-  assert(!(li >= lj));
-}
-
-// Make sure that li == lj.
-void
-assert_equal(const label &li, const label &lj)
-{
-  assert(li == lj);
-  assert(!(li != lj));
-  assert(li <= lj);
-  assert(li >= lj);
-  assert(!(li < lj));
-  assert(!(li > lj));
-}
-
-// Make sure that li > lj.
-void
-assert_greater(const label &li, const label &lj)
-{
-  assert_less(lj, li);
-}
-
-void
-assert_incomparable(const label &li, const label &lj)
+bool
+is_incomparable(const label &li, const label &lj)
 {
   // Neither li \preceq lj nor lj \preceq li holds.
-  assert(!(boe(li, lj)));
-  assert(!(boe(lj, li)));
+  return !boe(li, lj) && !boe(lj, li);
 }
 
 // Returns RIs rj such that: rj subset ri
@@ -147,30 +117,30 @@ test_relations()
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
-      assert_less(li, lj1);
+      assert(is_less(li, lj1));
 
       // Row 2.
       label lj2(get_cost(li), rj);
-      assert_less(li, lj2);
+      assert(is_less(li, lj2));
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
-      assert_greater(li, lj3);
+      assert(is_greater(li, lj3));
     }
 
   // Column 2.
   {
     // Row 1.
     label lj1(get_cost(li) + 1, get_resources(li));
-    assert_less(li, lj1);
+    assert(is_less(li, lj1));
 
     // Row 2.
     label lj2(get_cost(li), get_resources(li));
-    assert_equal(li, lj2);
+    assert(is_equal(li, lj2));
 
     // Row 3.
     label lj3(get_cost(li) - 1, get_resources(li));
-    assert_greater(li, lj3);
+    assert(is_greater(li, lj3));
   }
 
   // Column 3.
@@ -178,15 +148,15 @@ test_relations()
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
-      assert_less(li, lj1);
+      assert(is_less(li, lj1));
 
       // Row 2.
       label lj2(get_cost(li), rj);
-      assert_greater(li, lj2);
+      assert(is_greater(li, lj2));
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
-      assert_greater(li, lj3);
+      assert(is_greater(li, lj3));
     }
 
   // Column 4.
@@ -194,18 +164,18 @@ test_relations()
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
-      assert_less(li, lj1);
+      assert(is_less(li, lj1));
 
       // Row 2.
       label lj2(get_cost(li), rj);
       if (get_resources(li) < rj)
-        assert_less(li, lj2);
+        assert(is_less(li, lj2));
       else
-        assert_greater(li, lj2);
+        assert(is_greater(li, lj2));
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
-      assert_greater(li, lj3);
+      assert(is_greater(li, lj3));
     }
 }
 
@@ -258,9 +228,9 @@ test_transitivity()
   for(const auto &lj: worse_labels(li))
     for(const auto &lk: worse_labels(lj))
       {
-        assert_less(li, lj);
-        assert_less(lj, lk);
-        assert_less(li, lk);
+        assert(is_less(li, lj));
+        assert(is_less(lj, lk));
+        assert(is_less(li, lk));
       }
 }
 
@@ -320,8 +290,8 @@ test_intran_boe_incomp()
   for (const auto &lj: incomparable_labels(li))
     for (const auto &lk: incomparable_labels(lj))
       {
-        assert_incomparable(li, lj);
-        assert_incomparable(lj, lk);
+        is_incomparable(li, lj);
+        is_incomparable(lj, lk);
       }
 }
 
