@@ -15,10 +15,17 @@ using namespace std;
 // *****************************************************************
 
 bool
+is_comparable(const label &li, const label &lj)
+{
+  // Either li \preceq lj or lj \preceq li holds.
+  return boe(li, lj) || boe(lj, li);
+}
+
+bool
 is_incomparable(const label &li, const label &lj)
 {
   // Neither li \preceq lj nor lj \preceq li holds.
-  return !boe(li, lj) && !boe(lj, li);
+  return !is_comparable(li, lj);
 }
 
 // Returns RIs rj such that: rj subset ri
@@ -278,7 +285,7 @@ incomparable_labels(const label &li)
 
   // The cases are disjoint.
   assert(s.size() == count);
-  
+
   return s;
 }
 
@@ -290,8 +297,15 @@ test_intran_boe_incomp()
   for (const auto &lj: incomparable_labels(li))
     for (const auto &lk: incomparable_labels(lj))
       {
-        is_incomparable(li, lj);
-        is_incomparable(lj, lk);
+        assert(is_incomparable(li, lj));
+        assert(is_incomparable(lj, lk));
+        if (is_comparable(li, lk))
+          {
+            cout << li << endl;
+            cout << lj << endl;
+            cout << lk << endl;
+            cout << endl;
+          }
       }
 }
 
