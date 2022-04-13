@@ -249,44 +249,31 @@ test_transitivity()
 // * labels are of different cost, but it is intransitive for labels of
 // equal cost and incomparable RIs.
 
-set<label>
+auto
 incomparable_labels(const label &li)
 {
-  set<label> s;
-
-  int count = 0;
+  list<label> l;
 
   // Column 1. Row 3.
   for(auto &rj: sub_RIs(get_resources(li)))
-    {
-      s.emplace(get_cost(li) - 1, rj);
-      ++count;
-    }
+    l.emplace_back(get_cost(li) - 1, rj);
 
   // Column 3. Row 1.
   for(auto &rj: sup_RIs(get_resources(li)))
-    {
-      s.emplace(get_cost(li) + 1, rj);
-      ++count;
-    }
+    l.emplace_back(get_cost(li) + 1, rj);
 
   // Column 4.
   for(auto &rj: incomparable_RIs(get_resources(li)))
     {
       // Row 1.
-      s.emplace(get_cost(li) + 1, rj);
+      l.emplace_back(get_cost(li) + 1, rj);
       // Row 2.
-      s.emplace(get_cost(li), rj);
+      l.emplace_back(get_cost(li), rj);
       // Row 3.
-      s.emplace(get_cost(li) - 1, rj);
-
-      count += 3;
+      l.emplace_back(get_cost(li) - 1, rj);
     }
 
-  // The cases are disjoint.
-  assert(s.size() == count);
-
-  return s;
+  return l;
 }
 
 void
