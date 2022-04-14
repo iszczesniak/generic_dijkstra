@@ -252,26 +252,33 @@ test_transitivity()
 auto
 incomparable_labels(const label &li)
 {
-  list<label> l;
+  using slp = pair<string, list<label>>;
+  list<slp> l;
 
-  // Column 1. Row 3.
+  // Column 1.  Row 3.
+  l.push_back(slp("A. Column 1.  Row 3.", {}));
   for(auto &rj: sub_RIs(get_resources(li)))
-    l.emplace_back(get_cost(li) - 1, rj);
+    l.back().second.emplace_back(get_cost(li) - 1, rj);
 
-  // Column 3. Row 1.
+  // Column 3.  Row 1.
+  l.push_back(slp("B. Column 3.  Row 1.", {}));
   for(auto &rj: sup_RIs(get_resources(li)))
-    l.emplace_back(get_cost(li) + 1, rj);
+    l.back().second.emplace_back(get_cost(li) + 1, rj);
 
-  // Column 4.
+  // Column 4.  Row 1.
+  l.push_back(slp("C. Column 4.  Row 1.", {}));
   for(auto &rj: incomparable_RIs(get_resources(li)))
-    {
-      // Row 1.
-      l.emplace_back(get_cost(li) + 1, rj);
-      // Row 2.
-      l.emplace_back(get_cost(li), rj);
-      // Row 3.
-      l.emplace_back(get_cost(li) - 1, rj);
-    }
+    l.back().second.emplace_back(get_cost(li) + 1, rj);
+
+  // Column 4.  Row 2.
+  l.push_back(slp("D. Column 4.  Row 2.", {}));
+  for(auto &rj: incomparable_RIs(get_resources(li)))
+    l.back().second.emplace_back(get_cost(li), rj);
+
+  // Column 4.  Row 3.
+  l.push_back(slp("E. Column 4.  Row 3.", {}));
+  for(auto &rj: incomparable_RIs(get_resources(li)))
+    l.back().second.emplace_back(get_cost(li) - 1, rj);
 
   return l;
 }
@@ -281,19 +288,35 @@ test_intran_boe_incomp()
 {
   label li(10, {100, 120});
 
-  for (const auto &lj: incomparable_labels(li))
-    for (const auto &lk: incomparable_labels(lj))
-      {
-        assert(is_incomparable(li, lj));
-        assert(is_incomparable(lj, lk));
-        if (is_comparable(li, lk))
+  cout << "li = " << li << endl;
+
+  // Iterate over the table cells.
+  for (const auto &cj: incomparable_labels(li))
+    {
+      cout << cj.first << "***************************************" << endl;
+
+      // Iterate over the labels of a table cell.
+      for (const auto &lj: cj.second)
+        // Iterate over the table cells.
+        for (const auto &ck: incomparable_labels(lj))
           {
-            cout << li << endl;
-            cout << lj << endl;
-            cout << lk << endl;
-            cout << endl;
+            cout << '\t' << ck.first << endl;
+
+            // Iterate over the labels of a table cell.
+            for (const auto &lk: ck.second)
+              {
+                assert(is_incomparable(li, lj));
+                assert(is_incomparable(lj, lk));
+                if (is_comparable(li, lk))
+                  {
+                    cout << li << endl;
+                    cout << lj << endl;
+                    cout << lk << endl;
+                    cout << endl;
+                  }
+              }
           }
-      }
+    }
 }
 
 int
