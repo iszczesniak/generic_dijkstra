@@ -252,33 +252,38 @@ test_transitivity()
 auto
 incomparable_labels(const label &li)
 {
-  using slp = pair<string, list<label>>;
-  list<slp> l;
+  // slap - int-label pair
+  using ilap = pair<int, label>;
+
+  // slip - string-list pair
+  using slip = pair<string, list<ilap>>;
+
+  list<slip> l;
 
   // Column 1.  Row 3.
-  l.push_back(slp("A. Column 1.  Row 3.", {}));
-  for(auto &rj: sub_RIs(get_resources(li)))
-    l.back().second.emplace_back(get_cost(li) - 1, rj);
+  l.push_back(slip("A. Column 1.  Row 3.", {}));
+  for(int i = 1; auto &rj: sub_RIs(get_resources(li)))
+    l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
 
   // Column 3.  Row 1.
-  l.push_back(slp("B. Column 3.  Row 1.", {}));
-  for(auto &rj: sup_RIs(get_resources(li)))
-    l.back().second.emplace_back(get_cost(li) + 1, rj);
+  l.push_back(slip("B. Column 3.  Row 1.", {}));
+  for(int i = 1; auto &rj: sup_RIs(get_resources(li)))
+    l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
   // Column 4.  Row 1.
-  l.push_back(slp("C. Column 4.  Row 1.", {}));
-  for(auto &rj: incomparable_RIs(get_resources(li)))
-    l.back().second.emplace_back(get_cost(li) + 1, rj);
+  l.push_back(slip("C. Column 4.  Row 1.", {}));
+  for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
+    l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
   // Column 4.  Row 2.
-  l.push_back(slp("D. Column 4.  Row 2.", {}));
-  for(auto &rj: incomparable_RIs(get_resources(li)))
-    l.back().second.emplace_back(get_cost(li), rj);
+  l.push_back(slip("D. Column 4.  Row 2.", {}));
+  for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
+    l.back().second.push_back(ilap(i++, {get_cost(li), rj}));
 
   // Column 4.  Row 3.
-  l.push_back(slp("E. Column 4.  Row 3.", {}));
-  for(auto &rj: incomparable_RIs(get_resources(li)))
-    l.back().second.emplace_back(get_cost(li) - 1, rj);
+  l.push_back(slip("E. Column 4.  Row 3.", {}));
+  for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
+    l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
 
   return l;
 }
@@ -291,19 +296,19 @@ test_intran_boe_incomp()
   cout << "li = " << li << endl;
 
   // Iterate over the table cells.
-  for (const auto &cj: incomparable_labels(li))
+  for (const auto &[text_j, list_j]: incomparable_labels(li))
     {
-      cout << cj.first << "***************************************" << endl;
+      cout << text_j << "***********************************" << endl;
 
-      // Iterate over the labels of a table cell.
-      for (const auto &lj: cj.second)
+      // Iterate over the (int-label) pairs of a table cell.
+      for (const auto &[num_j, lj]: list_j)
         // Iterate over the table cells.
-        for (const auto &ck: incomparable_labels(lj))
+        for (const auto &[text_k, list_k]: incomparable_labels(lj))
           {
-            cout << '\t' << ck.first << endl;
+            cout << '\t' << text_k << endl;
 
             // Iterate over the labels of a table cell.
-            for (const auto &lk: ck.second)
+            for (const auto &[num_k, lk]: list_k)
               {
                 assert(is_incomparable(li, lj));
                 assert(is_incomparable(lj, lk));
