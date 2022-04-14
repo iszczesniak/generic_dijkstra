@@ -76,9 +76,9 @@ icl_RIs(const CU &ri)
 {
   list<CU> l;
 
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
-  l.push_back(CU(ri.min() - ri.size(), ri.min()));
   l.push_back(CU(ri.min() - ri.size() - 1, ri.min() - 1));
+  l.push_back(CU(ri.min() - ri.size(), ri.min()));
+  l.push_back(CU(ri.min() - 1, ri.max() - 1));
 
   return l;
 }
@@ -261,27 +261,27 @@ incomparable_labels(const label &li)
   list<slip> l;
 
   // Column 1.  Row 3.
-  l.push_back(slip("A. Column 1.  Row 3.", {}));
+  l.push_back(slip("A", {}));
   for(int i = 1; auto &rj: sub_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
 
   // Column 3.  Row 1.
-  l.push_back(slip("B. Column 3.  Row 1.", {}));
+  l.push_back(slip("B", {}));
   for(int i = 1; auto &rj: sup_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
   // Column 4.  Row 1.
-  l.push_back(slip("C. Column 4.  Row 1.", {}));
+  l.push_back(slip("C", {}));
   for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
   // Column 4.  Row 2.
-  l.push_back(slip("D. Column 4.  Row 2.", {}));
+  l.push_back(slip("D", {}));
   for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li), rj}));
 
   // Column 4.  Row 3.
-  l.push_back(slip("E. Column 4.  Row 3.", {}));
+  l.push_back(slip("E", {}));
   for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
 
@@ -297,31 +297,29 @@ test_intran_boe_incomp()
 
   // Iterate over the table cells.
   for (const auto &[text_j, list_j]: incomparable_labels(li))
-    {
-      cout << text_j << "***********************************" << endl;
-
-      // Iterate over the (int-label) pairs of a table cell.
-      for (const auto &[num_j, lj]: list_j)
-        // Iterate over the table cells.
-        for (const auto &[text_k, list_k]: incomparable_labels(lj))
+    // Iterate over the (int-label) pairs of a table cell.
+    for (const auto &[num_j, lj]: list_j)
+      // Iterate over the table cells.
+      for (const auto &[text_k, list_k]: incomparable_labels(lj))
+        // Iterate over the labels of a table cell.
+        for (const auto &[num_k, lk]: list_k)
           {
-            cout << '\t' << text_k << endl;
+            assert(is_incomparable(li, lj));
+            assert(is_incomparable(lj, lk));
 
-            // Iterate over the labels of a table cell.
-            for (const auto &[num_k, lk]: list_k)
+            if (is_comparable(li, lk))
               {
-                assert(is_incomparable(li, lj));
-                assert(is_incomparable(lj, lk));
-                if (is_comparable(li, lk))
-                  {
-                    cout << li << endl;
-                    cout << lj << endl;
-                    cout << lk << endl;
-                    cout << endl;
-                  }
+                cout << "***********************************" << endl;
+
+                cout << text_j << num_j << ", "
+                     << text_k << num_k << endl;
+
+                cout << li << endl;
+                cout << lj << endl;
+                cout << lk << endl;
+                cout << endl;
               }
           }
-    }
 }
 
 int
