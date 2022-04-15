@@ -307,18 +307,21 @@ test_intran_boe_incomp()
             assert(is_incomparable(li, lj));
             assert(is_incomparable(lj, lk));
 
-            if (is_comparable(li, lk))
-              {
-                cout << "***********************************" << endl;
+            cout << text_j << num_j << ", "
+                 << text_k << num_k << ", ";
 
-                cout << text_j << num_j << ", "
-                     << text_k << num_k << endl;
+            if (li == lk)
+              cout << "=";
+            else if (boe(li, lk))
+              cout << "<";
+            else if (boe(lk, li))
+              cout << ">";
+            else
+              cout << "|";
 
-                cout << li << endl;
-                cout << lj << endl;
-                cout << lk << endl;
-                cout << endl;
-              }
+            cout << ", ";
+
+            cout << lk << endl;
           }
 }
 
