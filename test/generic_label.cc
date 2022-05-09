@@ -28,23 +28,16 @@ is_incomparable(const label &li, const label &lj)
   return !is_comparable(li, lj);
 }
 
-// Returns RIs rj such that: rj subset ri
+// Returns all RIs rj such that: rj subset ri
 auto
 sub_RIs(const CU &ri)
 {
   list<CU> l;
+  assert(!ri.empty());
 
-  // Row 1.  Column 2.
-  l.push_back(CU(ri.min() + 1, ri.max()));
-  assert(ri < l.back());
-
-  // Row 1.  Column 3.
-  l.push_back(CU(ri.min() + 1, ri.max() - 1));
-  assert(ri < l.back());
-
-  // Row 2.  Column 3.
-  l.push_back(CU(ri.min(), ri.max() - 1));
-  assert(ri < l.back());
+  for(auto s = ri.size(); --s;)
+    for(auto i = ri.min(); i + s <= ri.max(); ++i)
+      l.push_back(CU(i, i + s));
 
   return l;
 }
@@ -68,6 +61,21 @@ sup_RIs(const CU &ri)
   assert(ri > l.back());
 
   return l;
+}
+
+void
+test_sub_RIs()
+{
+  assert(sub_RIs(CU{0, 1}).empty());
+
+  auto l1 = sub_RIs(CU{0, 2});
+  assert(l1.size() == 2);
+  assert((l1.front() == CU{0, 1}));
+  assert((l1.back() == CU{1, 2}));
+
+  auto l2 = sub_RIs(CU{0, 3});
+  list l3 = {CU(0, 2), CU(1, 3), CU(0, 1), CU(1, 2), CU(2, 3)};
+  assert(l2 == l3);
 }
 
 // Returns RIs rj such that ri || rj, rj is on the left of ri.
@@ -328,6 +336,7 @@ test_intran_boe_incomp()
 int
 main()
 {
+  test_sub_RIs();
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
