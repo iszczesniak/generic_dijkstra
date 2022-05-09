@@ -260,27 +260,27 @@ incomparable_labels(const label &li)
 
   list<slip> l;
 
-  // Column 1.  Row 3.
+  // A.  Column 1.  Row 3.
   l.push_back(slip("A", {}));
   for(int i = 1; auto &rj: sub_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
 
-  // Column 3.  Row 1.
+  // B.  Column 3.  Row 1.
   l.push_back(slip("B", {}));
   for(int i = 1; auto &rj: sup_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
-  // Column 4.  Row 1.
+  // C.  Column 4.  Row 1.
   l.push_back(slip("C", {}));
   for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
-  // Column 4.  Row 2.
+  // D.  Column 4.  Row 2.
   l.push_back(slip("D", {}));
   for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li), rj}));
 
-  // Column 4.  Row 3.
+  // E.  Column 4.  Row 3.
   l.push_back(slip("E", {}));
   for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
     l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
