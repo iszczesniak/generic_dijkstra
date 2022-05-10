@@ -140,6 +140,11 @@ incomparable_RIs(const CU &ri, const CU &omega)
   return l1;
 }
 
+void
+incomparable_RIs()
+{
+}
+
 // *****************************************************************
 // Test all relations.
 // *****************************************************************
@@ -353,6 +358,8 @@ main()
 {
   test_sub_RIs();
   test_sup_RIs();
+  test_incomparable_RIs();
+  
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
