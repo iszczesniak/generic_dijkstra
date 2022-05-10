@@ -76,6 +76,27 @@ sup_RIs(const CU &ri, const CU &omega)
   return l;
 }
 
+void
+test_sup_RIs()
+{
+  assert(sup_RIs(CU{0, 1}, CU(0, 1)).empty());
+  assert(sup_RIs(CU{0, 10}, CU(0, 10)).empty());
+
+  auto l1 = sup_RIs(CU{0, 1}, CU(0, 2));
+  assert(l1.size() == 1);
+  assert(l1.contains(CU(0, 2)));
+
+  auto l2 = sup_RIs(CU{1, 2}, CU(0, 2));
+  assert(l2.size() == 1);
+  assert(l2.contains(CU(0, 2)));
+
+  auto l3 = sup_RIs(CU{1, 3}, CU(0, 4));
+  assert(l3.size() == 3);
+  assert(l3.contains(CU(0, 3)));
+  assert(l3.contains(CU(1, 4)));
+  assert(l3.contains(CU(0, 4)));
+}
+
 // Returns RIs rj such that ri || rj, rj is on the left of ri.
 auto
 icl_RIs(const CU &ri, const CU &omega)
@@ -331,6 +352,7 @@ int
 main()
 {
   test_sub_RIs();
+  test_sup_RIs();
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
