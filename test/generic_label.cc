@@ -64,59 +64,57 @@ test_sub_RIs()
 // Returns RIs rj such that: rj supset ri.
 // rj must be included in omega.
 auto
-sup_RIs(const CU &ri)
+sup_RIs(const CU &ri, const CU &omega)
 {
-  list<CU> l;
+  set<CU> l;
 
-  // Row 2.  Column 1.
-  l.push_back(CU(ri.min(), ri.max() + 1));
-  assert(ri > l.back());
-
-  // Row 3.  Column 1.
-  l.push_back(CU(ri.min() - 1, ri.max() + 1));
-  assert(ri > l.back());
-
-  // Row 3.  Column 2.
-  l.push_back(CU(ri.min() - 1, ri.max()));
-  assert(ri > l.back());
+  for(auto i = omega.min(); i <= ri.min(); ++i)
+    for(auto j = ri.max(); j <= omega.max(); ++j)
+      if (CU(i, j) != ri)
+        l.insert(CU(i, j));
 
   return l;
 }
 
 // Returns RIs rj such that ri || rj, rj is on the left of ri.
 auto
-icl_RIs(const CU &ri)
+icl_RIs(const CU &ri, const CU &omega)
 {
-  list<CU> l;
+  assert(includes(omega, ri));
 
-  l.push_back(CU(ri.min() - ri.size() - 1, ri.min() - 1));
-  l.push_back(CU(ri.min() - ri.size(), ri.min()));
-  l.push_back(CU(ri.min() - 1, ri.max() - 1));
+  set<CU> l;
+
+  for(auto i = omega.min(); i < ri.min(); ++i)
+    for(auto j = i + 1; j < ri.max(); ++j)
+      l.insert(CU(i, j));
 
   return l;
 }
 
 // Returns RIs rj such that ri || rj, rj is on the right of ri.
 auto
-icr_RIs(const CU &ri)
+icr_RIs(const CU &ri, const CU &omega)
 {
-  list<CU> l;
+  assert(includes(omega, ri));
 
-  l.push_back(CU(ri.min() + 1, ri.max() + 1));
-  l.push_back(CU(ri.max(), ri.max() + ri.size()));
-  l.push_back(CU(ri.max() + 1, ri.max() + ri.size() + 1));
+  set<CU> l;
+
+  for(auto i = ri.min() + 1; i < omega.max(); ++i)
+    for(auto j = std::max(i + 1, ri.max() + 1);
+        j < omega.max(); ++j)
+      l.insert(CU(i, j));
 
   return l;
 }
 
 // Returns RIs rj such that: ri || rj
 auto
-incomparable_RIs(const CU &ri)
+incomparable_RIs(const CU &ri, const CU &omega)
 {
-  list<CU> l1 = icl_RIs(ri);
-  list<CU> l2 = icr_RIs(ri);
+  auto l1 = icl_RIs(ri, omega);
+  auto l2 = icr_RIs(ri, omega);
 
-  l1.insert(l1.end(), l2.begin(), l2.end());
+  l1.insert(l2.begin(), l2.end());
 
   return l1;
 }
@@ -128,8 +126,9 @@ incomparable_RIs(const CU &ri)
 void
 test_relations()
 {
+  CU omega(0, 30);
   // This label could be any.
-  label li(10, {100, 120});
+  label li(10, {10, 20});
 
   // -----------------------------------------------------------------
   // Column 1.
@@ -164,7 +163,7 @@ test_relations()
   }
 
   // Column 3.
-  for(auto &rj: sup_RIs(get_resources(li)))
+  for(auto &rj: sup_RIs(get_resources(li), omega))
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
@@ -180,7 +179,7 @@ test_relations()
     }
 
   // Column 4.
-  for(auto &rj: incomparable_RIs(get_resources(li)))
+  for(auto &rj: incomparable_RIs(get_resources(li), omega))
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
@@ -204,7 +203,7 @@ test_relations()
 // *****************************************************************
 
 set<label>
-worse_labels(const label &li)
+worse_labels(const label &li, const CU &omega)
 {
   set<label> s;
 
@@ -222,11 +221,11 @@ worse_labels(const label &li)
   s.emplace(get_cost(li) + 1, get_resources(li));
 
   // Column 3. Row 1.
-  for(auto &rj: sup_RIs(get_resources(li)))
+  for(auto &rj: sup_RIs(get_resources(li), omega))
     s.emplace(get_cost(li) + 1, rj);
 
   // Column 4.
-  for(auto &rj: incomparable_RIs(get_resources(li)))
+  for(auto &rj: incomparable_RIs(get_resources(li), omega))
     {
       // Row 1.
       s.emplace(get_cost(li) + 1, rj);
@@ -242,11 +241,13 @@ worse_labels(const label &li)
 void
 test_transitivity()
 {
-  // This label could be any, but with at least three units.
-  label li(10, {100, 120});
+  CU omega(0, 30);
 
-  for(const auto &lj: worse_labels(li))
-    for(const auto &lk: worse_labels(lj))
+  // This label could be any, but with at least three units.
+  label li(10, {10, 20});
+
+  for(const auto &lj: worse_labels(li, omega))
+    for(const auto &lk: worse_labels(lj, omega))
       {
         assert(is_less(li, lj));
         assert(is_less(lj, lk));
@@ -263,7 +264,7 @@ test_transitivity()
 // equal cost and incomparable RIs.
 
 auto
-incomparable_labels(const label &li)
+incomparable_labels(const label &li, const CU &omega)
 {
   // slap - int-label pair
   using ilap = pair<int, label>;
@@ -280,22 +281,25 @@ incomparable_labels(const label &li)
 
   // B.  Column 3.  Row 1.
   l.push_back(slip("B", {}));
-  for(int i = 1; auto &rj: sup_RIs(get_resources(li)))
+  for(int i = 1; auto &rj: sup_RIs(get_resources(li), omega))
     l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
   // C.  Column 4.  Row 1.
   l.push_back(slip("C", {}));
-  for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
+  for(int i = 1; auto &rj:
+        incomparable_RIs(get_resources(li), omega))
     l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
 
   // D.  Column 4.  Row 2.
   l.push_back(slip("D", {}));
-  for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
+  for(int i = 1; auto &rj:
+        incomparable_RIs(get_resources(li), omega))
     l.back().second.push_back(ilap(i++, {get_cost(li), rj}));
 
   // E.  Column 4.  Row 3.
   l.push_back(slip("E", {}));
-  for(int i = 1; auto &rj: incomparable_RIs(get_resources(li)))
+  for(int i = 1; auto &rj:
+        incomparable_RIs(get_resources(li), omega))
     l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
 
   return l;
@@ -304,37 +308,22 @@ incomparable_labels(const label &li)
 void
 test_intran_boe_incomp()
 {
-  label li(10, {100, 120});
-
-  cout << "li = " << li << endl;
+  CU omega(0, 30);
+  label li(10, {10, 20});
 
   // Iterate over the table cells.
-  for (const auto &[text_j, list_j]: incomparable_labels(li))
+  for (const auto &[text_j, list_j]:
+         incomparable_labels(li, omega))
     // Iterate over the (int-label) pairs of a table cell.
     for (const auto &[num_j, lj]: list_j)
       // Iterate over the table cells.
-      for (const auto &[text_k, list_k]: incomparable_labels(lj))
+      for (const auto &[text_k, list_k]:
+             incomparable_labels(lj, omega))
         // Iterate over the labels of a table cell.
         for (const auto &[num_k, lk]: list_k)
           {
             assert(is_incomparable(li, lj));
             assert(is_incomparable(lj, lk));
-
-            cout << text_j << num_j << ", "
-                 << text_k << num_k << ", ";
-
-            if (li == lk)
-              cout << "=";
-            else if (boe(li, lk))
-              cout << "<";
-            else if (boe(lk, li))
-              cout << ">";
-            else
-              cout << "|";
-
-            cout << ", ";
-
-            cout << lk << endl;
           }
 }
 
