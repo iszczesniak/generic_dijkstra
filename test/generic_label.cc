@@ -32,17 +32,37 @@ is_incomparable(const label &li, const label &lj)
 auto
 sub_RIs(const CU &ri)
 {
-  list<CU> l;
+  set<CU> l;
   assert(!ri.empty());
 
   for(auto s = ri.size(); --s;)
     for(auto i = ri.min(); i + s <= ri.max(); ++i)
-      l.push_back(CU(i, i + s));
+      l.insert(CU(i, i + s));
 
   return l;
 }
 
-// Returns RIs rj such that: rj supset ri
+void
+test_sub_RIs()
+{
+  assert(sub_RIs(CU{0, 1}).empty());
+
+  auto l1 = sub_RIs(CU{0, 2});
+  assert(l1.size() == 2);
+  assert(l1.contains(CU(0, 1)));
+  assert(l1.contains(CU(1, 2)));
+
+  auto l2 = sub_RIs(CU{0, 3});
+  assert(l2.size() == 5);
+  assert(l2.contains(CU(0, 2)));
+  assert(l2.contains(CU(1, 3)));
+  assert(l2.contains(CU(0, 1)));
+  assert(l2.contains(CU(1, 2)));
+  assert(l2.contains(CU(2, 3)));
+}
+
+// Returns RIs rj such that: rj supset ri.
+// rj must be included in omega.
 auto
 sup_RIs(const CU &ri)
 {
@@ -61,21 +81,6 @@ sup_RIs(const CU &ri)
   assert(ri > l.back());
 
   return l;
-}
-
-void
-test_sub_RIs()
-{
-  assert(sub_RIs(CU{0, 1}).empty());
-
-  auto l1 = sub_RIs(CU{0, 2});
-  assert(l1.size() == 2);
-  assert((l1.front() == CU{0, 1}));
-  assert((l1.back() == CU{1, 2}));
-
-  auto l2 = sub_RIs(CU{0, 3});
-  list l3 = {CU(0, 2), CU(1, 3), CU(0, 1), CU(1, 2), CU(2, 3)};
-  assert(l2 == l3);
 }
 
 // Returns RIs rj such that ri || rj, rj is on the left of ri.
