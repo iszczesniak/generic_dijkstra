@@ -35,9 +35,10 @@ sub_RIs(const CU &ri)
   set<CU> l;
   assert(!ri.empty());
 
-  for(auto s = ri.size(); --s;)
-    for(auto i = ri.min(); i + s <= ri.max(); ++i)
-      l.insert(CU(i, i + s));
+  for(auto i = ri.min(); i < ri.max(); ++i)
+    for(auto j = i + 1; j <= ri.max(); ++j)
+      if (CU(i, j) != ri)
+        l.insert(CU(i, j));
 
   return l;
 }
