@@ -145,9 +145,8 @@ icr_RIs(const CU &ri, const CU &omega)
 
   set<CU> l;
 
-  for(auto i = ri.min() + 1; i < omega.max(); ++i)
-    for(auto j = std::max(i + 1, ri.max() + 1);
-        j < omega.max(); ++j)
+  for(auto j = omega.max(); ri.max() < j; --j)
+    for(auto i = j - 1; ri.min() < i; --i)
       l.insert(CU(i, j));
 
   return l;
