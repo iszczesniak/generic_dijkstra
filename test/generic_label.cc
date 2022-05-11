@@ -155,7 +155,25 @@ icr_RIs(const CU &ri, const CU &omega)
 void
 test_icr_RIs()
 {
-  CU omega(0, 3);
+  CU omega(0, 4);
+
+  auto l1 = icr_RIs(CU(2, 4), omega);
+  assert(l1.empty());
+
+  auto l2 = icr_RIs(CU(2, 3), omega);
+  assert(l2.size() == 1);
+  assert(l2.contains(CU(3, 4)));
+
+  auto l3 = icr_RIs(CU(1, 3), omega);
+  assert(l3.size() == 2);
+  assert(l3.contains(CU(3, 4)));
+  assert(l3.contains(CU(2, 4)));
+
+  auto l4 = icr_RIs(CU(0, 3), omega);
+  assert(l4.size() == 3);
+  assert(l4.contains(CU(3, 4)));
+  assert(l4.contains(CU(2, 4)));
+  assert(l4.contains(CU(1, 4)));
 }
 
 // Returns RIs rj such that: ri || rj
