@@ -112,6 +112,30 @@ icl_RIs(const CU &ri, const CU &omega)
   return l;
 }
 
+void
+test_icl_RIs()
+{
+  CU omega(0, 4);
+
+  auto l1 = icl_RIs(CU(0, 2), omega);
+  assert(l1.empty());
+
+  auto l2 = icl_RIs(CU(1, 2), omega);
+  assert(l2.size() == 1);
+  assert(l2.contains(CU(0, 1)));
+
+  auto l3 = icl_RIs(CU(1, 3), omega);
+  assert(l3.size() == 2);
+  assert(l3.contains(CU(0, 1)));
+  assert(l3.contains(CU(0, 2)));
+
+  auto l4 = icl_RIs(CU(1, 4), omega);
+  assert(l4.size() == 3);
+  assert(l4.contains(CU(0, 1)));
+  assert(l4.contains(CU(0, 2)));
+  assert(l4.contains(CU(0, 3)));
+}
+
 // Returns RIs rj such that ri || rj, rj is on the right of ri.
 auto
 icr_RIs(const CU &ri, const CU &omega)
@@ -128,6 +152,12 @@ icr_RIs(const CU &ri, const CU &omega)
   return l;
 }
 
+void
+test_icr_RIs()
+{
+  CU omega(0, 3);
+}
+
 // Returns RIs rj such that: ri || rj
 auto
 incomparable_RIs(const CU &ri, const CU &omega)
@@ -138,11 +168,6 @@ incomparable_RIs(const CU &ri, const CU &omega)
   l1.insert(l2.begin(), l2.end());
 
   return l1;
-}
-
-void
-incomparable_RIs()
-{
 }
 
 // *****************************************************************
@@ -358,8 +383,9 @@ main()
 {
   test_sub_RIs();
   test_sup_RIs();
-  test_incomparable_RIs();
-  
+  test_icl_RIs();
+  test_icr_RIs();
+
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
