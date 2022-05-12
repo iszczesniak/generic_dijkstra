@@ -324,55 +324,73 @@ test_transitivity()
       }
 }
 
+// a. Column 1.  Row 3.
+auto
+incomparable_labels_a(const label &li)
+{
+  list<label> l;
+
+  for(auto &rj: sub_RIs(get_resources(li)))
+    l.push_back(label{get_cost(li) - 1, rj});
+
+  return l;
+}
+
+// b.  Column 3.  Row 1.
+auto
+incomparable_labels_b(const label &li, const CU &omega)
+{
+  list<label> l;
+
+  for(auto &rj: sup_RIs(get_resources(li), omega))
+    l.push_back(label{get_cost(li) + 1, rj});
+
+  return l;
+}
+
+// C.  Column 4.  Row 1.
+auto
+incomparable_labels_c(const label &li, const CU &omega)
+{
+  list<label> l;
+
+  for(auto &rj: incomparable_RIs(get_resources(li), omega))
+    l.push_back(label{get_cost(li) + 1, rj});
+
+  return l;
+}
+
+// D.  Column 4.  Row 2.
+auto
+incomparable_labels_d(const label &li, const CU &omega)
+{
+  list<label> l;
+
+  for(auto &rj: incomparable_RIs(get_resources(li), omega))
+    l.push_back(label{get_cost(li), rj});
+
+  return l;
+}
+
+// E.  Column 4.  Row 3.
+auto
+incomparable_labels_e(const label &li, const CU &omega)
+{
+  list<label> l;
+
+  for(auto &rj: incomparable_RIs(get_resources(li), omega))
+    l.push_back(label{get_cost(li) - 1, rj});
+
+  return l;
+}
+
 // Test the better-or-equal incomparability to pinpoint the reason why
 // this relation is intransitive.
 //
 // The relation is intransitive since:
 //
-// * labels are of different cost, but it is intransitive for labels of
-// equal cost and incomparable RIs.
-
-auto
-incomparable_labels(const label &li, const CU &omega)
-{
-  // slap - int-label pair
-  using ilap = pair<int, label>;
-
-  // slip - string-list pair
-  using slip = pair<string, list<ilap>>;
-
-  list<slip> l;
-
-  // A.  Column 1.  Row 3.
-  l.push_back(slip("A", {}));
-  for(int i = 1; auto &rj: sub_RIs(get_resources(li)))
-    l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
-
-  // B.  Column 3.  Row 1.
-  l.push_back(slip("B", {}));
-  for(int i = 1; auto &rj: sup_RIs(get_resources(li), omega))
-    l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
-
-  // C.  Column 4.  Row 1.
-  l.push_back(slip("C", {}));
-  for(int i = 1; auto &rj:
-        incomparable_RIs(get_resources(li), omega))
-    l.back().second.push_back(ilap(i++, {get_cost(li) + 1, rj}));
-
-  // D.  Column 4.  Row 2.
-  l.push_back(slip("D", {}));
-  for(int i = 1; auto &rj:
-        incomparable_RIs(get_resources(li), omega))
-    l.back().second.push_back(ilap(i++, {get_cost(li), rj}));
-
-  // E.  Column 4.  Row 3.
-  l.push_back(slip("E", {}));
-  for(int i = 1; auto &rj:
-        incomparable_RIs(get_resources(li), omega))
-    l.back().second.push_back(ilap(i++, {get_cost(li) - 1, rj}));
-
-  return l;
-}
+// * labels are of different cost, but it is intransitive for labels
+// of equal cost and incomparable RIs.
 
 void
 test_intran_boe_incomp()
@@ -380,20 +398,6 @@ test_intran_boe_incomp()
   CU omega(0, 30);
   label li(10, {10, 20});
 
-  // Iterate over the table cells.
-  for (const auto &[text_j, list_j]:
-         incomparable_labels(li, omega))
-    // Iterate over the (int-label) pairs of a table cell.
-    for (const auto &[num_j, lj]: list_j)
-      // Iterate over the table cells.
-      for (const auto &[text_k, list_k]:
-             incomparable_labels(lj, omega))
-        // Iterate over the labels of a table cell.
-        for (const auto &[num_k, lk]: list_k)
-          {
-            assert(is_incomparable(li, lj));
-            assert(is_incomparable(lj, lk));
-          }
 }
 
 int
