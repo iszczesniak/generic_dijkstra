@@ -395,30 +395,42 @@ incomparable_labels_e(const label &li, const CU &omega)
 void
 test_intran_boe_incomp()
 {
-  CU omega(0, 30);
-  label li(10, {10, 20});
+  CU omega(0, 10);
 
-  // Row A.
-  for(const auto &lj: incomparable_labels_a(li))
+  for(const auto &ri: sub_RIs(omega))
     {
-      assert(is_incomparable(li, lj));
+      label li(10, ri);
 
-      // Column A.
-      for(const auto &lk: incomparable_labels_a(lj))
+      // Row A.
+      for(const auto &lj: incomparable_labels_a(li))
         {
-          // A-A: incomparability is transitive.
-          assert(is_incomparable(lj, lk));
-          assert(is_incomparable(li, lk));
-        }
+          assert(is_incomparable(li, lj));
 
-      // Column B.
-      for(const auto &lk: incomparable_labels_b(lj, omega))
-        {
-          // A-B: incomparability is intransitive.
-          assert(is_incomparable(lj, lk));
-          assert(is_incomparable(li, lk));
+          // Column A.
+          for(const auto &lk: incomparable_labels_a(lj))
+            {
+              // A-A: incomparability is transitive.
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+
+          // Column D.
+          for(const auto &lk: incomparable_labels_d(lj, omega))
+            {
+              // A-D: incomparability is transitive.
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+
+          // Column E.
+          for(const auto &lk: incomparable_labels_e(lj, omega))
+            {
+              // A-E: incomparability is transitive.
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
         }
-}
+    }
 }
 
 int
