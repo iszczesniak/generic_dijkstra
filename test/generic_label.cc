@@ -324,7 +324,7 @@ test_transitivity()
       }
 }
 
-// a. Column 1.  Row 3.
+// a.  Column 1.  Row 3.
 auto
 incomparable_labels_a(const label &li)
 {
@@ -398,6 +398,27 @@ test_intran_boe_incomp()
   CU omega(0, 30);
   label li(10, {10, 20});
 
+  // Row A.
+  for(const auto &lj: incomparable_labels_a(li))
+    {
+      assert(is_incomparable(li, lj));
+
+      // Column A.
+      for(const auto &lk: incomparable_labels_a(lj))
+        {
+          // A-A: incomparability is transitive.
+          assert(is_incomparable(lj, lk));
+          assert(is_incomparable(li, lk));
+        }
+
+      // Column B.
+      for(const auto &lk: incomparable_labels_b(lj, omega))
+        {
+          // A-B: incomparability is intransitive.
+          assert(is_incomparable(lj, lk));
+          assert(is_incomparable(li, lk));
+        }
+}
 }
 
 int
