@@ -397,35 +397,116 @@ test_intran_boe_incomp()
 {
   CU omega(0, 10);
 
+  // The incomparability relation is transitive for:
+  //
+  // * a: a, d, e,
+  //
+  // * b: b, c, d
+  //
+  // * c: b
+  //
+  // * d: a, b
+  //
+  // * e: a
   for(const auto &ri: sub_RIs(omega))
     {
       label li(10, ri);
 
-      // Row A.
+      // Row a.
       for(const auto &lj: incomparable_labels_a(li))
         {
           assert(is_incomparable(li, lj));
 
-          // Column A.
+          // Column a.
           for(const auto &lk: incomparable_labels_a(lj))
             {
-              // A-A: incomparability is transitive.
               assert(is_incomparable(lj, lk));
               assert(is_incomparable(li, lk));
             }
 
-          // Column D.
+          // Column d.
           for(const auto &lk: incomparable_labels_d(lj, omega))
             {
-              // A-D: incomparability is transitive.
               assert(is_incomparable(lj, lk));
               assert(is_incomparable(li, lk));
             }
 
-          // Column E.
+          // Column e.
           for(const auto &lk: incomparable_labels_e(lj, omega))
             {
-              // A-E: incomparability is transitive.
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+        }
+
+      // Row b.
+      for(const auto &lj: incomparable_labels_b(li, omega))
+        {
+          assert(is_incomparable(li, lj));
+
+          // Column b.
+          for(const auto &lk: incomparable_labels_b(lj, omega))
+            {
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+
+          // Column c.
+          for(const auto &lk: incomparable_labels_c(lj, omega))
+            {
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+
+          // Column d.
+          for(const auto &lk: incomparable_labels_d(lj, omega))
+            {
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+        }
+
+      // Row c.
+      for(const auto &lj: incomparable_labels_c(li, omega))
+        {
+          assert(is_incomparable(li, lj));
+
+          // Column b.
+          for(const auto &lk: incomparable_labels_b(lj, omega))
+            {
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+        }
+
+      // Row d.
+      for(const auto &lj: incomparable_labels_d(li, omega))
+        {
+          assert(is_incomparable(li, lj));
+
+          // Column a.
+          for(const auto &lk: incomparable_labels_a(lj))
+            {
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+
+          // Column b.
+          for(const auto &lk: incomparable_labels_b(lj, omega))
+            {
+              assert(is_incomparable(lj, lk));
+              assert(is_incomparable(li, lk));
+            }
+        }
+
+      // Row e.
+      for(const auto &lj: incomparable_labels_e(li, omega))
+        {
+          assert(is_incomparable(li, lj));
+
+          // Column a.
+          for(const auto &lk: incomparable_labels_a(lj))
+            {
               assert(is_incomparable(lj, lk));
               assert(is_incomparable(li, lk));
             }
