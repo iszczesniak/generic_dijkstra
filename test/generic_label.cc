@@ -622,7 +622,7 @@ test_intran_boe_incomp()
   //
   // * c: a
   //
-  // We can have these relations: \prec, ==, and \parallel, not \succ.
+  // We have relations: \prec and \parallel, but not == nor \succ.
 
   // The a: c case.
   {
