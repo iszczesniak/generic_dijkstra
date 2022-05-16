@@ -615,6 +615,92 @@ test_intran_boe_incomp()
     assert(wt);
     assert(ic);
   }
+
+  // Cases for:
+  //
+  // * a: c
+  //
+  // * c: a
+  //
+  // We can have these relations: \prec, ==, and \parallel, not \succ.
+
+  // The a: c case.
+  {
+    // Better than.
+    bool bt = false;
+    // Equal.
+    bool eq = false;
+    // Worse than.
+    bool wt = false;
+    // Incomparable.
+    bool ic = false;
+
+    for(const auto &ri: sub_RIs(omega))
+      {
+        label li(10, ri);
+
+        // Row a.
+        for(const auto &lj: incomparable_labels_a(li))
+          {
+            assert(is_incomparable(li, lj));
+
+            // Column c.
+            for(const auto &lk: incomparable_labels_c(lj, omega))
+              {
+                assert(is_incomparable(lj, lk));
+
+                bt |= (boe(li, lk) && li != lk);
+                eq |= (li == lk);
+                wt |= (boe(lk, li) && li != lk);
+                ic |= is_incomparable(li, lk);
+              }
+          }
+      }
+
+    assert(bt);
+    assert(!eq);
+    assert(!wt);
+    assert(ic);
+  }
+
+  // The c: a case.
+  {
+    // Better than.
+    bool bt = false;
+    // Equal.
+    bool eq = false;
+    // Worse than.
+    bool wt = false;
+    // Incomparable.
+    bool ic = false;
+
+    for(const auto &ri: sub_RIs(omega))
+      {
+        label li(10, ri);
+
+        // Row a.
+        for(const auto &lj: incomparable_labels_c(li, omega))
+          {
+            assert(is_incomparable(li, lj));
+
+            // Column b.
+            for(const auto &lk: incomparable_labels_a(lj))
+              {
+                assert(is_incomparable(lj, lk));
+
+                bt |= (boe(li, lk) && li != lk);
+                eq |= (li == lk);
+                wt |= (boe(lk, li) && li != lk);
+                ic |= is_incomparable(li, lk);
+              }
+          }
+      }
+
+    assert(bt);
+    assert(!eq);
+    assert(!wt);
+    assert(ic);
+  }
 }
 
 int
