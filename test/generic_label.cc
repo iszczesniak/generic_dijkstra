@@ -524,6 +524,19 @@ test_intran_boe_incomp()
   // * a: b
   //
   // * b: a
+  //
+  // We can have any relation (\prec, ==, \succ, \parallel), because
+  // independently:
+  //
+  // * costs can be in any relation:
+  //   - cost(li) < cost(lk)
+  //   - cost(li) == cost(lk)
+  //   - cost(li) > cost(lk)
+  //
+  // * RIs can be in any relation:
+  //   - RI(li) \supset RI(lk)
+  //   - RI(li) == RI(lk)
+  //   - RI(li) \subset RI(lk)
 
   // The a: b case.
   {
