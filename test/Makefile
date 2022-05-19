@@ -3,7 +3,7 @@ TESTS = generic_label
 CXXFLAGS = -g -Wno-deprecated
 #CXXFLAGS = -O3 -Wno-deprecated
 
-CXXFLAGS := $(CXXFLAGS) -std=c++20
+CXXFLAGS := $(CXXFLAGS) -std=c++23
 CXXFLAGS := $(CXXFLAGS) -I ../
 CXXFLAGS := $(CXXFLAGS) -I units
 CXXFLAGS := $(CXXFLAGS) -I units/test
