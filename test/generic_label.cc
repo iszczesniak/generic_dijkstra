@@ -271,7 +271,7 @@ test_relations()
 // Test transitivity of <.
 // *****************************************************************
 
-set<label>
+auto
 worse_labels(const label &li, const CU &omega)
 {
   set<label> s;
@@ -324,64 +324,86 @@ test_transitivity()
       }
 }
 
-// a.  Column 1.  Row 3.
 auto
-incomparable_labels_a(const label &li)
+incomparable_labels(const string &cases, const label &li,
+                    const CU &omega)
 {
-  list<label> l;
+  set<label> l;
 
-  for(auto &rj: sub_RIs(get_resources(li)))
-    l.push_back(label{get_cost(li) - 1, rj});
+  // a.  Column 1.  Row 3.
+  if (cases.find('a') != cases.end())
+    for(auto &rj: sub_RIs(get_resources(li)))
+      l.emplace(get_cost(li) - 1, rj);
+
+  // b.  Column 3.  Row 1.
+  if (cases.find('b') != cases.end())
+    for(auto &rj: sup_RIs(get_resources(li), omega))
+      l.emplace(get_cost(li) + 1, rj);
+
+  // c.  Column 4.  Row 1.
+  if (cases.find('c') != cases.end())
+    for(auto &rj: incomparable_RIs(get_resources(li), omega))
+      l.emplace(get_cost(li) + 1, rj);
+
+  // d.  Column 4.  Row 2.
+  if (cases.find('d') != cases.end())
+    for(auto &rj: incomparable_RIs(get_resources(li), omega))
+      l.emplace(get_cost(li), rj);
+
+  // e.  Column 4.  Row 3.
+  if (cases.find('e') != cases.end())
+    for(auto &rj: incomparable_RIs(get_resources(li), omega))
+      l.emplace(get_cost(li) - 1, rj);
 
   return l;
 }
 
-// b.  Column 3.  Row 1.
-auto
-incomparable_labels_b(const label &li, const CU &omega)
+bool
+test_intransitive_case(const string &s1, const string &s2,
+                       const string &expected)
 {
-  list<label> l;
+  CU omega(0, 10);
 
-  for(auto &rj: sup_RIs(get_resources(li), omega))
-    l.push_back(label{get_cost(li) + 1, rj});
+  // Better than.
+  bool bt = false;
+  // Equal.
+  bool eq = false;
+  // Worse than.
+  bool wt = false;
+  // Incomparable.
+  bool ic = false;
 
-  return l;
-}
+  for(const auto &ri: sub_RIs(omega))
+    {
+      label li(10, ri);
 
-// C.  Column 4.  Row 1.
-auto
-incomparable_labels_c(const label &li, const CU &omega)
-{
-  list<label> l;
+      for(const auto &lj: incomparable_labels(s1, li, omega))
+        {
+          assert(is_incomparable(li, lj));
 
-  for(auto &rj: incomparable_RIs(get_resources(li), omega))
-    l.push_back(label{get_cost(li) + 1, rj});
+          // Column a.
+          for(const auto &lk: incomparable_labels(s2, lj, omega))
+            {
+              assert(is_incomparable(lj, lk));
 
-  return l;
-}
+              bt |= (boe(li, lk) && li != lk);
+              eq |= (li == lk);
+              wt |= (boe(lk, li) && li != lk);
+              ic |= is_incomparable(li, lk);
+            }
+        }
+    }
 
-// D.  Column 4.  Row 2.
-auto
-incomparable_labels_d(const label &li, const CU &omega)
-{
-  list<label> l;
-
-  for(auto &rj: incomparable_RIs(get_resources(li), omega))
-    l.push_back(label{get_cost(li), rj});
-
-  return l;
-}
-
-// E.  Column 4.  Row 3.
-auto
-incomparable_labels_e(const label &li, const CU &omega)
-{
-  list<label> l;
-
-  for(auto &rj: incomparable_RIs(get_resources(li), omega))
-    l.push_back(label{get_cost(li) - 1, rj});
-
-  return l;
+  if (expected.find('<') == expected.end())
+    bt = !bt;
+  if (expected.find('=') == expected.end())
+    eq = !eq;
+  if (expected.find('>') == expected.end())
+    wt = !wt;
+  if (expected.find('|') == expected.end())
+    ic = !ic;
+  
+  return bt && eq && wt && ic;
 }
 
 // Test the better-or-equal incomparability to pinpoint the reason why
@@ -395,8 +417,6 @@ incomparable_labels_e(const label &li, const CU &omega)
 void
 test_intran_boe_incomp()
 {
-  CU omega(0, 10);
-
   // *****************************************************************
   //
   // The incomparability relation is transitive for:
@@ -410,110 +430,12 @@ test_intran_boe_incomp()
   // * d: a, b
   //
   // * e: a
-  for(const auto &ri: sub_RIs(omega))
-    {
-      label li(10, ri);
 
-      // Row a.
-      for(const auto &lj: incomparable_labels_a(li))
-        {
-          assert(is_incomparable(li, lj));
-
-          // Column a.
-          for(const auto &lk: incomparable_labels_a(lj))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-
-          // Column d.
-          for(const auto &lk: incomparable_labels_d(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-
-          // Column e.
-          for(const auto &lk: incomparable_labels_e(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-        }
-
-      // Row b.
-      for(const auto &lj: incomparable_labels_b(li, omega))
-        {
-          assert(is_incomparable(li, lj));
-
-          // Column b.
-          for(const auto &lk: incomparable_labels_b(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-
-          // Column c.
-          for(const auto &lk: incomparable_labels_c(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-
-          // Column d.
-          for(const auto &lk: incomparable_labels_d(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-        }
-
-      // Row c.
-      for(const auto &lj: incomparable_labels_c(li, omega))
-        {
-          assert(is_incomparable(li, lj));
-
-          // Column b.
-          for(const auto &lk: incomparable_labels_b(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-        }
-
-      // Row d.
-      for(const auto &lj: incomparable_labels_d(li, omega))
-        {
-          assert(is_incomparable(li, lj));
-
-          // Column a.
-          for(const auto &lk: incomparable_labels_a(lj))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-
-          // Column b.
-          for(const auto &lk: incomparable_labels_b(lj, omega))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-        }
-
-      // Row e.
-      for(const auto &lj: incomparable_labels_e(li, omega))
-        {
-          assert(is_incomparable(li, lj));
-
-          // Column a.
-          for(const auto &lk: incomparable_labels_a(lj))
-            {
-              assert(is_incomparable(lj, lk));
-              assert(is_incomparable(li, lk));
-            }
-        }
-    }
+  test_intransitive_case("a", "ade", "|");
+  test_intransitive_case("b", "bcd", "|");
+  test_intransitive_case("c", "b", "|");
+  test_intransitive_case("d", "ab", "|");
+  test_intransitive_case("e", "a", "|");
 
   // *****************************************************************
   //
@@ -538,83 +460,8 @@ test_intran_boe_incomp()
   //   - RI(li) == RI(lk)
   //   - RI(li) \subset RI(lk)
 
-  // The a: b case.
-  {
-    // Better than.
-    bool bt = false;
-    // Equal.
-    bool eq = false;
-    // Worse than.
-    bool wt = false;
-    // Incomparable.
-    bool ic = false;
-
-    for(const auto &ri: sub_RIs(omega))
-      {
-        label li(10, ri);
-
-        // Row a.
-        for(const auto &lj: incomparable_labels_a(li))
-          {
-            assert(is_incomparable(li, lj));
-
-            // Column b.
-            for(const auto &lk: incomparable_labels_b(lj, omega))
-              {
-                assert(is_incomparable(lj, lk));
-
-                bt |= (boe(li, lk) && li != lk);
-                eq |= (li == lk);
-                wt |= (boe(lk, li) && li != lk);
-                ic |= is_incomparable(li, lk);
-              }
-          }
-      }
-
-    assert(bt);
-    assert(eq);
-    assert(wt);
-    assert(ic);
-  }
-
-  // The b: a case.
-  {
-    // Better than.
-    bool bt = false;
-    // Equal.
-    bool eq = false;
-    // Worse than.
-    bool wt = false;
-    // Incomparable.
-    bool ic = false;
-
-    for(const auto &ri: sub_RIs(omega))
-      {
-        label li(10, ri);
-
-        // Row a.
-        for(const auto &lj: incomparable_labels_b(li, omega))
-          {
-            assert(is_incomparable(li, lj));
-
-            // Column b.
-            for(const auto &lk: incomparable_labels_a(lj))
-              {
-                assert(is_incomparable(lj, lk));
-
-                bt |= (boe(li, lk) && li != lk);
-                eq |= (li == lk);
-                wt |= (boe(lk, li) && li != lk);
-                ic |= is_incomparable(li, lk);
-              }
-          }
-      }
-
-    assert(bt);
-    assert(eq);
-    assert(wt);
-    assert(ic);
-  }
+  test_intransitive_case("a", "b", "<=>|");
+  test_intransitive_case("b", "a", "<=>|");
 
   // Cases for:
   //
@@ -624,83 +471,8 @@ test_intran_boe_incomp()
   //
   // We have relations: \prec and \parallel, but not == nor \succ.
 
-  // The a: c case.
-  {
-    // Better than.
-    bool bt = false;
-    // Equal.
-    bool eq = false;
-    // Worse than.
-    bool wt = false;
-    // Incomparable.
-    bool ic = false;
-
-    for(const auto &ri: sub_RIs(omega))
-      {
-        label li(10, ri);
-
-        // Row a.
-        for(const auto &lj: incomparable_labels_a(li))
-          {
-            assert(is_incomparable(li, lj));
-
-            // Column c.
-            for(const auto &lk: incomparable_labels_c(lj, omega))
-              {
-                assert(is_incomparable(lj, lk));
-
-                bt |= (boe(li, lk) && li != lk);
-                eq |= (li == lk);
-                wt |= (boe(lk, li) && li != lk);
-                ic |= is_incomparable(li, lk);
-              }
-          }
-      }
-
-    assert(bt);
-    assert(!eq);
-    assert(!wt);
-    assert(ic);
-  }
-
-  // The c: a case.
-  {
-    // Better than.
-    bool bt = false;
-    // Equal.
-    bool eq = false;
-    // Worse than.
-    bool wt = false;
-    // Incomparable.
-    bool ic = false;
-
-    for(const auto &ri: sub_RIs(omega))
-      {
-        label li(10, ri);
-
-        // Row a.
-        for(const auto &lj: incomparable_labels_c(li, omega))
-          {
-            assert(is_incomparable(li, lj));
-
-            // Column b.
-            for(const auto &lk: incomparable_labels_a(lj))
-              {
-                assert(is_incomparable(lj, lk));
-
-                bt |= (boe(li, lk) && li != lk);
-                eq |= (li == lk);
-                wt |= (boe(lk, li) && li != lk);
-                ic |= is_incomparable(li, lk);
-              }
-          }
-      }
-
-    assert(bt);
-    assert(!eq);
-    assert(!wt);
-    assert(ic);
-  }
+  test_intransitive_case("a", "c", "<|");
+  test_intransitive_case("c", "a", "<|");
 
   // Cases for:
   //
@@ -710,83 +482,8 @@ test_intran_boe_incomp()
   //
   // We have relations: \succ and \parallel, but not == nor \prec.
 
-  // The b: e case.
-  {
-    // Better than.
-    bool bt = false;
-    // Equal.
-    bool eq = false;
-    // Worse than.
-    bool wt = false;
-    // Incomparable.
-    bool ic = false;
-
-    for(const auto &ri: sub_RIs(omega))
-      {
-        label li(10, ri);
-
-        // Row a.
-        for(const auto &lj: incomparable_labels_b(li, omega))
-          {
-            assert(is_incomparable(li, lj));
-
-            // Column c.
-            for(const auto &lk: incomparable_labels_e(lj, omega))
-              {
-                assert(is_incomparable(lj, lk));
-
-                bt |= (boe(li, lk) && li != lk);
-                eq |= (li == lk);
-                wt |= (boe(lk, li) && li != lk);
-                ic |= is_incomparable(li, lk);
-              }
-          }
-      }
-
-    assert(!bt);
-    assert(!eq);
-    assert(wt);
-    assert(ic);
-  }
-
-  // The e: b case.
-  {
-    // Better than.
-    bool bt = false;
-    // Equal.
-    bool eq = false;
-    // Worse than.
-    bool wt = false;
-    // Incomparable.
-    bool ic = false;
-
-    for(const auto &ri: sub_RIs(omega))
-      {
-        label li(10, ri);
-
-        // Row a.
-        for(const auto &lj: incomparable_labels_e(li, omega))
-          {
-            assert(is_incomparable(li, lj));
-
-            // Column b.
-            for(const auto &lk: incomparable_labels_b(lj, omega))
-              {
-                assert(is_incomparable(lj, lk));
-
-                bt |= (boe(li, lk) && li != lk);
-                eq |= (li == lk);
-                wt |= (boe(lk, li) && li != lk);
-                ic |= is_incomparable(li, lk);
-              }
-          }
-      }
-
-    assert(!bt);
-    assert(!eq);
-    assert(wt);
-    assert(ic);
-  }
+  test_intransitive_case("b", "e", ">|");
+  test_intransitive_case("e", "b", ">|");
 }
 
 int
