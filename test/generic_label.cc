@@ -331,27 +331,27 @@ incomparable_labels(const string &cases, const label &li,
   set<label> l;
 
   // a.  Column 1.  Row 3.
-  if (cases.find('a') != cases.end())
+  if (cases.contains('a'))
     for(auto &rj: sub_RIs(get_resources(li)))
       l.emplace(get_cost(li) - 1, rj);
 
   // b.  Column 3.  Row 1.
-  if (cases.find('b') != cases.end())
+  if (cases.contains('b'))
     for(auto &rj: sup_RIs(get_resources(li), omega))
       l.emplace(get_cost(li) + 1, rj);
 
   // c.  Column 4.  Row 1.
-  if (cases.find('c') != cases.end())
+  if (cases.contains('c'))
     for(auto &rj: incomparable_RIs(get_resources(li), omega))
       l.emplace(get_cost(li) + 1, rj);
 
   // d.  Column 4.  Row 2.
-  if (cases.find('d') != cases.end())
+  if (cases.contains('d'))
     for(auto &rj: incomparable_RIs(get_resources(li), omega))
       l.emplace(get_cost(li), rj);
 
   // e.  Column 4.  Row 3.
-  if (cases.find('e') != cases.end())
+  if (cases.contains('e'))
     for(auto &rj: incomparable_RIs(get_resources(li), omega))
       l.emplace(get_cost(li) - 1, rj);
 
@@ -394,13 +394,13 @@ test_intransitive_case(const string &s1, const string &s2,
         }
     }
 
-  if (expected.find('<') == expected.end())
+  if (expected.contains('<'))
     bt = !bt;
-  if (expected.find('=') == expected.end())
+  if (expected.contains('='))
     eq = !eq;
-  if (expected.find('>') == expected.end())
+  if (expected.contains('>'))
     wt = !wt;
-  if (expected.find('|') == expected.end())
+  if (expected.contains('|'))
     ic = !ic;
   
   return bt && eq && wt && ic;
