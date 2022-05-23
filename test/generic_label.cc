@@ -390,17 +390,20 @@ test_intransitive_case(const string &s1, const string &s2,
               eq |= (li == lk);
               wt |= (boe(lk, li) && li != lk);
               ic |= is_incomparable(li, lk);
+
+              // The incomparability is symmetric: both hold or not.
+              assert (!(is_incomparable(li, lk) ^ is_incomparable(li, lk)));
             }
         }
     }
 
-  if (expected.contains('<'))
+  if (!expected.contains('<'))
     bt = !bt;
-  if (expected.contains('='))
+  if (!expected.contains('='))
     eq = !eq;
-  if (expected.contains('>'))
+  if (!expected.contains('>'))
     wt = !wt;
-  if (expected.contains('|'))
+  if (!expected.contains('|'))
     ic = !ic;
   
   return bt && eq && wt && ic;
@@ -431,11 +434,11 @@ test_intran_boe_incomp()
   //
   // * e: a
 
-  test_intransitive_case("a", "ade", "|");
-  test_intransitive_case("b", "bcd", "|");
-  test_intransitive_case("c", "b", "|");
-  test_intransitive_case("d", "ab", "|");
-  test_intransitive_case("e", "a", "|");
+  assert(test_intransitive_case("a", "ade", "|"));
+  assert(test_intransitive_case("b", "bcd", "|"));
+  assert(test_intransitive_case("c", "b", "|"));
+  assert(test_intransitive_case("d", "ab", "|"));
+  assert(test_intransitive_case("e", "a", "|"));
 
   // *****************************************************************
   //
@@ -460,8 +463,8 @@ test_intran_boe_incomp()
   //   - RI(li) == RI(lk)
   //   - RI(li) \subset RI(lk)
 
-  test_intransitive_case("a", "b", "<=>|");
-  test_intransitive_case("b", "a", "<=>|");
+  assert(test_intransitive_case("a", "b", "<=>|"));
+  assert(test_intransitive_case("b", "a", "<=>|"));
 
   // Cases for:
   //
@@ -471,8 +474,8 @@ test_intran_boe_incomp()
   //
   // We have relations: \prec and \parallel, but not == nor \succ.
 
-  test_intransitive_case("a", "c", "<|");
-  test_intransitive_case("c", "a", "<|");
+  assert(test_intransitive_case("a", "c", "<|"));
+  assert(test_intransitive_case("c", "a", "<|"));
 
   // Cases for:
   //
@@ -482,8 +485,8 @@ test_intran_boe_incomp()
   //
   // We have relations: \succ and \parallel, but not == nor \prec.
 
-  test_intransitive_case("b", "e", ">|");
-  test_intransitive_case("e", "b", ">|");
+  assert(test_intransitive_case("b", "e", ">|"));
+  assert(test_intransitive_case("e", "b", ">|"));
 }
 
 int
