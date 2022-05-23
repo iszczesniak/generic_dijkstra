@@ -17,7 +17,7 @@ struct generic_label
   {
   }
 
-  std::strong_ordering
+  auto
   operator <=> (const generic_label &) const = default;
 };
 
