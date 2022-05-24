@@ -412,10 +412,23 @@ test_intransitive_case(const string &s1, const string &s2,
 // Test the better-or-equal incomparability to pinpoint the reason why
 // this relation is intransitive.
 //
-// The relation is intransitive since:
+// The relation is intransitive, because even though:
 //
-// * labels are of different cost, but it is intransitive for labels
-// of equal cost and incomparable RIs.
+// * both li || lj and lj || lk are true,
+//
+// the following: 
+//
+// * li || lk does not always hold.
+//
+// Relation li || lk does not always hold, simply because the
+// conditions for incomparability are not met.  Labels li and lk are
+// incomparable in five cases:
+//
+// a. cost(li) > cost(lk) and RI(li) \supset RI(lj)
+//
+// b. cost(li) < cost(lk) and RI(li) \subset RI(lj)
+//
+// c. RI(li) || RI(lj)
 
 void
 test_intran_boe_incomp()
