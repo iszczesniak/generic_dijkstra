@@ -435,7 +435,6 @@ void
 test_intran_boe_incomp()
 {
   // *****************************************************************
-  //
   // Here the incomparability relation is transitive.
 
   assert(test_intransitive_case("a", "acd", "|"));
@@ -445,13 +444,10 @@ test_intran_boe_incomp()
   assert(test_intransitive_case("e", "b", "|"));
 
   // *****************************************************************
-  //
   // The incomparability relation is transitive in the other cases.
-  //
-  // Here all relations can take place.
-  //
-  // We can have any relation (\prec, ==, \succ, \parallel), because
-  // independently:
+
+  // In the following cases we can have any relation (\prec, ==,
+  // \succ, \parallel), because independently:
   //
   // * costs can be in any relation:
   //   - cost(li) < cost(lk)
@@ -466,12 +462,14 @@ test_intran_boe_incomp()
   assert(test_intransitive_case("a", "b", "<=>|"));
   assert(test_intransitive_case("b", "a", "<=>|"));
 
-  // Here we have \succ and \parallel, but not == nor \prec.
+  // In the following cases we can have \succ and \parallel, but not
+  // == nor \prec, because:
 
   assert(test_intransitive_case("a", "e", ">|"));
   assert(test_intransitive_case("e", "a", ">|"));
 
-  // Here we have \prec and \parallel, but not == nor \succ.
+  // In the following cases we can have \prec and \parallel, but not
+  // == nor \succ, because:
 
   assert(test_intransitive_case("b", "c", "<|"));
   assert(test_intransitive_case("c", "b", "<|"));
