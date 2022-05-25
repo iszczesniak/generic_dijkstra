@@ -330,15 +330,15 @@ incomparable_labels(const string &cases, const label &li,
 {
   set<label> l;
 
-  // a.  Column 1.  Row 3.
+  // a.  Column 1.  Row 1.
   if (cases.contains('a'))
-    for(auto &rj: sub_RIs(get_resources(li)))
-      l.emplace(get_cost(li) - 1, rj);
-
-  // b.  Column 3.  Row 1.
-  if (cases.contains('b'))
     for(auto &rj: sup_RIs(get_resources(li), omega))
       l.emplace(get_cost(li) + 1, rj);
+
+  // b.  Column 3.  Row 3.
+  if (cases.contains('b'))
+    for(auto &rj: sub_RIs(get_resources(li)))
+      l.emplace(get_cost(li) - 1, rj);
 
   // c.  Column 4.  Row 1.
   if (cases.contains('c'))
@@ -381,7 +381,6 @@ test_intransitive_case(const string &s1, const string &s2,
         {
           assert(is_incomparable(li, lj));
 
-          // Column a.
           for(const auto &lk: incomparable_labels(s2, lj, omega))
             {
               assert(is_incomparable(lj, lk));
@@ -392,7 +391,7 @@ test_intransitive_case(const string &s1, const string &s2,
               ic |= is_incomparable(li, lk);
 
               // The incomparability is symmetric: both hold or not.
-              assert (!(is_incomparable(li, lk) ^ is_incomparable(li, lk)));
+              assert (!(is_incomparable(li, lk) ^ is_incomparable(lk, li)));
             }
         }
     }
