@@ -275,8 +275,14 @@ worse_labels(const label &li, const CU &omega)
 {
   set<label> s;
 
-  // -----------------------------------------------------------------
-  // Column 1.
+  // Column 1. Row 1.
+  for(auto &rj: sup_RIs(get_resources(li), omega))
+    s.emplace(get_cost(li) + 1, rj);
+
+  // Column 2. Row 1.
+  s.emplace(get_cost(li) + 1, get_resources(li));
+
+  // Column 3.
   for(auto &rj: sub_RIs(get_resources(li)))
     {
       // Row 1.
@@ -284,13 +290,6 @@ worse_labels(const label &li, const CU &omega)
       // Row 2.
       s.emplace(get_cost(li), rj);
     }
-
-  // Column 2. Row 1.
-  s.emplace(get_cost(li) + 1, get_resources(li));
-
-  // Column 3. Row 1.
-  for(auto &rj: sup_RIs(get_resources(li), omega))
-    s.emplace(get_cost(li) + 1, rj);
 
   // Column 4.
   for(auto &rj: incomparable_RIs(get_resources(li), omega))
