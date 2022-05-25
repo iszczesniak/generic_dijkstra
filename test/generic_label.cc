@@ -421,44 +421,34 @@ test_intransitive_case(const string &s1, const string &s2,
 // conditions for incomparability are not met.  Labels li and lk are
 // incomparable in five cases:
 //
-// a. cost(li) > cost(lk) and RI(li) \supset RI(lj)
+// a. cost(li) < cost(lk) and RI(li) \subset RI(lj)
 //
-// b. cost(li) < cost(lk) and RI(li) \subset RI(lj)
+// b. cost(li) > cost(lk) and RI(li) \supset RI(lj)
 //
-// c. RI(li) || RI(lj)
+// c. cost(li) < cost(lk) and RI(li) || RI(lj)
+//
+// d. cost(li) = cost(lk) and RI(li) || RI(lj)
+//
+// e. cost(li) > cost(lk) and RI(li) || RI(lj)
 
 void
 test_intran_boe_incomp()
 {
   // *****************************************************************
   //
-  // The incomparability relation is transitive for:
-  //
-  // * a: a, d, e,
-  //
-  // * b: b, c, d
-  //
-  // * c: b
-  //
-  // * d: a, b
-  //
-  // * e: a
+  // Here the incomparability relation is transitive.
 
-  assert(test_intransitive_case("a", "ade", "|"));
-  assert(test_intransitive_case("b", "bcd", "|"));
-  assert(test_intransitive_case("c", "b", "|"));
+  assert(test_intransitive_case("a", "acd", "|"));
+  assert(test_intransitive_case("b", "bde", "|"));
+  assert(test_intransitive_case("c", "a", "|"));
   assert(test_intransitive_case("d", "ab", "|"));
-  assert(test_intransitive_case("e", "a", "|"));
+  assert(test_intransitive_case("e", "b", "|"));
 
   // *****************************************************************
   //
   // The incomparability relation is transitive in the other cases.
-
-  // Cases where all relations can take place:
   //
-  // * a: b
-  //
-  // * b: a
+  // Here all relations can take place.
   //
   // We can have any relation (\prec, ==, \succ, \parallel), because
   // independently:
@@ -476,27 +466,15 @@ test_intran_boe_incomp()
   assert(test_intransitive_case("a", "b", "<=>|"));
   assert(test_intransitive_case("b", "a", "<=>|"));
 
-  // Cases for:
-  //
-  // * a: c
-  //
-  // * c: a
-  //
-  // We have relations: \prec and \parallel, but not == nor \succ.
+  // Here we have \succ and \parallel, but not == nor \prec.
 
-  assert(test_intransitive_case("a", "c", "<|"));
-  assert(test_intransitive_case("c", "a", "<|"));
+  assert(test_intransitive_case("a", "e", ">|"));
+  assert(test_intransitive_case("e", "a", ">|"));
 
-  // Cases for:
-  //
-  // * b: e
-  //
-  // * e: b
-  //
-  // We have relations: \succ and \parallel, but not == nor \prec.
+  // Here we have \prec and \parallel, but not == nor \succ.
 
-  assert(test_intransitive_case("b", "e", ">|"));
-  assert(test_intransitive_case("e", "b", ">|"));
+  assert(test_intransitive_case("b", "c", "<|"));
+  assert(test_intransitive_case("c", "b", "<|"));
 }
 
 int
