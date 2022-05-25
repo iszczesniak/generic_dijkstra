@@ -199,9 +199,8 @@ test_relations()
   // This label could be any.
   label li(10, {10, 20});
 
-  // -----------------------------------------------------------------
   // Column 1.
-  for(auto &rj: sub_RIs(get_resources(li)))
+  for(auto &rj: sup_RIs(get_resources(li), omega))
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
@@ -209,7 +208,7 @@ test_relations()
 
       // Row 2.
       label lj2(get_cost(li), rj);
-      assert(is_less(li, lj2));
+      assert(is_greater(li, lj2));
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
@@ -232,7 +231,7 @@ test_relations()
   }
 
   // Column 3.
-  for(auto &rj: sup_RIs(get_resources(li), omega))
+  for(auto &rj: sub_RIs(get_resources(li)))
     {
       // Row 1.
       label lj1(get_cost(li) + 1, rj);
@@ -240,7 +239,7 @@ test_relations()
 
       // Row 2.
       label lj2(get_cost(li), rj);
-      assert(is_greater(li, lj2));
+      assert(is_less(li, lj2));
 
       // Row 3.
       label lj3(get_cost(li) - 1, rj);
