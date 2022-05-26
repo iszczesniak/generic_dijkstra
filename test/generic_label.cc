@@ -468,6 +468,10 @@ test_intran_boe_incomp()
 
   // In the following cases we can have \succ and ||, but not == nor
   // \prec, because:
+  //
+  // a. cost(li) < cost(lj) and RI(li) \subset RI(lj)
+  //
+  // e. cost(lj) > cost(lk) and RI(lj) || RI(lk)
 
   assert(test_case("a", "e", ">|"));
   assert(test_case("e", "a", ">|"));
