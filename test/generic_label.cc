@@ -451,7 +451,7 @@ test_intran_boe_incomp()
   // The incomparability relation is transitive in the other cases.
 
   // In the following cases we can have any relation (\prec, ==,
-  // \succ, \parallel), because independently:
+  // \succ, ||), because independently:
   //
   // * costs can be in any relation:
   //   - cost(li) < cost(lk)
@@ -466,24 +466,61 @@ test_intran_boe_incomp()
   assert(test_case("a", "b", "<=>|"));
   assert(test_case("b", "a", "<=>|"));
 
-  // In the following cases we can have \succ and \parallel, but not
-  // == nor \prec, because:
+  // In the following cases we can have \succ and ||, but not == nor
+  // \prec, because:
 
   assert(test_case("a", "e", ">|"));
   assert(test_case("e", "a", ">|"));
 
-  // In the following cases we can have \prec and \parallel, but not
-  // == nor \succ, because:
+  // In the following cases we can have \prec and ||, but not == nor
+  // \succ, because:
 
   assert(test_case("b", "c", "<|"));
   assert(test_case("c", "b", "<|"));
 
+  // *****************************************************************
+  // In the following we have the cases of c, d, and e only.  In these
+  // cases RIs are incomparable, and so the relations between RIs can
+  // be any, i.e.:
+  //
+  // * RI(li) \supset RI(lk)
+  // * RI(li) == RI(lk)
+  // * RI(li) \subset RI(lk)
+  // * RI(li) || RI(lk)
+  //
+  // Therefore the expected relations depend mainly on the cost.
+
+  // In the following cases we can have only relations \prec and ||,
+  // because the cost relation can only be:
+  //
+  // * cost(li) < cost(lk)
+
   assert(test_case("cd", "c", "<|"));
   assert(test_case("c", "cd", "<|"));
 
+  // In the following cases we can have any relation (\prec, ==,
+  // \succ, ||), because the cost relation can only be:
+  //
+  // * cost(li) < cost(lk)
+  // * cost(li) == cost(lk)
+  // * cost(li) > cost(lk)
+
   assert(test_case("c", "e", "<=>|"));
-  assert(test_case("d", "d", "<=>|"));
   assert(test_case("e", "c", "<=>|"));
+
+  // In the following case the cost relation can only be:
+  //
+  // * cost(li) == cost(lk)
+  //
+  // However, the relations between RIs can be any, and therefore the
+  // relation between the labels can be any.
+  
+  assert(test_case("d", "d", "<=>|"));
+
+  // In the following cases we can have only relations \succ and ||,
+  // because the cost relation can only be:
+  //
+  // * cost(li) > cost(lk)
 
   assert(test_case("de", "e", "|>"));
   assert(test_case("e", "de", "|>"));
