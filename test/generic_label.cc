@@ -454,11 +454,13 @@ test_intran_boe_incomp()
   // \succ, ||), because independently:
   //
   // * costs can be in any relation:
+  //
   //   - cost(li) < cost(lk)
   //   - cost(li) == cost(lk)
   //   - cost(li) > cost(lk)
   //
   // * RIs can be in any relation:
+  //
   //   - RI(li) \supset RI(lk)
   //   - RI(li) == RI(lk)
   //   - RI(li) \subset RI(lk)
@@ -469,15 +471,33 @@ test_intran_boe_incomp()
   // In the following cases we can have \succ and ||, but not == nor
   // \prec, because:
   //
-  // a. cost(li) < cost(lj) and RI(li) \subset RI(lj)
+  // * costs can be in any relation:
   //
-  // e. cost(lj) > cost(lk) and RI(lj) || RI(lk)
+  //   - cost(li) < cost(lk)
+  //   - cost(li) == cost(lk)
+  //   - cost(li) > cost(lk)
+  //
+  // * RIs can be only:
+  //
+  //   - RI(li) \subset RI(lk)
+  //   - RI(li) || RI(lk)
 
   assert(test_case("a", "e", ">|"));
   assert(test_case("e", "a", ">|"));
 
   // In the following cases we can have \prec and ||, but not == nor
   // \succ, because:
+  //
+  // * costs can be in any relation:
+  //
+  //   - cost(li) < cost(lk)
+  //   - cost(li) == cost(lk)
+  //   - cost(li) > cost(lk)
+  //
+  // * RIs can be only:
+  //
+  //   - RI(li) \supset RI(lk)
+  //   - RI(li) || RI(lk)
 
   assert(test_case("b", "c", "<|"));
   assert(test_case("c", "b", "<|"));
@@ -503,7 +523,7 @@ test_intran_boe_incomp()
   assert(test_case("c", "cd", "<|"));
 
   // In the following cases we can have any relation (\prec, ==,
-  // \succ, ||), because the cost relation can only be:
+  // \succ, ||), because the cost relation can be any:
   //
   // * cost(li) < cost(lk)
   // * cost(li) == cost(lk)
