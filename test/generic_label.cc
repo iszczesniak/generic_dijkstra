@@ -369,6 +369,17 @@ incomparable_labels(const string &cases, const label &li,
   return l;
 }
 
+// This function tests the relations between li and lk, provided li ||
+// lj and lj || lk.  Returns true if the relations are as expected:
+//
+// * '<' - better than
+// * '=' - equal to
+// * '>' - worse than
+// * '|' - incomparable with
+//
+// Having label li, labels lj are produced for the cases (from a to e)
+// in s1.  Having label lj, labels lk are produced for cases (from a
+// to e) in s2.
 bool
 test_case(const string &s1, const string &s2, const string &expected)
 {
@@ -418,19 +429,10 @@ test_case(const string &s1, const string &s2, const string &expected)
   return bt && eq && wt && ic;
 }
 
-// Test the better-or-equal incomparability to pinpoint the reason why
-// this relation is intransitive.
-//
-// The relation is intransitive, because even though:
-//
-// * both li || lj and lj || lk are true,
-//
-// the following: 
-//
-// * li || lk does not always hold.
-//
-// Relation li || lk does not always hold, simply because the
-// conditions for incomparability are not met.
+// The better-or-equal incomparability is intransitive, i.e., even
+// though both li || lj and lj || lk are true, li || lk does not
+// always hold, because the conditions for incomparability (cases from
+// a to e above) are not met.
 
 void
 test_intran_boe_incomp()
