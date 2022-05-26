@@ -370,12 +370,13 @@ incomparable_labels(const string &cases, const label &li,
 }
 
 // This function tests the relations between li and lk, provided li ||
-// lj and lj || lk.  Returns true if the relations are as expected:
+// lj and lj || lk.  Returns true if the relations are as given in
+// "expected", where the recognized characters are:
 //
-// * '<' - better than
-// * '=' - equal to
-// * '>' - worse than
-// * '|' - incomparable with
+// * '<' for better than,
+// * '=' for equal to,
+// * '>' for worse than,
+// * '|' for incomparable with.
 //
 // Having label li, labels lj are produced for the cases (from a to e)
 // in s1.  Having label lj, labels lk are produced for cases (from a
@@ -476,6 +477,16 @@ test_intran_boe_incomp()
 
   assert(test_case("b", "c", "<|"));
   assert(test_case("c", "b", "<|"));
+
+  assert(test_case("cd", "c", "<|"));
+  assert(test_case("c", "cd", "<|"));
+
+  assert(test_case("c", "e", "<=>|"));
+  assert(test_case("d", "d", "<=>|"));
+  assert(test_case("e", "c", "<=>|"));
+
+  assert(test_case("de", "e", "|>"));
+  assert(test_case("e", "de", "|>"));
 }
 
 int
