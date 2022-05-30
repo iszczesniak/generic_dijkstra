@@ -441,11 +441,33 @@ test_intran_boe_incomp()
   // *****************************************************************
   // Here the incomparability relation is transitive.
 
+  // In the following cases we can have || only, because:
+  //
+  // * the costs can only be:
+  //
+  //   - cost(li) < cost(lk)
+  //
+  // * the RIs can only be:
+  //
+  //   - RI(li) \subset RI(lk)
+  //   - RI(li) || RI(lk)
+
   assert(test_case("a", "acd", "|"));
+  assert(test_case("acd", "a", "|"));
+
+  // In the following cases we can have || only, because:
+  //
+  // * the costs can only be:
+  //
+  //   - cost(li) > cost(lk)
+  //
+  // * the RIs can only be:
+  //
+  //   - RI(li) \supset RI(lk)
+  //   - RI(li) || RI(lk)
+
   assert(test_case("b", "bde", "|"));
-  assert(test_case("c", "a", "|"));
-  assert(test_case("d", "ab", "|"));
-  assert(test_case("e", "b", "|"));
+  assert(test_case("bde", "b", "|"));
 
   // *****************************************************************
   // The incomparability relation is transitive in the other cases.
