@@ -470,7 +470,7 @@ test_intran_boe_incomp()
   assert(test_case("bde", "b", "|"));
 
   // *****************************************************************
-  // The incomparability relation is transitive in the other cases.
+  // The incomparability relation is intransitive in all other cases.
 
   // In the following cases we can have any relation (\prec, ==,
   // \succ, ||), because independently:
@@ -524,7 +524,7 @@ test_intran_boe_incomp()
   assert(test_case("b", "c", "<|"));
   assert(test_case("c", "b", "<|"));
 
-  // *****************************************************************
+  // -----------------------------------------------------------------
   // In the following we have the cases of c, d, and e only.  In these
   // cases RIs are incomparable, and so the relations between RIs can
   // be any, i.e.:
