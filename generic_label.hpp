@@ -19,7 +19,7 @@ struct generic_label
 
   // The default implementation offers a lexicographic comparison, and
   // that's what we need.
-  auto
+  constexpr auto
   operator <=> (const generic_label &) const = default;
 };
 
