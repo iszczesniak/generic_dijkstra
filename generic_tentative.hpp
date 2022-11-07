@@ -20,19 +20,19 @@ struct generic_tentative: std::vector<std::set<Label>>
   using base = std::vector<vd_type>;
   // The size_type of the base.
   using size_type = typename base::size_type;
-  // The cost type of the label.
-  using cost_type = Cost<label_type>;
+  // The weight type of the label.
+  using weight_type = Weight<label_type>;
   // The index type of the vertex.
   using index_type = Index<Vertex<Edge<label_type>>>;
 
   // The priority queue element type.
-  using pqet = std::pair<cost_type, index_type>;
+  using pqet = std::pair<weight_type, index_type>;
 
   // The priority queue.
   std::set<pqet> m_pq;
 
-  // Vetext to cost reverse look up of the priority queue elements.
-  std::vector<std::optional<cost_type>> m_v2c;
+  // Vetext to weight reverse look up of the priority queue elements.
+  std::vector<std::optional<weight_type>> m_v2c;
 
   // The constructor builds a vector of data for each vertex.
   generic_tentative(size_type count): base(count), m_v2c(count)
@@ -54,7 +54,7 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     if (i == vd.begin())
       {
-        auto c = get_cost(l);
+        auto c = get_weight(l);
         // There already can be an element in the queue for tk.
         auto &o = m_v2c[ti];
         if (o)
@@ -82,12 +82,12 @@ struct generic_tentative: std::vector<std::set<Label>>
     auto &vd = this->operator[](ti);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
-    assert(get_cost(nh.value()) == c);
+    assert(get_weight(nh.value()) == c);
     auto &o = m_v2c[ti];
     // If there is other label for ti, put it into the queue.
     if (!vd.empty())
       {
-        const auto &nc = get_cost(*vd.begin());
+        const auto &nc = get_weight(*vd.begin());
         assert(get_index(get_target(*vd.begin())) == ti);
         m_pq.insert({nc, ti});
         o = nc;
@@ -108,16 +108,16 @@ has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
-  // fact that the elements in the set are sorted by cost first.
+  // fact that the elements in the set are sorted by weight first.
 
   // Iterate over all tentative labels.
   for (const auto &i: T[get_index(get_target(j))])
     {
-      // Stop searching when we reach a label with a higher cost.  If
-      // the cost of label i is higher than the cost of label j, then
+      // Stop searching when we reach a label with a higher weight.  If
+      // the weight of label i is higher than the weight of label j, then
       // label i (and the labels in the vector that follow) cannot be
       // better or equal (they can be incomparable or worse).
-      if (get_cost(i) > get_cost(j))
+      if (get_weight(i) > get_weight(j))
         break;
 
       // Is label i better than or equal to label j?
@@ -139,25 +139,25 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
 
   // We could go for the easy implementation where we iterate for each
   // label i and compare it to j.  But we take advantage of the fact
-  // that the elements in the set are sorted by cost first.  We
+  // that the elements in the set are sorted by weight first.  We
   // iterate in the reverse order!
   for(auto r = Tt.rbegin(); r != Tt.rend();)
     {
       const auto &i = *r;
 
-      // Stop searching when we reach label i with the cost lower than
-      // the cost of label j.  If the cost of label i is lower than
-      // the cost of label j, then label i (and the labels in the set
+      // Stop searching when we reach label i with the weight lower than
+      // the weight of label j.  If the weight of label i is lower than
+      // the weight of label j, then label i (and the labels in the set
       // that follow) cannot be worse (they can be better or
       // incomparable).
-      if (get_cost(i) < get_cost(j))
+      if (get_weight(i) < get_weight(j))
         break;
 
       // Make sure labels i and j are not equal.  We can make this
       // assertion here, because we are not inserting equal labels
       // into the priority queue.  We need this assertion here, so
       // that we can safely use the <= operator below.
-      assert(!(get_cost(i) == get_cost(j) &&
+      assert(!(get_weight(i) == get_weight(j) &&
                get_units(i) == get_units(j)));
 
       // To check whether label i is worse then j, we use the <=

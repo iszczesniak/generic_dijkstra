@@ -4,15 +4,15 @@
 #include <compare>
 #include <iostream>
 
-// The label has cost c, and resources r.
+// The label has weight c, and resources r.
 
-template <typename Cost, typename Resources>
+template <typename Weight, typename Resources>
 struct generic_label
 {
-  Cost m_c;
+  Weight m_c;
   Resources m_r;
 
-  generic_label(Cost c, Resources r):
+  generic_label(Weight c, Resources r):
     m_c(c), m_r(r)
   {
   }
@@ -23,36 +23,36 @@ struct generic_label
   operator <=> (const generic_label &) const = default;
 };
 
-template <typename Cost, typename Resources>
+template <typename Weight, typename Resources>
 const auto &
-get_cost(const generic_label<Cost, Resources> &l)
+get_weight(const generic_label<Weight, Resources> &l)
 {
   return l.m_c;
 }
 
-template <typename Cost, typename Resources>
+template <typename Weight, typename Resources>
 const auto &
-get_resources(const generic_label<Cost, Resources> &l)
+get_resources(const generic_label<Weight, Resources> &l)
 {
   return l.m_r;
 }
 
 // This "better or equal" function.
-template <typename Cost, typename Resources>
+template <typename Weight, typename Resources>
 bool
-boe(const generic_label<Cost, Resources> &i,
-    const generic_label<Cost, Resources> &j)
+boe(const generic_label<Weight, Resources> &i,
+    const generic_label<Weight, Resources> &j)
 {
-  return get_cost(i) <= get_cost(j) &&
+  return get_weight(i) <= get_weight(j) &&
     includes(get_resources(i), get_resources(j));
 }
 
-template <typename Cost, typename Resources>
+template <typename Weight, typename Resources>
 std::ostream &
 operator<<(std::ostream &out,
-           const generic_label<Cost, Resources> &l)
+           const generic_label<Weight, Resources> &l)
 {
-  out << "label(cost = " << get_cost(l)
+  out << "label(weight = " << get_weight(l)
       << ", resources = " << get_resources(l) << ")";
 
     return out;

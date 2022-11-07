@@ -203,30 +203,30 @@ test_relations()
   for(auto &rj: sup_RIs(get_resources(li), omega))
     {
       // Row 1.
-      label lj1(get_cost(li) + 1, rj);
+      label lj1(get_weight(li) + 1, rj);
       assert(is_less(li, lj1));
 
       // Row 2.
-      label lj2(get_cost(li), rj);
+      label lj2(get_weight(li), rj);
       assert(is_greater(li, lj2));
 
       // Row 3.
-      label lj3(get_cost(li) - 1, rj);
+      label lj3(get_weight(li) - 1, rj);
       assert(is_greater(li, lj3));
     }
 
   // Column 2.
   {
     // Row 1.
-    label lj1(get_cost(li) + 1, get_resources(li));
+    label lj1(get_weight(li) + 1, get_resources(li));
     assert(is_less(li, lj1));
 
     // Row 2.
-    label lj2(get_cost(li), get_resources(li));
+    label lj2(get_weight(li), get_resources(li));
     assert(is_equal(li, lj2));
 
     // Row 3.
-    label lj3(get_cost(li) - 1, get_resources(li));
+    label lj3(get_weight(li) - 1, get_resources(li));
     assert(is_greater(li, lj3));
   }
 
@@ -234,15 +234,15 @@ test_relations()
   for(auto &rj: sub_RIs(get_resources(li)))
     {
       // Row 1.
-      label lj1(get_cost(li) + 1, rj);
+      label lj1(get_weight(li) + 1, rj);
       assert(is_less(li, lj1));
 
       // Row 2.
-      label lj2(get_cost(li), rj);
+      label lj2(get_weight(li), rj);
       assert(is_less(li, lj2));
 
       // Row 3.
-      label lj3(get_cost(li) - 1, rj);
+      label lj3(get_weight(li) - 1, rj);
       assert(is_greater(li, lj3));
     }
 
@@ -250,18 +250,18 @@ test_relations()
   for(auto &rj: incomparable_RIs(get_resources(li), omega))
     {
       // Row 1.
-      label lj1(get_cost(li) + 1, rj);
+      label lj1(get_weight(li) + 1, rj);
       assert(is_less(li, lj1));
 
       // Row 2.
-      label lj2(get_cost(li), rj);
+      label lj2(get_weight(li), rj);
       if (get_resources(li) < rj)
         assert(is_less(li, lj2));
       else
         assert(is_greater(li, lj2));
 
       // Row 3.
-      label lj3(get_cost(li) - 1, rj);
+      label lj3(get_weight(li) - 1, rj);
       assert(is_greater(li, lj3));
     }
 }
@@ -277,29 +277,29 @@ worse_labels(const label &li, const CU &omega)
 
   // Column 1. Row 1.
   for(auto &rj: sup_RIs(get_resources(li), omega))
-    s.emplace(get_cost(li) + 1, rj);
+    s.emplace(get_weight(li) + 1, rj);
 
   // Column 2. Row 1.
-  s.emplace(get_cost(li) + 1, get_resources(li));
+  s.emplace(get_weight(li) + 1, get_resources(li));
 
   // Column 3.
   for(auto &rj: sub_RIs(get_resources(li)))
     {
       // Row 1.
-      s.emplace(get_cost(li) + 1, rj);
+      s.emplace(get_weight(li) + 1, rj);
       // Row 2.
-      s.emplace(get_cost(li), rj);
+      s.emplace(get_weight(li), rj);
     }
 
   // Column 4.
   for(auto &rj: incomparable_RIs(get_resources(li), omega))
     {
       // Row 1.
-      s.emplace(get_cost(li) + 1, rj);
+      s.emplace(get_weight(li) + 1, rj);
 
       // Row 2.
       if (get_resources(li) < rj)
-        s.emplace(get_cost(li), rj);
+        s.emplace(get_weight(li), rj);
     }
 
   return s;
@@ -325,15 +325,15 @@ test_transitivity()
 // For label li, the function produces incomparable labels lj.  There
 // are five cases (from a to e) with these conditions:
 //
-// a. column 1, row 1: cost(li) < cost(lj) and RI(li) \subset RI(lj)
+// a. column 1, row 1: weight(li) < weight(lj) and RI(li) \subset RI(lj)
 //
-// b. column 3, row 3: cost(li) > cost(lj) and RI(li) \supset RI(lj)
+// b. column 3, row 3: weight(li) > weight(lj) and RI(li) \supset RI(lj)
 //
-// c. column 4, row 1: cost(li) < cost(lj) and RI(li) || RI(lj)
+// c. column 4, row 1: weight(li) < weight(lj) and RI(li) || RI(lj)
 //
-// d. column 4, row 2: cost(li) = cost(lj) and RI(li) || RI(lj)
+// d. column 4, row 2: weight(li) = weight(lj) and RI(li) || RI(lj)
 //
-// e. column 4, row 3: cost(li) > cost(lj) and RI(li) || RI(lj)
+// e. column 4, row 3: weight(li) > weight(lj) and RI(li) || RI(lj)
 
 auto
 incomparable_labels(const string &cases, const label &li,
@@ -344,27 +344,27 @@ incomparable_labels(const string &cases, const label &li,
   // a.  Column 1.  Row 1.
   if (cases.contains('a'))
     for(auto &rj: sup_RIs(get_resources(li), omega))
-      l.emplace(get_cost(li) + 1, rj);
+      l.emplace(get_weight(li) + 1, rj);
 
   // b.  Column 3.  Row 3.
   if (cases.contains('b'))
     for(auto &rj: sub_RIs(get_resources(li)))
-      l.emplace(get_cost(li) - 1, rj);
+      l.emplace(get_weight(li) - 1, rj);
 
   // c.  Column 4.  Row 1.
   if (cases.contains('c'))
     for(auto &rj: incomparable_RIs(get_resources(li), omega))
-      l.emplace(get_cost(li) + 1, rj);
+      l.emplace(get_weight(li) + 1, rj);
 
   // d.  Column 4.  Row 2.
   if (cases.contains('d'))
     for(auto &rj: incomparable_RIs(get_resources(li), omega))
-      l.emplace(get_cost(li), rj);
+      l.emplace(get_weight(li), rj);
 
   // e.  Column 4.  Row 3.
   if (cases.contains('e'))
     for(auto &rj: incomparable_RIs(get_resources(li), omega))
-      l.emplace(get_cost(li) - 1, rj);
+      l.emplace(get_weight(li) - 1, rj);
 
   return l;
 }
@@ -443,9 +443,9 @@ test_intran_boe_incomp()
 
   // In the following cases we can have || only, because:
   //
-  // * the costs can only be:
+  // * the weights can only be:
   //
-  //   - cost(li) < cost(lk)
+  //   - weight(li) < weight(lk)
   //
   // * the RIs can only be:
   //
@@ -457,9 +457,9 @@ test_intran_boe_incomp()
 
   // In the following cases we can have || only, because:
   //
-  // * the costs can only be:
+  // * the weights can only be:
   //
-  //   - cost(li) > cost(lk)
+  //   - weight(li) > weight(lk)
   //
   // * the RIs can only be:
   //
@@ -475,11 +475,11 @@ test_intran_boe_incomp()
   // In the following cases we can have any relation (\prec, ==,
   // \succ, ||), because independently:
   //
-  // * costs can be in any relation:
+  // * weights can be in any relation:
   //
-  //   - cost(li) < cost(lk)
-  //   - cost(li) == cost(lk)
-  //   - cost(li) > cost(lk)
+  //   - weight(li) < weight(lk)
+  //   - weight(li) == weight(lk)
+  //   - weight(li) > weight(lk)
   //
   // * RIs can be in any relation:
   //
@@ -493,11 +493,11 @@ test_intran_boe_incomp()
   // In the following cases we can have \succ and ||, but not == nor
   // \prec, because:
   //
-  // * costs can be in any relation:
+  // * weights can be in any relation:
   //
-  //   - cost(li) < cost(lk)
-  //   - cost(li) == cost(lk)
-  //   - cost(li) > cost(lk)
+  //   - weight(li) < weight(lk)
+  //   - weight(li) == weight(lk)
+  //   - weight(li) > weight(lk)
   //
   // * RIs can be only:
   //
@@ -510,11 +510,11 @@ test_intran_boe_incomp()
   // In the following cases we can have \prec and ||, but not == nor
   // \succ, because:
   //
-  // * costs can be in any relation:
+  // * weights can be in any relation:
   //
-  //   - cost(li) < cost(lk)
-  //   - cost(li) == cost(lk)
-  //   - cost(li) > cost(lk)
+  //   - weight(li) < weight(lk)
+  //   - weight(li) == weight(lk)
+  //   - weight(li) > weight(lk)
   //
   // * RIs can be only:
   //
@@ -534,29 +534,29 @@ test_intran_boe_incomp()
   // * RI(li) \subset RI(lk)
   // * RI(li) || RI(lk)
   //
-  // Therefore the expected relations depend mainly on the cost.
+  // Therefore the expected relations depend mainly on the weight.
 
   // In the following cases we can have only relations \prec and ||,
-  // because the cost relation can only be:
+  // because the weight relation can only be:
   //
-  // * cost(li) < cost(lk)
+  // * weight(li) < weight(lk)
 
   assert(test_case("cd", "c", "<|"));
   assert(test_case("c", "cd", "<|"));
 
   // In the following cases we can have any relation (\prec, ==,
-  // \succ, ||), because the cost relation can be any:
+  // \succ, ||), because the weight relation can be any:
   //
-  // * cost(li) < cost(lk)
-  // * cost(li) == cost(lk)
-  // * cost(li) > cost(lk)
+  // * weight(li) < weight(lk)
+  // * weight(li) == weight(lk)
+  // * weight(li) > weight(lk)
 
   assert(test_case("c", "e", "<=>|"));
   assert(test_case("e", "c", "<=>|"));
 
-  // In the following case the cost relation can only be:
+  // In the following case the weight relation can only be:
   //
-  // * cost(li) == cost(lk)
+  // * weight(li) == weight(lk)
   //
   // However, the relations between RIs can be any, and therefore the
   // relation between the labels can be any.
@@ -564,9 +564,9 @@ test_intran_boe_incomp()
   assert(test_case("d", "d", "<=>|"));
 
   // In the following cases we can have only relations \succ and ||,
-  // because the cost relation can only be:
+  // because the weight relation can only be:
   //
-  // * cost(li) > cost(lk)
+  // * weight(li) > weight(lk)
 
   assert(test_case("de", "e", "|>"));
   assert(test_case("e", "de", "|>"));
