@@ -5,10 +5,7 @@
 #include <set>
 #include <vector>
 
-// The container type for storing the generic tentative labels.  A
-// vertex can have many shared (with the priority queue) labels or
-// none.  For each vertex we store a container or shared_ptrs to
-// labels, because we create a weak_ptr in the priority queue.
+// The container type for storing the generic tentative labels.
 template <typename Label>
 struct generic_tentative: std::vector<std::set<Label>>
 {
