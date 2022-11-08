@@ -44,7 +44,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   {
     // The index of the target vertex.
     auto ti = get_index(get_target(l));
-    auto &vd = this->operator[](ti);
+    auto &vd = generic_tentative::operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
