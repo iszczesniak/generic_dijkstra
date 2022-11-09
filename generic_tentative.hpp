@@ -28,7 +28,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   // The priority queue.
   std::set<pqet> m_pq;
 
-  // Vetext to weight reverse look up of the priority queue elements.
+  // Vertex to weight reverse look up of the priority queue elements.
   std::vector<std::optional<weight_type>> m_v2c;
 
   // The constructor builds a vector of data for each vertex.
