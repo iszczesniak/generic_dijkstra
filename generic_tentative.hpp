@@ -76,7 +76,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     assert(!m_pq.empty());
     const auto [c, ti] = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    auto &vd = this->operator[](ti);
+    auto &vd = base::operator[](ti);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
     assert(get_weight(nh.value()) == c);
