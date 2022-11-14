@@ -2,29 +2,25 @@
 #define GENERIC_PERMANENT_HPP
 
 #include "graph_interface.hpp"
-#include "label_robe.hpp"
 
 #include <utility>
 #include <vector>
 
 // The container type for storing permanent generic labels.  A vertex
 // can have many labels or none, so we store them in a container.
-template <typename Label, typename Edge>
-struct generic_permanent:
-  std::vector<std::vector<label_robe<Label, Edge>>>
+template <typename Label>
+struct generic_permanent: std::vector<std::vector<Label>>
 {
   // The label type.
   using label_type = Label;
-  // The robe type.
-  using robe_type = label_robe<Label, Edge>;
   // The type of data a vertex has.
-  using vd_type = std::vector<robe_type>;
+  using vd_type = std::vector<label_type>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
   // The size type of the base.
   using size_type = typename base::size_type;
   // The index type of the vertex.
-  using index_type = Index<Vertex<Edge>>;
+  using index_type = Index<Vertex<Edge<label_type>>>;
 
   generic_permanent(size_type count): base(count)
   {
@@ -47,10 +43,9 @@ struct generic_permanent:
 /**
  * Is there in P a label that is better than or equal to label j?
  */
-template <typename Label, typename Edge>
+template <typename Label>
 bool
-has_better_or_equal(const generic_permanent<Label, Edge> &P,
-                    const label_robe<Label, Edge> &j)
+has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
