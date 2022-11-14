@@ -9,7 +9,7 @@
 
 // The container type for storing the generic tentative labels.
 template <typename Label>
-struct generic_tentative: std::vector<std::set<label>>
+struct generic_tentative: std::vector<std::set<Label>>
 {
   // The label type.
   using label_type = Label;
@@ -22,7 +22,7 @@ struct generic_tentative: std::vector<std::set<label>>
   // The weight type of the label.
   using weight_type = Weight<label_type>;
   // The index type of the vertex.
-  using index_type = Index<Vertex<Edge>>;
+  using index_type = Index<Vertex<Edge<Label>>>;
 
   // The priority queue element type.
   using pqet = std::pair<weight_type, index_type>;
