@@ -1,26 +1,32 @@
 #ifndef GENERIC_TENTATIVE_HPP
 #define GENERIC_TENTATIVE_HPP
 
+#include "graph_interface.hpp"
+#include "label_robe.hpp"
+
 #include <cassert>
 #include <set>
 #include <vector>
 
 // The container type for storing the generic tentative labels.
-template <typename Label>
-struct generic_tentative: std::vector<std::set<Label>>
+template <typename Label, typename Edge>
+struct generic_tentative:
+  std::vector<std::set<label_robe<Label, Edge>>>
 {
-  // The label type
+  // The label type.
   using label_type = Label;
+  // The robe type.
+  using robe_type = label_robe<Label, Edge>;
   // The type of data a vertex has.
-  using vd_type = std::set<label_type>;
+  using vd_type = std::set<robe_type>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
-  // The size_type of the base.
+  // The size type of the base.
   using size_type = typename base::size_type;
   // The weight type of the label.
   using weight_type = Weight<label_type>;
   // The index type of the vertex.
-  using index_type = Index<Vertex<Edge<label_type>>>;
+  using index_type = Index<Vertex<Edge>>;
 
   // The priority queue element type.
   using pqet = std::pair<weight_type, index_type>;
@@ -36,15 +42,15 @@ struct generic_tentative: std::vector<std::set<Label>>
   {
   }
 
-  // This function pushes a new label, and returns a reference to it
-  // in the container.
-  template <typename T>
+  // This function pushes a new label, and returns a reference to the
+  // robe in the container.
+  template<typename T>
   const auto &
-  push(T &&l)
+  push(T &&l, const Edge &e)
   {
     // The index of the target vertex.
-    auto ti = get_index(get_target(l));
-    auto &vd = generic_tentative::operator[](ti);
+    auto ti = get_index(get_target(e));
+    auto &vd = base::operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
@@ -70,7 +76,8 @@ struct generic_tentative: std::vector<std::set<Label>>
     return m_pq.empty();
   }
 
-  label_type
+  // Here we return a robe by value.
+  auto
   pop()
   {
     assert(!m_pq.empty());
@@ -99,9 +106,10 @@ struct generic_tentative: std::vector<std::set<Label>>
 /**
  * Is there in T a label that is better than or equal to label j?
  */
-template <typename Label>
+template <typename Label, typename Edge>
 bool
-has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
+has_better_or_equal(const generic_tentative<Label, Edge> &T,
+                    const label_robe<Label, Edge> &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
@@ -128,9 +136,10 @@ has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 /**
  * Purge from queue Q those labels which are worse than label j.
  */
-template <typename Label>
+template <typename Label, typename Edge>
 void
-purge_worse(generic_tentative<Label> &T, const Label &j)
+purge_worse(generic_tentative<Label, Edge> &T,
+            const label_robe<Label, Edge> &j)
 {
   auto &Tt = T[get_index(get_target(j))];
 
