@@ -2,31 +2,27 @@
 #define GENERIC_TENTATIVE_HPP
 
 #include "graph_interface.hpp"
-#include "label_robe.hpp"
 
 #include <cassert>
 #include <set>
 #include <vector>
 
 // The container type for storing the generic tentative labels.
-template <typename Label, typename Edge>
-struct generic_tentative:
-  std::vector<std::set<label_robe<Label, Edge>>>
+template <typename Label>
+struct generic_tentative: std::vector<std::set<Label>>
 {
   // The label type.
   using label_type = Label;
-  // The robe type.
-  using robe_type = label_robe<Label, Edge>;
   // The type of data a vertex has.
-  using vd_type = std::set<robe_type>;
+  using vd_type = std::set<label_type>;
   // The type of the vector of vertex data.
   using base = std::vector<vd_type>;
-  // The size_type of the base.
+  // The size type of the base.
   using size_type = typename base::size_type;
   // The weight type of the label.
   using weight_type = Weight<label_type>;
   // The index type of the vertex.
-  using index_type = Index<Vertex<Edge>>;
+  using index_type = Index<Vertex<Edge<Label>>>;
 
   // The priority queue element type.
   using pqet = std::pair<weight_type, index_type>;
@@ -43,13 +39,13 @@ struct generic_tentative:
   }
 
   // This function pushes a new label, and returns a reference to the
-  // robe in the container.
-  template <typename Label, typename Edge>
+  // label in the container.
+  template<typename T>
   const auto &
-  push(Label &&l, const Edge &e)
+  push(T &&l)
   {
     // The index of the target vertex.
-    auto ti = get_index(get_target(e));
+    auto ti = get_index(get_target(l));
     auto &vd = base::operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
@@ -76,7 +72,7 @@ struct generic_tentative:
     return m_pq.empty();
   }
 
-  // Here we return a robe by value.
+  // Here we return a label by value.
   auto
   pop()
   {
@@ -162,7 +158,7 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
       // into the priority queue.  We need this assertion here, so
       // that we can safely use the <= operator below.
       assert(!(get_weight(i) == get_weight(j) &&
-               get_units(i) == get_units(j)));
+               get_resources(i) == get_resources(j)));
 
       // To check whether label i is worse then j, we use the <=
       // operator, because we made sure the labels are not equal.

@@ -1,6 +1,8 @@
 #ifndef GENERIC_PERMANENT_HPP
 #define GENERIC_PERMANENT_HPP
 
+#include "graph_interface.hpp"
+
 #include <utility>
 #include <vector>
 
@@ -9,7 +11,7 @@
 template <typename Label>
 struct generic_permanent: std::vector<std::vector<Label>>
 {
-  // The label type
+  // The label type.
   using label_type = Label;
   // The type of data a vertex has.
   using vd_type = std::vector<label_type>;
@@ -17,6 +19,8 @@ struct generic_permanent: std::vector<std::vector<Label>>
   using base = std::vector<vd_type>;
   // The size type of the base.
   using size_type = typename base::size_type;
+  // The index type of the vertex.
+  using index_type = Index<Vertex<Edge<label_type>>>;
 
   generic_permanent(size_type count): base(count)
   {
@@ -41,8 +45,7 @@ struct generic_permanent: std::vector<std::vector<Label>>
  */
 template <typename Label>
 bool
-has_better_or_equal(const generic_permanent<Label> &P,
-                    const Label &j)
+has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
