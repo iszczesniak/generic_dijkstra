@@ -1,7 +1,10 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
+#include "graph_interface.hpp"
+
 #include <compare>
+#include <concepts>
 #include <iostream>
 
 // The label has weight c, and resources r.
@@ -61,16 +64,11 @@ operator<<(std::ostream &out,
 // *******************************************************************
 // The weight traits
 
-template<typename>
-struct weight_traits;
-
-template <typename Weight, typename Resources>
-struct weight_traits<generic_label<Weight, Resources>>
+template <typename Label, typename Weight, typename Resources>
+requires std::derived_from<Label, generic_label<Weight, Resources>>
+struct weight_traits<Label>
 {
   using type = Weight;
 };
-
-template <typename T>
-using Weight = typename weight_traits<T>::type;
 
 #endif // GENERIC_LABEL_HPP
