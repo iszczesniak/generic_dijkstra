@@ -1,5 +1,5 @@
-#ifndef GENERAL_LABEL_CREATOR_HPP
-#define GENERAL_LABEL_CREATOR_HPP
+#ifndef GENERIC_LABEL_CREATOR_HPP
+#define GENERIC_LABEL_CREATOR_HPP
 
 #include "graph.hpp"
 
@@ -15,24 +15,24 @@ public:
   std::list<label_type>
   operator()(const label_type &l, const Edge &e) const
   {
-    // Candidate cost.
-    Cost c_c = get_weight(l) + get_weight(e);
+    // Candidate weight.
+    auto c_weight = get_weight(l) + get_weight(e);
 
     // The label resources.
     const auto &l_resources = get_resources(l);
-    // The resources available on the edge.
+    // The edge resources.
     const auto &e_resources = get_resources(e);
     // The candidate resources.
     auto c_resources = intersection(l_resources, e_resources);
 
-    std::list<label_type> l;
+    std::list<label_type> result;
 
     for (auto &cr: c_resources)
       // The candidate label.
-      l.emplace_back(c_c, std::move(cu), e);
+      result.emplace_back(e, c_weight, cr);
 
-    return l;
+    return result;
   }
 };
 
-#endif // GENERAL_LABEL_CREATOR_HPP
+#endif // GENERIC_LABEL_CREATOR_HPP
