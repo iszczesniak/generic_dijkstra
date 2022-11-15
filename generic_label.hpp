@@ -64,9 +64,8 @@ operator<<(std::ostream &out,
 // *******************************************************************
 // The weight traits
 
-template <typename Label, typename Weight, typename Resources>
-requires std::derived_from<Label, generic_label<Weight, Resources>>
-struct weight_traits<Label>
+template <typename Weight, typename Resources>
+struct weight_traits<generic_label<Weight, Resources>>
 {
   using type = Weight;
 };
