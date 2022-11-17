@@ -94,7 +94,7 @@ struct generic_tracer
   }
 
   const auto &
-  labels(typename vd_type::size_type index) const
+  operator[](typename vd_type::size_type index) const
   {
     return m_P[index];
   }
