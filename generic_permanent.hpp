@@ -19,8 +19,6 @@ struct generic_permanent: std::vector<std::vector<Label>>
   using base = std::vector<vd_type>;
   // The size type of the base.
   using size_type = typename base::size_type;
-  // The index type of the vertex.
-  using index_type = Index<Vertex<Edge<label_type>>>;
 
   generic_permanent(size_type count): base(count)
   {
