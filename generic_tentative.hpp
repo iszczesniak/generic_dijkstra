@@ -7,7 +7,10 @@
 #include <set>
 #include <vector>
 
-// The container type for storing the generic tentative labels.
+// The container type for storing the generic tentative labels.  We
+// keep the labels separate for every vertex because functions
+// has_better_or_equal and purge_worse go through labels for a
+// specific vertex only.
 template <typename Label>
 struct generic_tentative: std::vector<std::set<Label>>
 {
