@@ -1,19 +1,13 @@
 #ifndef GENERIC_LABEL_CREATOR_HPP
 #define GENERIC_LABEL_CREATOR_HPP
 
-#include "graph.hpp"
-
 #include <list>
 
-template <typename Label>
-class generic_label_creator
+struct generic_label_creator
 {
-  using label_type = Label;
-  
-public:
-  template <typename Edge>
-  std::list<label_type>
-  operator()(const label_type &l, const Edge &e) const
+  template <typename Label, typename Edge>
+  std::list<Label>
+  operator()(const Label &l, const Edge &e) const
   {
     // Candidate weight.
     auto c_weight = get_weight(l) + get_weight(e);
@@ -25,7 +19,7 @@ public:
     // The candidate resources.
     auto c_resources = intersection(l_resources, e_resources);
 
-    std::list<label_type> result;
+    std::list<Label> result;
 
     for (auto &cr: c_resources)
       // The candidate label.
