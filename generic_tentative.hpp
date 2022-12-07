@@ -48,7 +48,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   push(T &&l)
   {
     // The index of the target vertex.
-    auto ti = get_index(get_target(l));
+    auto ti = get_index(l);
     auto &vd = base::operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
@@ -91,7 +91,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     if (!vd.empty())
       {
         const auto &nc = get_weight(*vd.begin());
-        assert(get_index(get_target(*vd.begin())) == ti);
+        assert(get_index(*vd.begin()) == ti);
         m_pq.insert({nc, ti});
         o = nc;
       }
@@ -114,7 +114,7 @@ has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
   // fact that the elements in the set are sorted by weight first.
 
   // Iterate over all tentative labels.
-  for (const auto &i: T[get_index(get_target(j))])
+  for (const auto &i: T[get_index(j)])
     {
       // Stop searching when we reach a label with a higher weight.  If
       // the weight of label i is higher than the weight of label j, then
@@ -138,7 +138,7 @@ template <typename Label>
 void
 purge_worse(generic_tentative<Label> &T, const Label &j)
 {
-  auto &Tt = T[get_index(get_target(j))];
+  auto &Tt = T[get_index(j)];
 
   // We could go for the easy implementation where we iterate for each
   // label i and compare it to j.  But we take advantage of the fact

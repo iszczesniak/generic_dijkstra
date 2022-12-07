@@ -30,7 +30,7 @@ struct generic_permanent: std::vector<std::vector<Label>>
   push(T &&l)
   {
     // The index of the target vertex of the label.
-    const auto &ti = get_index(get_target(l));
+    const auto &ti = get_index(l);
     // Push the label back.
     base::operator[](ti).push_back(std::forward<T>(l));
 
@@ -48,7 +48,7 @@ has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
   // fact that the elements in the vector are sorted by weight first.
-  for (const auto &i: P[get_index(get_target(j))])
+  for (const auto &i: P[get_index(j)])
     {
       // Stop searching when we reach a label with a higher weight.  If
       // the weight of label i is higher than the weight of label j, then
