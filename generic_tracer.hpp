@@ -93,10 +93,11 @@ struct generic_tracer
     assert(false);
   }
 
+  template <typename Vertex>
   const auto &
-  operator[](typename vd_type::size_type index) const
+  operator[](const Vertex &v) const
   {
-    return m_P[index];
+    return m_P[get_index(v)];
   }
 };
 
