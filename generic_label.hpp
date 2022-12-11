@@ -2,21 +2,16 @@
 #define GENERIC_LABEL_HPP
 
 #include "graph_interface.hpp"
+#include "props.hpp"
 
-#include <compare>
-#include <concepts>
 #include <iostream>
 
 // The label has weight c, and resources r.
 
 template <typename Weight, typename Resources>
-struct generic_label
+struct generic_label: weight<Weight>, resources<Resources>
 {
-  Weight m_c;
-  Resources m_r;
-
-  generic_label(Weight c, Resources r):
-    m_c(c), m_r(r)
+  generic_label(Weight w, Resources r): weight(w), resources(r)
   {
   }
 
@@ -25,20 +20,6 @@ struct generic_label
   constexpr auto
   operator <=> (const generic_label &) const = default;
 };
-
-template <typename Weight, typename Resources>
-const auto &
-get_weight(const generic_label<Weight, Resources> &l)
-{
-  return l.m_c;
-}
-
-template <typename Weight, typename Resources>
-const auto &
-get_resources(const generic_label<Weight, Resources> &l)
-{
-  return l.m_r;
-}
 
 // This "better or equal" function.
 template <typename Weight, typename Resources>
@@ -60,14 +41,5 @@ operator<<(std::ostream &out,
 
     return out;
 }
-
-// *******************************************************************
-// The weight traits
-
-template <typename Weight, typename Resources>
-struct weight_traits<generic_label<Weight, Resources>>
-{
-  using type = Weight;
-};
 
 #endif // GENERIC_LABEL_HPP
