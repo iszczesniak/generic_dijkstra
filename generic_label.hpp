@@ -11,7 +11,8 @@
 template <typename Weight, typename Resources>
 struct generic_label: weight<Weight>, resources<Resources>
 {
-  generic_label(Weight w, Resources r): weight(w), resources(r)
+  generic_label(Weight w, Resources r):
+    weight<Weight>(w), resources<Resources>(r)
   {
   }
 
