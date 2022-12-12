@@ -47,13 +47,14 @@ has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
-  // fact that the elements in the vector are sorted by weight first.
+  // fact that the elements in the vector are sorted with operator <=.
   for (const auto &i: P[get_index(j)])
     {
-      // Stop searching when we reach a label with a higher weight.  If
-      // the weight of label i is higher than the weight of label j, then
-      // label i (and the labels in the vector that follow) cannot be
-      // better or equal (they can be incomparable or worse).
+      // Stop searching when we reach a label with a higher weight.
+      // If the weight of label i is higher than the weight of label
+      // j, then label i (and the labels in the vector that follow)
+      // cannot be better or equal (they can be incomparable or
+      // worse).
       if (get_weight(i) > get_weight(j))
         break;
 
