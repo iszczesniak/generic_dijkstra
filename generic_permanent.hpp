@@ -1,13 +1,12 @@
 #ifndef GENERIC_PERMANENT_HPP
 #define GENERIC_PERMANENT_HPP
 
-#include "graph_interface.hpp"
-
 #include <utility>
 #include <vector>
 
-// The container type for storing permanent generic labels.  A vertex
-// can have many labels or none, so we store them in a container.
+// The container type for storing permanent generic labels.  All
+// labels for a given index are incomparable.  An index can have many
+// labels or none, so we store them in a container.
 template <typename Label>
 struct generic_permanent: std::vector<std::vector<Label>>
 {
@@ -16,11 +15,11 @@ struct generic_permanent: std::vector<std::vector<Label>>
   // The type of data a vertex has.
   using vd_type = std::vector<label_type>;
   // The type of the vector of vertex data.
-  using base = std::vector<vd_type>;
-  // The size type of the base.
-  using size_type = typename base::size_type;
+  using base_type = std::vector<vd_type>;
+  // The size type of the base type.
+  using size_type = typename base_type::size_type;
 
-  generic_permanent(size_type count): base(count)
+  generic_permanent(size_type count): base_type(count)
   {
   }
 
@@ -32,9 +31,9 @@ struct generic_permanent: std::vector<std::vector<Label>>
     // The index of the target vertex of the label.
     const auto &ti = get_index(l);
     // Push the label back.
-    base::operator[](ti).push_back(std::forward<T>(l));
+    base_type::operator[](ti).push_back(std::forward<T>(l));
 
-    return base::operator[](ti).back();
+    return base_type::operator[](ti).back();
   }
 };
 
@@ -47,7 +46,8 @@ has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
 {
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
-  // fact that the elements in the vector are sorted with operator <=.
+  // fact that the elements in the vector are sorted with operator <.
+  // The < operator establishes order between incomparable elements.
   for (const auto &i: P[get_index(j)])
     {
       // Stop searching when we reach a label with a higher weight.
@@ -59,7 +59,7 @@ has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
         break;
 
       // Is label i better than or equal to label j?
-      if (i <= j)
+      if (boe(i, j))
         return true;
     }
 
