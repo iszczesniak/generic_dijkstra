@@ -2,7 +2,13 @@
 #include "generic_permanent.hpp"
 #include "units.hpp"
 
-// Make sure that the has_better_or_equal works correct.
+// Make sure that has_better_or_equal works correctly.  We do not need
+// to check much, because we rely on the definition of < (if j < i,
+// then i cannot be better than or equal to j, because it can only be
+// incomparable or worse), and the transitivity of < (i.e., j < k hold
+// true for all labels k that follow label i, because i < k).  The
+// definition and transitivity of < are completely tested in
+// generic_label.cc.
 
 using label = generic_label<double, CU>;
 
