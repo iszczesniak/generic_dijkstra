@@ -11,6 +11,8 @@
 // keep the labels separate for every index because functions
 // has_better_or_equal and purge_worse go through labels for a
 // specific index only.
+//
+// For a given index, the labels stored are sorted with <.
 template <typename Label>
 struct generic_tentative: std::vector<std::set<Label>>
 {
@@ -19,9 +21,9 @@ struct generic_tentative: std::vector<std::set<Label>>
   // The type of data a vertex has.
   using vd_type = std::set<label_type>;
   // The type of the vector of vertex data.
-  using base = std::vector<vd_type>;
-  // The size type of the base.
-  using size_type = typename base::size_type;
+  using base_type = std::vector<vd_type>;
+  // The size type of the base type.
+  using size_type = typename base_type::size_type;
   // The weight type of the label.
   using weight_type = Weight<label_type>;
   // The index type of the vertex.
@@ -37,7 +39,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   std::vector<std::optional<weight_type>> m_v2c;
 
   // The constructor builds a vector of data for each vertex.
-  generic_tentative(size_type count): base(count), m_v2c(count)
+  generic_tentative(size_type count): base_type(count), m_v2c(count)
   {
   }
 
@@ -49,7 +51,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   {
     // The index of the target vertex.
     auto ti = get_index(l);
-    auto &vd = base::operator[](ti);
+    auto &vd = base_type::operator[](ti);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
@@ -82,7 +84,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     assert(!m_pq.empty());
     const auto [c, ti] = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    auto &vd = base::operator[](ti);
+    auto &vd = base_type::operator[](ti);
     assert(!vd.empty());
     auto nh = vd.extract(vd.begin());
     assert(get_weight(nh.value()) == c);
@@ -113,7 +115,7 @@ has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 }
 
 /**
- * Purge from queue Q those labels which are worse than label j.
+ * Purge those that are worse than j.
  */
 template <typename Label>
 void
@@ -121,38 +123,31 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
 {
   auto &Tt = T[get_index(j)];
 
-  // We could go for the easy implementation where we iterate for each
-  // label i and compare it to j.  But we take advantage of the fact
-  // that the elements in the set are sorted by weight first.  We
-  // iterate in the reverse order!
+  // Since labels (for a given index) are sorted with <, we:
+  //
+  // * iterate in the reverse order because the worse labels are most
+  //   likely at the end,
+  //
+  // * break the loop once we discover that i < j because then i can
+  //   only be better than or incomparable with j (so i cannot be
+  //   worse), and the same applies to the labels that come before i
+  //   because < is transitive.
+  
   for(auto r = Tt.rbegin(); r != Tt.rend();)
     {
       const auto &i = *r;
 
-      // Stop searching when we reach label i with the weight lower than
-      // the weight of label j.  If the weight of label i is lower than
-      // the weight of label j, then label i (and the labels in the set
-      // that follow) cannot be worse (they can be better or
-      // incomparable).
-      if (get_weight(i) < get_weight(j))
+      if (i < j)
         break;
 
-      // Make sure labels i and j are not equal.  We can make this
-      // assertion here, because we are not inserting equal labels
-      // into the priority queue.  We need this assertion here, so
-      // that we can safely use the <= operator below.
-      assert(!(get_weight(i) == get_weight(j) &&
-               get_resources(i) == get_resources(j)));
-
-      // To check whether label i is worse then j, we use the <=
-      // operator, because we made sure the labels are not equal.
-      if (j <= i)
+      // Check whether j is better than or equal to i.
+      if (boe(j, i))
         // We want to remove label i, and we're going to use iterator
         // r.  We can safely remove the element pointed to by r,
-        // because the base iterator points to the element next to r.
+        // because the base iterator points to the element left to r.
         // This erasure does not invalidate the base iterator of r.
         // Note that we do not increment r, because after the erasure,
-        // r will already point to the next element.
+        // r will already point to the next element (on the left).
         Tt.erase(--(r.base()));
       else
         ++r;
