@@ -24,22 +24,31 @@ struct generic_tentative: std::vector<std::set<Label>>
   using base_type = std::vector<vd_type>;
   // The size type of the base type.
   using size_type = typename base_type::size_type;
-  // The weight type of the label.
-  using weight_type = Weight<label_type>;
-  // The index type of the vertex.
-  using index_type = Index<Vertex<Edge<Label>>>;
 
-  // The priority queue element type.
-  using pqet = std::pair<weight_type, index_type>;
+  // The functor structure for comparing the elements of the queue.  I
+  // tried to rewrite this as a lambda, but it failed to compile.
+  struct cmp
+  {
+    base_type &m_r;
 
-  // The priority queue.
-  std::set<pqet> m_pq;
+    cmp(base_type &r): m_r(r)
+    {
+    }
 
-  // Vertex to weight reverse look up of the priority queue elements.
-  std::vector<std::optional<weight_type>> m_v2c;
+    bool operator()(const size_type &a, const size_type &b) const
+    {
+      return *m_r.operator[](a) < *m_r.operator[](b);
+    }
+  };
+
+  // The set of indexes that serves as the priority queue.  We need
+  // the multiset, because there can be labels that compare equivalent
+  // with the < operator (i.e., < doesn't hold between them): equal
+  // labels for different vertexes.
+  std::multiset<size_type, cmp> m_pq;
 
   // The constructor builds a vector of data for each vertex.
-  generic_tentative(size_type count): base_type(count), m_v2c(count)
+  generic_tentative(size_type count): base_type(count), m_pq(*this)
   {
   }
 
@@ -50,8 +59,8 @@ struct generic_tentative: std::vector<std::set<Label>>
   push(T &&l)
   {
     // The index of the target vertex.
-    auto ti = get_index(l);
-    auto &vd = base_type::operator[](ti);
+    auto index = get_index(l);
+    auto &vd = base_type::operator[](index);
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
@@ -121,7 +130,9 @@ template <typename Label>
 void
 purge_worse(generic_tentative<Label> &T, const Label &j)
 {
-  auto &Tt = T[get_index(j)];
+  auto index = get_index(j);
+  auto &Tt = T[index];
+  bool empty_before = Tt.empty();
 
   // Since labels (for a given index) are sorted with <, we:
   //
@@ -152,6 +163,11 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
       else
         ++r;
     }
+
+  // We remove the index from the priority queue only when there are
+  // no labels for this index while previously there where.
+  if (!empty_before && Tt.empty())
+    m_pq.erase(index);
 }
 
 #endif // GENERIC_TENTATIVE_HPP
