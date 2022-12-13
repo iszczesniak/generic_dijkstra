@@ -1,0 +1,6 @@
+generic_label.o: generic_label.cc units/test/helpers.hpp \
+ ../generic_label.hpp graph/graph_interface.hpp graph/props.hpp \
+ units/units.hpp units/cunits.hpp units/sunits.hpp
+generic_permanent.o: generic_permanent.cc ../generic_label.hpp \
+ graph/graph_interface.hpp graph/props.hpp ../generic_permanent.hpp \
+ units/units.hpp units/cunits.hpp units/sunits.hpp

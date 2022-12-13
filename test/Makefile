@@ -22,6 +22,6 @@ clean:
 	rm -rf $(TESTS)
 
 depend:
-	g++ -MM -I../ *.cc > dependencies
+	g++ -MM $(CXXFLAGS) -I../ *.cc > dependencies
 
 include dependencies
