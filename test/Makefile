@@ -9,6 +9,9 @@ CXXFLAGS := $(CXXFLAGS) -I graph
 CXXFLAGS := $(CXXFLAGS) -I units
 CXXFLAGS := $(CXXFLAGS) -I units/test
 
+# Use the C++ linker
+LINK.o = $(LINK.cc)
+
 # Run the tests.
 run: $(TESTS)
 	@for i in $(TESTS); do echo "Running" $$i; ./$$i; done
