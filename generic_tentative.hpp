@@ -8,9 +8,9 @@
 #include <vector>
 
 // The container type for storing the generic tentative labels.  We
-// keep the labels separate for every vertex because functions
+// keep the labels separate for every index because functions
 // has_better_or_equal and purge_worse go through labels for a
-// specific vertex only.
+// specific index only.
 template <typename Label>
 struct generic_tentative: std::vector<std::set<Label>>
 {
@@ -109,26 +109,7 @@ template <typename Label>
 bool
 has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 {
-  // We could go for the easy implementation where we iterate for each
-  // label i, and compare it to label j.  But we take advantage of the
-  // fact that the elements in the set are sorted by weight first.
-
-  // Iterate over all tentative labels.
-  for (const auto &i: T[get_index(j)])
-    {
-      // Stop searching when we reach a label with a higher weight.  If
-      // the weight of label i is higher than the weight of label j, then
-      // label i (and the labels in the vector that follow) cannot be
-      // better or equal (they can be incomparable or worse).
-      if (get_weight(i) > get_weight(j))
-        break;
-
-      // Is label i better than or equal to label j?
-      if (i <= j)
-        return true;
-    }
-
-  return false;
+  return boe(T[get_index(j)], j);
 }
 
 /**
