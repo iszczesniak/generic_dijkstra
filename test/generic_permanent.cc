@@ -1,4 +1,4 @@
-#include "generic_label.hpp"
+#include "label.hpp"
 #include "generic_permanent.hpp"
 #include "units.hpp"
 
@@ -10,20 +10,6 @@
 // definition and transitivity of < are completely tested in
 // generic_label.cc.
 
-using label = generic_label<double, CU>;
-
-struct label_robe: generic_label<double, CU>, index<unsigned>
-{
-  using label_type = generic_label<double, CU>;
-
-  label_robe(const label_type &l, unsigned i):
-    label_type(l), index<unsigned>(i)
-  {
-  }
-
-  using label_type::operator<=>;
-};
-               
 using namespace std;
 
 int

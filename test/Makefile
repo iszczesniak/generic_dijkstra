@@ -1,4 +1,4 @@
-TESTS = generic_label generic_permanent
+TESTS = generic_label generic_permanent generic_tentative
 
 CXXFLAGS = -g -Wno-deprecated
 #CXXFLAGS = -O3 -Wno-deprecated

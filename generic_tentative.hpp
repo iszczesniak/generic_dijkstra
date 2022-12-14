@@ -25,8 +25,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   // The size type of the base type.
   using size_type = typename base_type::size_type;
 
-  // The functor structure for comparing the elements of the queue.  I
-  // tried to rewrite this as a lambda, but it failed to compile.
+  // The functor structure for comparing the elements of the queue.
   struct cmp
   {
     base_type &m_r;
@@ -37,14 +36,18 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     bool operator()(const size_type &a, const size_type &b) const
     {
-      return *m_r.operator[](a) < *m_r.operator[](b);
+      // We compare only the first elements of the sets, because they
+      // are the best the sets offer, i.e. the elements in the sets
+      // are sorted with <.
+      return *m_r.operator[](a).begin() < *m_r.operator[](b).begin();
     }
   };
 
   // The set of indexes that serves as the priority queue.  We need
-  // the multiset, because there can be labels that compare equivalent
-  // with the < operator (i.e., < doesn't hold between them): equal
-  // labels for different vertexes.
+  // the multiset, because there can be indexes (of different values)
+  // that compare equivalent with the < operator (i.e., < doesn't hold
+  // between them): the indexes refer to equal labels for different
+  // vertexes.
   std::multiset<size_type, cmp> m_pq;
 
   // The constructor builds a vector of data for each vertex.
@@ -58,25 +61,37 @@ struct generic_tentative: std::vector<std::set<Label>>
   const auto &
   push(T &&l)
   {
-    // The index of the target vertex.
+    // The index of the label.
     auto index = get_index(l);
+    // The set of labels for the index.
     auto &vd = base_type::operator[](index);
+
+    // If inserting label l would push back the existing label to
+    // which the index in the priority queue is referring, we have to
+    // remove the index from the queue.
+    if (!vd.empty() && l < *vd.begin())
+      m_pq.erase(index);
+
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
 
+    // Insert the index to the priority queue only if the label ended
+    // up at the beginning of the set, which can happen for one of two
+    // reasons:
+    //
+    // * it's the only label in the set, and so the index was not
+    //   inserted before,
+    //
+    // * it's not the only label in the set, but we knew that it would
+    //   be first, and so we removed the index before.
+    //
+    // If the label is inserted in the set after the first element,
+    // then there is no need to add the index into the queue, because
+    // there already is one for the first label in the set.
     if (i == vd.begin())
-      {
-        auto c = get_weight(l);
-        // There already can be an element in the queue for tk.
-        auto &o = m_v2c[ti];
-        if (o)
-          // Erase the former element from the queue.
-          m_pq.erase({*o, ti});
-        m_pq.insert({c, ti});
-        o = c;
-      }
-
+      m_pq.insert(index);
+    
     return *i;
   }
 
