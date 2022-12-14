@@ -106,23 +106,17 @@ struct generic_tentative: std::vector<std::set<Label>>
   pop()
   {
     assert(!m_pq.empty());
-    const auto [c, ti] = *m_pq.begin();
+    // Get the index from the queue.
+    size_type index = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    auto &vd = base_type::operator[](ti);
+    // Get the set for the index.
+    auto &vd = base_type::operator[](index);
     assert(!vd.empty());
+    // Get the first element.
     auto nh = vd.extract(vd.begin());
-    assert(get_weight(nh.value()) == c);
-    auto &o = m_v2c[ti];
-    // If there is other label for ti, put it into the queue.
+    // Insert the index again if the set is not empty.
     if (!vd.empty())
-      {
-        const auto &nc = get_weight(*vd.begin());
-        assert(get_index(*vd.begin()) == ti);
-        m_pq.insert({nc, ti});
-        o = nc;
-      }
-    else
-      o.reset();
+      m_pq.insert(index);
 
     return std::move(nh.value());
   }
@@ -182,7 +176,7 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
   // We remove the index from the priority queue only when there are
   // no labels for this index while previously there where.
   if (!empty_before && Tt.empty())
-    m_pq.erase(index);
+    T.m_pq.erase(index);
 }
 
 #endif // GENERIC_TENTATIVE_HPP

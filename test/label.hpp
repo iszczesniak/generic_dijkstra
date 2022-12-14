@@ -2,6 +2,7 @@
 #define LABEL_HPP
 
 #include "generic_label.hpp"
+#include "units.hpp"
 
 using label = generic_label<double, CU>;
 
