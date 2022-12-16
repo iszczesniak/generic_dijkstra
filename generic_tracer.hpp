@@ -1,7 +1,7 @@
 #ifndef GENERIC_TRACER_HPP
 #define GENERIC_TRACER_HPP
 
-#include <list>
+#include <deque>
 
 template <typename Permanent>
 struct generic_tracer
@@ -13,7 +13,7 @@ struct generic_tracer
   // The type of vertex data.
   using vd_type = typename Permanent::vd_type;
   // The path type.  The trace function needs it.
-  using path_type = std::list<label_type>;
+  using path_type = std::deque<label_type>;
 
   generic_tracer(const Permanent &P): m_P(P)
   {
