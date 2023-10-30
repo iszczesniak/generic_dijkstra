@@ -16,10 +16,8 @@ struct generic_label: weight<Weight>, resources<Resources>
   {
   }
 
-  // The default implementation offers a lexicographic comparison, and
-  // that's what we need.
-  constexpr auto
-  operator <=> (const generic_label &) const = default;
+  // The default implementation offers a lexicographic comparison.
+  constexpr auto operator <=> (const generic_label &) const = default;
 };
 
 // This "better or equal" function.
