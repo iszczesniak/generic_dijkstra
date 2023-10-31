@@ -15,6 +15,7 @@ struct label_robe: generic_label<double, CU>, index<unsigned>
   {
   }
 
+  using label_type::operator==;
   using label_type::operator<=>;
 };
 
