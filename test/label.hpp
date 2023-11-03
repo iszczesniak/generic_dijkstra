@@ -6,17 +6,20 @@
 
 using label = generic_label<double, CU>;
 
-struct label_robe: generic_label<double, CU>, index<unsigned>
+struct robed_label: label, index<unsigned>
 {
-  using label_type = generic_label<double, CU>;
+  using label_type = label;
 
-  label_robe(const label_type &l, unsigned i):
+  robed_label(const label_type &l, unsigned i):
     label_type(l), index<unsigned>(i)
   {
   }
 
-  using label_type::operator==;
-  using label_type::operator<=>;
+  // We delegate <=> to label_type.
+  constexpr auto operator <=> (const robed_label &l) const
+  {
+    return label_type::operator<=>(l);
+  }
 };
 
 #endif // LABEL_HPP

@@ -1,6 +1,8 @@
 #ifndef GENERIC_PERMANENT_HPP
 #define GENERIC_PERMANENT_HPP
 
+#include "generic_label.hpp"
+
 #include <utility>
 #include <vector>
 
