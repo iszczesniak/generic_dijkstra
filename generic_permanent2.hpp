@@ -5,8 +5,9 @@
 #include <set>
 #include <vector>
 
-// This container is experimental.  It stores the labels sorted by the
-// resources only.
+// This container is experimental.  Needs fixing because it's broken.
+
+// It stores the labels sorted by the resources only.
 
 // This type establishes the order between elements in a set.  We only
 // care about the CUs, and not the cost.  In the set we do not store
