@@ -20,7 +20,7 @@ struct generic_label: weight<Weight>, resources<Resources>
   constexpr auto operator <=> (const generic_label &) const = default;
 };
 
-// This "better or equal" function.
+// The "better or equal" function.
 template <typename Weight, typename Resources>
 bool
 boe(const generic_label<Weight, Resources> &i,
