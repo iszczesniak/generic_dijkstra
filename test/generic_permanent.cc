@@ -1,5 +1,5 @@
-#include "label.hpp"
 #include "generic_permanent.hpp"
+#include "robed_label.hpp"
 #include "units.hpp"
 
 // Make sure that has_better_or_equal works correctly.  We do not need
@@ -16,11 +16,21 @@ int
 main()
 {
   generic_permanent<robed_label> P(1);
-  // l1 <= l2, l1 || l2
-  auto l1 = robed_label(label(1, {0, 5}), 0);
-  auto l2 = robed_label(label(2, {0, 6}), 0);
 
-  P.push(l1);
-  assert(has_better_or_equal(P, l1));
-  assert(!has_better_or_equal(P, l2));
+  // We're inserting labels with non-decreasing cost.
+  robed_label rl1(label(1, {2, 4}), 0);
+  assert(!has_better_or_equal(P, rl1));
+  P.push(rl1);
+
+  robed_label rl2(label(2, {0, 3}), 0);
+  assert(!has_better_or_equal(P, rl2));
+  P.push(rl2);
+
+  robed_label rl3(label(3, {1, 3}), 0);
+  assert(has_better_or_equal(P, rl3));
+
+  robed_label rl4(label(4, {1, 4}), 0);
+  assert(!has_better_or_equal(P, rl4));
+  P.push(rl4);
+  assert(has_better_or_equal(P, rl4));
 }

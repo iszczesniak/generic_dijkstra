@@ -1,5 +1,5 @@
-#ifndef LABEL_HPP
-#define LABEL_HPP
+#ifndef ROBED_LABEL_HPP
+#define ROBED_LABEL_HPP
 
 #include "generic_label.hpp"
 #include "units.hpp"
@@ -15,6 +15,11 @@ struct robed_label: label, index<unsigned>
   {
   }
 
+  constexpr auto operator == (const robed_label &l) const
+  {
+    return label_type::operator==(l);
+  }
+  
   // We delegate <=> to label_type.
   constexpr auto operator <=> (const robed_label &l) const
   {
@@ -22,4 +27,4 @@ struct robed_label: label, index<unsigned>
   }
 };
 
-#endif // LABEL_HPP
+#endif // ROBED_LABEL_HPP

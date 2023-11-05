@@ -1,5 +1,5 @@
-#include "label.hpp"
 #include "generic_tentative.hpp"
+#include "robed_label.hpp"
 
 int
 main()
