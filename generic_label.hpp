@@ -1,7 +1,6 @@
 #ifndef GENERIC_LABEL_HPP
 #define GENERIC_LABEL_HPP
 
-#include "graph_interface.hpp"
 #include "props.hpp"
 
 #include <iostream>
@@ -16,7 +15,7 @@ struct generic_label: weight<Weight>, resources<Resources>
   {
   }
 
-  // The default implementation offers a lexicographic comparison.
+  // The default implementation offers the lexicographic comparison.
   constexpr auto operator <=> (const generic_label &) const = default;
 };
 

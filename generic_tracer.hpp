@@ -65,7 +65,7 @@ struct generic_tracer
     const auto &s = get_source(e);
 
     // Find the labels at node s.
-    const auto &ls = m_P[get_index(s)];
+    const auto &ls = m_P[get_key(s)];
     assert(!ls.empty());
 
     // We look for a preceeding label at node s.  The loop condition
@@ -97,7 +97,7 @@ struct generic_tracer
   const auto &
   operator[](const Vertex &v) const
   {
-    return m_P[get_index(v)];
+    return m_P[get_key(v)];
   }
 };
 

@@ -2,16 +2,17 @@
 #define ROBED_LABEL_HPP
 
 #include "generic_label.hpp"
+#include "props.hpp"
 #include "units.hpp"
 
 using label = generic_label<double, CU>;
 
-struct robed_label: label, index<unsigned>
+struct robed_label: label, key<unsigned>
 {
   using label_type = label;
 
   robed_label(const label_type &l, unsigned i):
-    label_type(l), index<unsigned>(i)
+    label_type(l), key<unsigned>(i)
   {
   }
 

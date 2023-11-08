@@ -1,8 +1,8 @@
 [submodule "test/units"]
 	path = test/units
 	url = https://github.com/iszczesniak/units
-[submodule "test/graph"]
-	path = test/graph
-	url = git@github.com:iszczesniak/graph2
 [submodule "graph"]
 	url = https://github.com/iszczesniak/graph2
+[submodule "test/props"]
+	path = test/props
+	url = https://github.com/iszczesniak/props.git

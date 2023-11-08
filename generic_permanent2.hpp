@@ -45,8 +45,8 @@ struct generic_permanent2:
   const label_type &
   push(T &&l)
   {
-    // The index of the label.
-    const auto &ti = get_index(l);
+    // The key of the label.
+    const auto &ti = get_key(l);
     // The vertex data.
     auto &vd = base::operator[](ti);
     // Just insert.
@@ -68,7 +68,7 @@ has_better_or_equal(const generic_permanent2<Label> &P,
   // We could go for the easy implementation where we iterate for each
   // label i, and compare it to label j.  But we take advantage of the
   // fact that the elements in the vector are sorted by units first.
-  for (const auto &i: P[get_index(j)])
+  for (const auto &i: P[get_key(j)])
     {
       // Stop searching when we reach a label with a higher CU min,
       // because the CU of that label cannot include the CU of j, nor

@@ -7,7 +7,7 @@
 #include <vector>
 
 // The container type for storing permanent generic labels.  All
-// labels for a given index are incomparable.  An index can have many
+// labels for a given key are incomparable.  An key can have many
 // labels or none, so we store them in a container.
 template <typename Label>
 struct generic_permanent: std::vector<std::vector<Label>>
@@ -30,8 +30,8 @@ struct generic_permanent: std::vector<std::vector<Label>>
   const label_type &
   push(T &&l)
   {
-    // The index of the target vertex of the label.
-    const auto &ti = get_index(l);
+    // The key of the target vertex of the label.
+    const auto &ti = get_key(l);
     // Push the label back.
     base_type::operator[](ti).push_back(std::forward<T>(l));
 
@@ -46,7 +46,7 @@ template <typename Label>
 bool
 has_better_or_equal(const generic_permanent<Label> &P, const Label &j)
 {
-  return boe(P[get_index(j)], j);
+  return boe(P[get_key(j)], j);
 }
 
 #endif // GENERIC_PERMANENT_HPP

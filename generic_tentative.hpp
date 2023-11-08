@@ -1,18 +1,16 @@
 #ifndef GENERIC_TENTATIVE_HPP
 #define GENERIC_TENTATIVE_HPP
 
-#include "graph_interface.hpp"
-
 #include <cassert>
 #include <set>
 #include <vector>
 
 // The container type for storing the generic tentative labels.  We
-// keep the labels separate for every index because functions
+// keep the labels separate for every key because functions
 // has_better_or_equal and purge_worse go through labels for a
-// specific index only.
+// specific key only.
 //
-// For a given index, the labels stored are sorted with <.
+// For a given key, the labels stored are sorted with <.
 template <typename Label>
 struct generic_tentative: std::vector<std::set<Label>>
 {
@@ -43,10 +41,10 @@ struct generic_tentative: std::vector<std::set<Label>>
     }
   };
 
-  // The set of indexes that serves as the priority queue.  We need
-  // the multiset, because there can be indexes (of different values)
-  // that compare equivalent with the < operator (i.e., < doesn't hold
-  // between them): the indexes refer to equal labels for different
+  // The set of keys that serves as the priority queue.  We need the
+  // multiset, because there can be keys (of different values) that
+  // compare equivalent with the < operator (i.e., < doesn't hold
+  // between them): the keys refer to equal labels for different
   // vertexes.
   std::multiset<size_type, cmp> m_pq;
 
@@ -61,36 +59,36 @@ struct generic_tentative: std::vector<std::set<Label>>
   const auto &
   push(T &&l)
   {
-    // The index of the label.
-    auto index = get_index(l);
-    // The set of labels for the index.
-    auto &vd = base_type::operator[](index);
+    // The key of the label.
+    auto key = get_key(l);
+    // The set of labels for the key.
+    auto &vd = base_type::operator[](key);
 
     // If inserting label l would push back the existing label to
-    // which the index in the priority queue is referring, we have to
-    // remove the index from the queue.
+    // which the key in the priority queue is referring, we have to
+    // remove the key from the queue.
     if (!vd.empty() && l < *vd.begin())
-      m_pq.erase(index);
+      m_pq.erase(key);
 
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
 
-    // Insert the index to the priority queue only if the label ended
-    // up at the beginning of the set, which can happen for one of two
+    // Insert the key to the priority queue only if the label ended up
+    // at the beginning of the set, which can happen for one of two
     // reasons:
     //
-    // * it's the only label in the set, and so the index was not
+    // * it's the only label in the set, and so the key was not
     //   inserted before,
     //
     // * it's not the only label in the set, but we knew that it would
-    //   be first, and so we removed the index before.
+    //   be first, and so we removed the key before.
     //
     // If the label is inserted in the set after the first element,
-    // then there is no need to add the index into the queue, because
+    // then there is no need to add the key into the queue, because
     // there already is one for the first label in the set.
     if (i == vd.begin())
-      m_pq.insert(index);
+      m_pq.insert(key);
     
     return *i;
   }
@@ -106,17 +104,17 @@ struct generic_tentative: std::vector<std::set<Label>>
   pop()
   {
     assert(!m_pq.empty());
-    // Get the index from the queue.
-    size_type index = *m_pq.begin();
+    // Get the key from the queue.
+    size_type key = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    // Get the set for the index.
-    auto &vd = base_type::operator[](index);
+    // Get the set for the key.
+    auto &vd = base_type::operator[](key);
     assert(!vd.empty());
     // Get the first element.
     auto nh = vd.extract(vd.begin());
-    // Insert the index again if the set is not empty.
+    // Insert the key again if the set is not empty.
     if (!vd.empty())
-      m_pq.insert(index);
+      m_pq.insert(key);
 
     return std::move(nh.value());
   }
@@ -129,7 +127,7 @@ template <typename Label>
 bool
 has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 {
-  return boe(T[get_index(j)], j);
+  return boe(T[get_key(j)], j);
 }
 
 /**
@@ -139,11 +137,11 @@ template <typename Label>
 void
 purge_worse(generic_tentative<Label> &T, const Label &j)
 {
-  auto index = get_index(j);
-  auto &Tt = T[index];
+  auto key = get_key(j);
+  auto &Tt = T[key];
   bool empty_before = Tt.empty();
 
-  // Since labels (for a given index) are sorted with <, we:
+  // Since labels (for a given key) are sorted with <, we:
   //
   // * iterate in the reverse order because the worse labels are most
   //   likely at the end,
@@ -173,10 +171,10 @@ purge_worse(generic_tentative<Label> &T, const Label &j)
         ++r;
     }
 
-  // We remove the index from the priority queue only when there are
-  // no labels for this index while previously there where.
+  // We remove the key from the priority queue only when there are no
+  // labels for this key while previously there where.
   if (!empty_before && Tt.empty())
-    T.m_pq.erase(index);
+    T.m_pq.erase(key);
 }
 
 #endif // GENERIC_TENTATIVE_HPP
