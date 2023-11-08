@@ -11,16 +11,16 @@ struct generic_label_creator
   operator()(const Label &l, const Edge &e) const
   {
     // Candidate weight.
-    auto c_weight = get_weight(l) + get_weight(e);
+    auto c_w = get_weight(l) + get_weight(e);
 
     // The label resources.
-    const auto &l_resources = get_resources(l);
+    const auto &l_r = get_resources(l);
     // The edge resources.
-    const auto &e_resources = get_resources(e);
+    const auto &e_r = get_resources(e);
     // The candidate resources.
-    auto c_resources = intersection(l_resources, e_resources);
+    auto c_r = intersection(l_r, e_r);
 
-    return std::make_pair(c_c, std::move(c_resources));
+    return std::make_pair(c_w, std::move(c_r));
   }
 };
 
