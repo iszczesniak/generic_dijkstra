@@ -73,13 +73,4 @@ operator<<(std::ostream &out,
     return out;
 }
 
-// *******************************************************************
-// The weight traits
-
-template <typename Weight, typename Resources>
-struct weight_traits<generic_label<Weight, Resources>>
-{
-  using type = Weight;
-};
-
 #endif // GENERIC_LABEL_HPP
