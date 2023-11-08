@@ -1,12 +1,13 @@
 #ifndef GENERIC_LABEL_CREATOR_HPP
 #define GENERIC_LABEL_CREATOR_HPP
 
-#include <list>
+#include <utility>
 
 struct generic_label_creator
 {
   template <typename Label, typename Edge>
-  std::list<Label>
+
+  auto
   operator()(const Label &l, const Edge &e) const
   {
     // Candidate weight.
@@ -19,13 +20,7 @@ struct generic_label_creator
     // The candidate resources.
     auto c_resources = intersection(l_resources, e_resources);
 
-    std::list<Label> result;
-
-    for (auto &cr: c_resources)
-      // The candidate label.
-      result.emplace_back(e, c_weight, cr);
-
-    return result;
+    return std::make_pair(c_c, std::move(c_resources));
   }
 };
 
