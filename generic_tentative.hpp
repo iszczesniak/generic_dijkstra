@@ -66,7 +66,8 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     // If inserting label l would push back the existing label to
     // which the key in the priority queue is referring, we have to
-    // remove the key from the queue.
+    // remove the key from the queue.  Otherwise we would corrupt the
+    // queue.
     if (!vd.empty() && l < *vd.begin())
       m_pq.erase(key);
 
