@@ -3,8 +3,10 @@
 #include "generic_label.hpp"
 #include "units.hpp"
 
+#include <algorithm>
 #include <list>
 #include <set>
+#include <vector>
 
 using label = generic_label<double, CU>;
 
@@ -572,6 +574,27 @@ test_intran_boe_incomp()
   assert(test_case("e", "de", "|>"));
 }
 
+void
+test_bounds()
+{
+  vector<label> v;
+  v.push_back({0, {0, 1}});
+  v.push_back({1, {0, 10}});
+  v.push_back({1, {5, 15}});
+  v.push_back({1, {10, 20}});
+  v.push_back({2, {0, 1}});
+
+  auto lb = lower_bound(v.begin(), v.end(), label(1, {5, 15}),
+                        boe<double, CU>);
+  auto ub = upper_bound(v.begin(), v.end(), label(1, {5, 15}),
+                        boe<double, CU>);
+
+  cout << "lb = " << *lb << endl;
+  cout << "ub = " << *ub << endl;
+  assert(lb == ++v.begin());
+  assert(ub == --v.end());
+}
+
 int
 main()
 {
@@ -583,4 +606,6 @@ main()
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
+
+  test_bounds();
 }
