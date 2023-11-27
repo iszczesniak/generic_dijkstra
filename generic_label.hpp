@@ -29,7 +29,7 @@ boe(const generic_label<Weight, Resources> &i,
     includes(get_resources(i), get_resources(j));
 }
 
-template <template<typename> typename C, typename Label>
+template <template<typename...> typename C, typename Label>
 bool
 boe(const C<Label> &c, const Label &j)
 {

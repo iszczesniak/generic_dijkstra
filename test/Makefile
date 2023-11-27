@@ -4,7 +4,7 @@ TESTS = generic_label generic_permanent generic_permanent2	\
 CXXFLAGS = -g -Wno-deprecated
 #CXXFLAGS = -O3 -Wno-deprecated
 
-CXXFLAGS := $(CXXFLAGS) -std=c++23
+CXXFLAGS := $(CXXFLAGS) -std=c++2b
 CXXFLAGS := $(CXXFLAGS) -I ../
 CXXFLAGS := $(CXXFLAGS) -I graph
 CXXFLAGS := $(CXXFLAGS) -I props
