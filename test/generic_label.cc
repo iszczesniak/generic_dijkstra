@@ -578,16 +578,19 @@ void
 test_bounds()
 {
   vector<label> v;
-  v.push_back({0, {0, 1}});
+  v.push_back({0, {5, 15}});
   v.push_back({1, {0, 10}});
   v.push_back({1, {5, 15}});
   v.push_back({1, {10, 20}});
   v.push_back({2, {0, 1}});
 
-  auto lb = lower_bound(v.begin(), v.end(), label(1, {5, 15}),
-                        boe<double, CU>);
-  auto ub = upper_bound(v.begin(), v.end(), label(1, {5, 15}),
-                        boe<double, CU>);
+  auto l = label(1, {5, 15});
+
+  assert(boe(v[0], l));
+  assert(is_incomparable(v[1], l));
+
+  auto lb = lower_bound(v.begin(), v.end(), l, boe<double, CU>);
+  auto ub = upper_bound(v.begin(), v.end(), l, boe<double, CU>);
 
   cout << "lb = " << *lb << endl;
   cout << "ub = " << *ub << endl;
@@ -598,6 +601,8 @@ test_bounds()
 int
 main()
 {
+  test_bounds();
+
   test_sub_RIs();
   test_sup_RIs();
   test_icl_RIs();
@@ -606,6 +611,4 @@ main()
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
-
-  test_bounds();
 }
