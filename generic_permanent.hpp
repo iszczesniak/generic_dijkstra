@@ -7,7 +7,7 @@
 #include <vector>
 
 // The container type for storing permanent generic labels.  All
-// labels for a given key are incomparable.  An key can have many
+// labels for a given key are incomparable.  A key can have many
 // labels or none, so we store them in a container.
 template <typename Label>
 struct generic_permanent: std::vector<std::vector<Label>>
