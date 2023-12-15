@@ -9,6 +9,9 @@
 // The container type for storing permanent generic labels.  All
 // labels for a given key are incomparable.  A key can have many
 // labels or none, so we store them in a container.
+//
+// We assume that the labels for a given key that are pushed into the
+// container are ordered with <.
 template <typename Label>
 struct generic_permanent: std::vector<std::vector<Label>>
 {
@@ -25,7 +28,7 @@ struct generic_permanent: std::vector<std::vector<Label>>
   {
   }
 
-  // Pushes a new label, and returns a reference to it.
+  // Pushes back a label, and returns a reference to it.
   template <typename T>
   const label_type &
   push(T &&l)
