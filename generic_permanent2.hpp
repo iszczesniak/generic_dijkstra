@@ -5,7 +5,12 @@
 #include <set>
 #include <vector>
 
-// This container is experimental.  Needs fixing because it's broken.
+// When we search for a permanent label, we have to decide how we
+// compare labels.  Operator < for generic_label first compares the
+// cost, then the resources.  Container generic_permanent uses <.
+//
+// Container generic_permanent2 compares differently: the resources
+// only.
 
 // It stores the labels sorted by the resources only.
 
@@ -22,11 +27,10 @@ struct cmp
   }
 };
 
-// The container type for storing permanent generic labels.  A vertex
-// can have many labels or none, so we store them in a container.
+// The container type for storing permanent generic labels.  A key can
+// have many labels or none, so we store them in a sorted container.
 template <typename Label>
-struct generic_permanent2:
-  std::vector<std::set<Label, cmp<Label>>>
+struct generic_permanent2: std::vector<std::set<Label, cmp<Label>>>
 {
   // The label type.
   using label_type = Label;
