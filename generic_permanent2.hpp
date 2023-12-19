@@ -3,40 +3,41 @@
 
 #include <cassert>
 #include <set>
+#include <tuple>
 #include <vector>
 
-// When we search for a permanent label, we have to decide how we
-// compare labels.  Operator < for generic_label first compares the
-// cost, then the resources.  Container generic_permanent uses <.
+// We have to decide how we compare labels when we store (in sorted
+// containers) and search for them.  Operator < for generic_label
+// first compares the cost, then the resources.  Container
+// generic_permanent uses <.
 //
 // Container generic_permanent2 compares differently: the resources
-// only.
-
-// It stores the labels sorted by the resources only.
-
-// This type establishes the order between elements in a set.  We only
-// care about the CUs, and not the cost.  In the set we do not store
-// labels of equal CUs and different cost.
-template <typename Label>
+// first, then the cost.  Here we have to use std::set because
+// resources of an inserted label can be any, they do not have to come
+// one after another.  In generic_permanent labels are stored in a
+// vector that is sorted by cost first because labels of
+// non-decreasing cost are inserted at the back.
 struct cmp
 {
+  template <typename Label>
   bool
   operator()(const Label &a, const Label &b) const
   {
-    return get_resources(a) < get_resources(b);
+    return std::tie(get_resources(a), get_weight(a)) <
+      std::tie(get_resources(b), get_weight(b));
   }
 };
 
 // The container type for storing permanent generic labels.  A key can
 // have many labels or none, so we store them in a sorted container.
 template <typename Label>
-struct generic_permanent2: std::vector<std::set<Label, cmp<Label>>>
+struct generic_permanent2: std::vector<std::set<Label, cmp>>
 {
   // The label type.
   using label_type = Label;
 
   // The base type.
-  using base = std::vector<std::set<label_type, cmp<label_type>>>;
+  using base = std::vector<std::set<label_type, cmp>>;
   // The size type of the base.
   using size_type = typename base::size_type;
 
@@ -69,19 +70,13 @@ bool
 has_better_or_equal(const generic_permanent2<Label> &P,
                     const Label &j)
 {
-  // We could go for the easy implementation where we iterate for each
-  // label i, and compare it to label j.  But we take advantage of the
-  // fact that the elements in the vector are sorted by units first.
   for (const auto &i: P[get_key(j)])
     {
-      // Stop searching when we reach a label with a higher CU min,
-      // because the CU of that label cannot include the CU of j, nor
-      // can the labels that follow.
-      if (get_resources(i).min() > get_resources(j).min())
+      if (cmp()(j, i))
         break;
 
       // Is label i better than or equal to label j?
-      if (i <= j)
+      if (boe(i, j))
         return true;
     }
 
