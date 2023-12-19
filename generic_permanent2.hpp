@@ -13,10 +13,11 @@
 //
 // Container generic_permanent2 compares differently: the resources
 // first, then the cost.  Here we have to use std::set because
-// resources of an inserted label can be any, they do not have to come
-// one after another.  In generic_permanent labels are stored in a
-// vector that is sorted by cost first because labels of
-// non-decreasing cost are inserted at the back.
+// resources of an inserted label can be any and they do not have to
+// come one after another, i.e., in the order defined by < for
+// resources.  In contrast, in generic_permanent labels are stored in
+// a vector that is sorted by cost first (< for generic_label) because
+// labels of non-decreasing cost are inserted at the back.
 struct cmp
 {
   template <typename Label>
@@ -45,7 +46,8 @@ struct generic_permanent2: std::vector<std::set<Label, cmp>>
   {
   }
 
-  // Pushes a new label, and returns a reference to it.
+  // Pushes a new label, and returns a reference to it.  We return a
+  // const reference because a label stays there for good unchanged.
   template <typename T>
   const label_type &
   push(T &&l)
@@ -70,8 +72,14 @@ bool
 has_better_or_equal(const generic_permanent2<Label> &P,
                     const Label &j)
 {
+  // We have to iterate from the beginning and cannot use lower_bound
+  // or upper_bound because the resources of the first label can
+  // include the resources of j.
   for (const auto &i: P[get_key(j)])
     {
+      // We can break the loop once we know that the resources of i
+      // cannot include the resources of j, so i cannot be better or
+      // equal to j.
       if (cmp()(j, i))
         break;
 
