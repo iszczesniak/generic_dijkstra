@@ -40,9 +40,7 @@ test_perm()
           robed_label cl(l, 0);
           assert(P[0].contains(cl));
         }
-    }
-
-  while(std::next_permutation(ls.begin(), ls.end()));
+    } while(std::next_permutation(ls.begin(), ls.end()));
 }
 
 int

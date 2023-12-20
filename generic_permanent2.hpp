@@ -6,18 +6,21 @@
 #include <tuple>
 #include <vector>
 
-// We have to decide how we compare labels when we store (in sorted
-// containers) and search for them.  Operator < for generic_label
-// first compares the cost, then the resources.  Container
-// generic_permanent uses <.
+// We have to decide how we compare labels when we store and search
+// for them in sorted containers.  We compare generic_label's with <
+// (that compares first cost then resources) in generic_permanent.
 //
 // Container generic_permanent2 compares differently: the resources
 // first, then the cost.  Here we have to use std::set because
 // resources of an inserted label can be any and they do not have to
-// come one after another, i.e., in the order defined by < for
-// resources.  In contrast, in generic_permanent labels are stored in
-// a vector that is sorted by cost first (< for generic_label) because
-// labels of non-decreasing cost are inserted at the back.
+// come in the order defined by < for resources.  In contrast,
+// generic_permanent stores labels in a vector sorted by cost first
+// then by resources (< for generic_label) because labels of
+// non-decreasing cost are inserted at the back.
+
+// This functor establishes the order required.  Since it is needed in
+// the inheritance list of generic_permanent2, we cannot define it as
+// a member-type, and have to define it here.
 struct cmp
 {
   template <typename Label>
