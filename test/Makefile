@@ -6,7 +6,6 @@ CXXFLAGS = -g -Wno-deprecated
 
 CXXFLAGS := $(CXXFLAGS) -std=c++2b
 CXXFLAGS := $(CXXFLAGS) -I ../
-CXXFLAGS := $(CXXFLAGS) -I graph
 CXXFLAGS := $(CXXFLAGS) -I props
 CXXFLAGS := $(CXXFLAGS) -I units
 CXXFLAGS := $(CXXFLAGS) -I units/test
