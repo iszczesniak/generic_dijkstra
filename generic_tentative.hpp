@@ -7,10 +7,10 @@
 
 // The container type for storing the generic tentative labels.  We
 // keep the labels separate for every key because functions
-// has_better_or_equal and purge_worse go through labels for a
-// specific key only.
+// has_better_or_equal and purge_worse should go through labels for a
+// specific key only, not through all labels for all keys.
 //
-// For a given key, the labels stored are sorted with <.
+// For a given key, the labels are stored in a set sorted with <.
 template <typename Label>
 struct generic_tentative: std::vector<std::set<Label>>
 {
@@ -42,10 +42,10 @@ struct generic_tentative: std::vector<std::set<Label>>
   };
 
   // The set of keys that serves as the priority queue.  We need the
-  // multiset, because there can be keys (of different values) that
-  // compare equivalent with the < operator (i.e., < doesn't hold
-  // between them): the keys refer to equal labels for different
-  // vertexes.
+  // multiset even though the keys are always of different values
+  // because there can be keys that compare equivalent with the cmp
+  // (i.e., cmp doesn't hold between them): the keys refer to equal
+  // labels for different vertexes.
   std::multiset<size_type, cmp> m_pq;
 
   // The constructor builds a vector of data for each vertex.
