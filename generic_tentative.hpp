@@ -23,7 +23,7 @@ struct generic_tentative: std::vector<std::set<Label>>
   // The size type of the base type.
   using size_type = typename base_type::size_type;
 
-  // The functor structure for comparing the elements of the queue.
+  // The functor structure for comparing the labels in the queue.
   struct cmp
   {
     base_type &m_r;
@@ -71,6 +71,12 @@ struct generic_tentative: std::vector<std::set<Label>>
     if (!vd.empty() && l < *vd.begin())
       m_pq.erase(key);
 
+    // Remove the labels that are worse than or equal to l.  We want
+    // to remove those labels now, before we insert l, because we're
+    // using the boe (better or equal) funtion for comparison.
+    purge_worse_or_equal(vd, l);
+
+    // Insert the new label to the set.
     auto [i, s] = vd.insert(std::forward<T>(l));
     // Make sure the insertion was successful.
     assert(s);
@@ -90,7 +96,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     // there already is one for the first label in the set.
     if (i == vd.begin())
       m_pq.insert(key);
-    
+
     return *i;
   }
 
@@ -119,6 +125,45 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     return std::move(nh.value());
   }
+
+private:
+  // Purge from vd those labels i that are worse than or equal to j,
+  // i.e., those for which boe(j, i) is true.
+  void
+  purge_worse_or_equal(vd_type &vd, const label_type &j)
+  {
+    // Since labels (for a given key) are sorted with <, we:
+    //
+    // * iterate in the reverse order because the worse labels are
+    //   most likely at the end,
+    //
+    // * break the loop once we discover that i < j because then i can
+    //   only be better than or incomparable with j (so i cannot be
+    //   worse), and the same applies to the labels that come before i
+    //   because < is transitive.
+    for(auto r = vd.rbegin(); r != vd.rend();)
+      {
+        const auto &i = *r;
+
+        if (i < j)
+          break;
+
+        // Check whether l is better than or equal to i.
+        if (boe(j, i))
+          {
+            // We want to remove label i, and we're going to use
+            // iterator r.  We can safely remove the element pointed
+            // to by r, because the base iterator points to the
+            // element left to r.  This erasure does not invalidate
+            // the base iterator of r.  Note that we do not increment
+            // r, because after the erasure, r will already point to
+            // the next element (on the left).
+            vd.erase(--(r.base()));
+          }
+        else
+          ++r;
+      }
+  }
 };
 
 /**
@@ -129,53 +174,6 @@ bool
 has_better_or_equal(const generic_tentative<Label> &T, const Label &j)
 {
   return boe(T[get_key(j)], j);
-}
-
-/**
- * Purge those that are worse than j.
- */
-template <typename Label>
-void
-purge_worse(generic_tentative<Label> &T, const Label &j)
-{
-  auto key = get_key(j);
-  auto &Tt = T[key];
-  bool empty_before = Tt.empty();
-
-  // Since labels (for a given key) are sorted with <, we:
-  //
-  // * iterate in the reverse order because the worse labels are most
-  //   likely at the end,
-  //
-  // * break the loop once we discover that i < j because then i can
-  //   only be better than or incomparable with j (so i cannot be
-  //   worse), and the same applies to the labels that come before i
-  //   because < is transitive.
-  
-  for(auto r = Tt.rbegin(); r != Tt.rend();)
-    {
-      const auto &i = *r;
-
-      if (i < j)
-        break;
-
-      // Check whether j is better than or equal to i.
-      if (boe(j, i))
-        // We want to remove label i, and we're going to use iterator
-        // r.  We can safely remove the element pointed to by r,
-        // because the base iterator points to the element left to r.
-        // This erasure does not invalidate the base iterator of r.
-        // Note that we do not increment r, because after the erasure,
-        // r will already point to the next element (on the left).
-        Tt.erase(--(r.base()));
-      else
-        ++r;
-    }
-
-  // We remove the key from the priority queue only when there are no
-  // labels for this key while previously there where.
-  if (!empty_before && Tt.empty())
-    T.m_pq.erase(key);
 }
 
 #endif // GENERIC_TENTATIVE_HPP
