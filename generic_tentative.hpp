@@ -7,8 +7,9 @@
 
 // The container type for storing the generic tentative labels.  We
 // keep the labels separate for every key because functions
-// has_better_or_equal and purge_worse should go through labels for a
-// specific key only, not through all labels for all keys.
+// has_better_or_equal and purge_worse_or_equal should go through
+// labels for a specific key only, not through all labels for all
+// keys.
 //
 // For a given key, the labels are stored in a set sorted with <.
 template <typename Label>
