@@ -1,31 +1,25 @@
-TESTS = generic_label generic_permanent generic_permanent2	\
-	generic_tentative
+PROGS = generic_label generic_permanent generic_permanent2	\
+generic_tentative
 
-CXXFLAGS = -g -Wno-deprecated
-#CXXFLAGS = -O3 -Wno-deprecated
+SRCS_generic_label = generic_label.cc
+SRCS_generic_permanent = generic_permanent.cc
+SRCS_generic_permanent2 = generic_permanent2.cc
+SRCS_generic_tentative = generic_tentative.cc
+MAN =
 
-CXXFLAGS := $(CXXFLAGS) -std=c++2b
-CXXFLAGS := $(CXXFLAGS) -I ../
-CXXFLAGS := $(CXXFLAGS) -I props
-CXXFLAGS := $(CXXFLAGS) -I units
-CXXFLAGS := $(CXXFLAGS) -I units/test
+CXX = clang++-17
 
-# Use the C++ linker
-LINK.o = $(LINK.cc)
+#CXXFLAGS += -g -Wno-deprecated
+CXXFLAGS += -O3 -Wno-deprecated
+
+CXXFLAGS += -std=c++23
+CXXFLAGS += -I ../
+CXXFLAGS += -I props
+CXXFLAGS += -I units
+CXXFLAGS += -I units/test
 
 # Run the tests.
-run: $(TESTS)
-	@for i in $(TESTS); do echo "Running" $$i; ./$$i; done
+all: $(PROGS)
+	@for i in $(PROGS); do echo "Running" $$i; ./$$i; done
 
-count:
-	wc -l *.hpp *.cc
-
-clean:
-	rm -rf *~
-	rm -rf *.o
-	rm -rf $(TESTS)
-
-depend:
-	g++ -MM $(CXXFLAGS) -I../ *.cc > dependencies
-
-include dependencies
+.include <bsd.prog.mk>
