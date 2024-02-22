@@ -1,11 +1,5 @@
-PROGS = generic_label generic_permanent generic_permanent2	\
-generic_tentative
-
-SRCS_generic_label = generic_label.cc
-SRCS_generic_permanent = generic_permanent.cc
-SRCS_generic_permanent2 = generic_permanent2.cc
-SRCS_generic_tentative = generic_tentative.cc
-MAN =
+SRCS != ls *.cc
+PROGS = $(SRCS:R)
 
 CXX = clang++-17
 
@@ -21,5 +15,3 @@ CXXFLAGS += -I units/test
 # Run the tests.
 all: $(PROGS)
 	@for i in $(PROGS); do echo "Running" $$i; ./$$i; done
-
-.include <bsd.prog.mk>
