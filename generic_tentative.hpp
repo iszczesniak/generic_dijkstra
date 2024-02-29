@@ -3,13 +3,13 @@
 
 #include <cassert>
 #include <set>
+#include <tuple>
 #include <vector>
 
 // The container type for storing the generic tentative labels.  We
 // keep the labels separate for every key because functions
-// has_better_or_equal and purge_worse_or_equal should go through
-// labels for a specific key only, not through all labels for all
-// keys.
+// has_better_or_equal and purge_worse should go through labels for a
+// specific key only, not through all labels for all keys.
 //
 // For a given key, the labels are stored in a set sorted with <.
 template <typename Label>
@@ -35,19 +35,20 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     bool operator()(const size_type &a, const size_type &b) const
     {
-      // We compare only the first elements of the sets, because they
-      // are the best the sets offer, i.e. the elements in the sets
-      // are sorted with <.
-      return *m_r.operator[](a).begin() < *m_r.operator[](b).begin();
+      // We compare the first elements of the sets, because they are
+      // the best the sets offer, i.e. the elements in the sets are
+      // sorted with <.  We need to compare also a and b, because we
+      // need to differentiate between the elements of the queue that
+      // compare equivalent, so that we can add and remove specific
+      // keys.
+
+      return std::tie(*m_r.operator[](a).begin(), a) <
+        std::tie(*m_r.operator[](b).begin(), b);
     }
   };
 
-  // The set of keys that serves as the priority queue.  We need the
-  // multiset even though the keys are always of different values
-  // because there can be keys that compare equivalent with the cmp
-  // (i.e., cmp doesn't hold between them): the keys refer to equal
-  // labels for different vertexes.
-  std::multiset<size_type, cmp> m_pq;
+  // The set of keys that serves as the priority queue.
+  std::set<size_type, cmp> m_pq;
 
   // The constructor builds a vector of data for each vertex.
   generic_tentative(size_type count): base_type(count), m_pq(*this)
@@ -70,7 +71,10 @@ struct generic_tentative: std::vector<std::set<Label>>
     // remove the key from the queue.  Otherwise we would corrupt the
     // queue.
     if (!vd.empty() && l < *vd.begin())
-      m_pq.erase(key);
+      {
+        assert(m_pq.contains(key));
+        m_pq.erase(key);
+      }
 
     // Remove the labels that are worse than or equal to l.  We want
     // to remove those labels now, before we insert l, because we're
@@ -96,7 +100,15 @@ struct generic_tentative: std::vector<std::set<Label>>
     // then there is no need to add the key into the queue, because
     // there already is one for the first label in the set.
     if (i == vd.begin())
-      m_pq.insert(key);
+      {
+        assert(!m_pq.contains(key));
+        m_pq.insert(key);
+      }
+
+    // Make sure that:
+    // * when there are no labels in vd, then there is no key in m_pq,
+    // * when there are labels in vd, then there is a key in m_pq.
+    assert(vd.empty() ^ m_pq.contains(key));
 
     return *i;
   }
@@ -115,6 +127,8 @@ struct generic_tentative: std::vector<std::set<Label>>
     // Get the key from the queue.
     size_type key = *m_pq.begin();
     m_pq.erase(m_pq.begin());
+    // There should be no other "key" in the queue.
+    assert(!m_pq.contains(key));
     // Get the set for the key.
     auto &vd = base_type::operator[](key);
     assert(!vd.empty());
@@ -122,7 +136,15 @@ struct generic_tentative: std::vector<std::set<Label>>
     auto nh = vd.extract(vd.begin());
     // Insert the key again if the set is not empty.
     if (!vd.empty())
-      m_pq.insert(key);
+      {
+        auto [i, status] = m_pq.insert(key);
+        assert(status);
+      }
+
+    // Make sure that:
+    // * when there are no labels in vd, then there is no key in m_pq,
+    // * when there are labels in vd, then there is a key in m_pq.
+    assert(vd.empty() ^ m_pq.contains(key));
 
     return std::move(nh.value());
   }
