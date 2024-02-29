@@ -101,14 +101,12 @@ struct generic_tentative: std::vector<std::set<Label>>
     // there already is one for the first label in the set.
     if (i == vd.begin())
       {
-        assert(!m_pq.contains(key));
-        m_pq.insert(key);
+        auto [i, status] = m_pq.insert(key);
+        assert(status);
       }
 
-    // Make sure that:
-    // * when there are no labels in vd, then there is no key in m_pq,
-    // * when there are labels in vd, then there is a key in m_pq.
-    assert(vd.empty() ^ m_pq.contains(key));
+    // The key must be in the queue.
+    assert(m_pq.contains(key));
 
     return *i;
   }
@@ -127,8 +125,6 @@ struct generic_tentative: std::vector<std::set<Label>>
     // Get the key from the queue.
     size_type key = *m_pq.begin();
     m_pq.erase(m_pq.begin());
-    // There should be no other "key" in the queue.
-    assert(!m_pq.contains(key));
     // Get the set for the key.
     auto &vd = base_type::operator[](key);
     assert(!vd.empty());
@@ -141,10 +137,10 @@ struct generic_tentative: std::vector<std::set<Label>>
         assert(status);
       }
 
-    // Make sure that:
-    // * when there are no labels in vd, then there is no key in m_pq,
-    // * when there are labels in vd, then there is a key in m_pq.
-    assert(vd.empty() ^ m_pq.contains(key));
+    // There are no labels in vd or the key is in m_pq.  If there are
+    // no labels, then we cannot make sure the key is not in the
+    // queue, because functor cmp would accces a label in an empty vd.
+    assert(vd.empty() || m_pq.contains(key));
 
     return std::move(nh.value());
   }
