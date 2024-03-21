@@ -19,7 +19,7 @@
 // of non-decreasing cost are inserted at the back.
 
 // This functor establishes the required lexicographic ordering (that
-// is transitive).  The Since it is needed in the inheritance list of
+// is transitive).  Since it is needed in the inheritance list of
 // generic_permanent2, we cannot define it as a member-type, and have
 // to define it here.
 struct cmp
