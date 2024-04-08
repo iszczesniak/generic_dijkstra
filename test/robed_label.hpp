@@ -7,6 +7,8 @@
 
 using label = generic_label<double, CU>;
 
+// We need this structure, so that we define the key that is required
+// by the generic_permanent.
 struct robed_label: label, key<unsigned>
 {
   using label_type = label;
