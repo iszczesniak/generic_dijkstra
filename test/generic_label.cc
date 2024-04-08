@@ -8,7 +8,7 @@
 #include <set>
 #include <vector>
 
-using label = generic_label<double, CU>;
+using label = generic_label<unsigned, CU>;
 
 using namespace std;
 

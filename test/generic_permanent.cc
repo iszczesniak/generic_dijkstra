@@ -1,5 +1,5 @@
 #include "generic_permanent.hpp"
-#include "robed_label.hpp"
+#include "label_robe.hpp"
 #include "units.hpp"
 
 // Make sure that has_better_or_equal works correctly.  We do not need
@@ -12,6 +12,9 @@
 
 using namespace std;
 
+using robed_label = label_robe<CU>;
+using label = robed_label::label_type;
+  
 int
 main()
 {

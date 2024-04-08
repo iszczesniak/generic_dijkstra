@@ -2,7 +2,11 @@
 #define TEST_PERM_HPP
 
 #include "generic_permanent2.hpp"
-#include "robed_label.hpp"
+#include "label_robe.hpp"
+#include "units.hpp"
+
+using robed_label = label_robe<CU>;
+using label = robed_label::label_type;
 
 template <template<typename...> typename C>
 void
