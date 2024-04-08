@@ -5,13 +5,13 @@
 #include "label_robe.hpp"
 #include "units.hpp"
 
-using robed_label = label_robe<CU>;
-using label = robed_label::label_type;
-
 template <template<typename...> typename C>
 void
 test_perm()
 {
+  using robed_label = label_robe<CU>;
+  using label = robed_label::label_type;
+
   std::vector<label> ls;
   ls.push_back({1, {0, 2}});
   ls.push_back({4, {0, 3}});
