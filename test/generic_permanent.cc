@@ -12,12 +12,13 @@
 
 using namespace std;
 
-using robed_label = label_robe<CU>;
-using label = robed_label::label_type;
-  
-int
-main()
+template<typename Units>
+void
+boe()
 {
+  using robed_label = label_robe<Units>;
+  using label = robed_label::label_type;
+
   generic_permanent<robed_label> P(1);
 
   // We're inserting labels with non-decreasing cost.
@@ -36,4 +37,10 @@ main()
   assert(!has_better_or_equal(P, rl4));
   P.push(rl4);
   assert(has_better_or_equal(P, rl4));
+}
+
+int
+main()
+{
+  boe<CU>();
 }

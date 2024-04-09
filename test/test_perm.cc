@@ -1,7 +1,14 @@
 #include "generic_permanent.hpp"
 #include "generic_permanent2.hpp"
+#include "generic_tentative.hpp"
 #include "label_robe.hpp"
 #include "units.hpp"
+
+// We produce 720 permutations of the same 6 labels defined below.
+// These six labels are incomparable, so has_better_or_equal should
+// always return false, and insertion should always be successfull.
+// The order in which we push labels should not be important, and
+// that's what we test with permutations.
 
 template <template<typename...> typename C>
 void
@@ -18,14 +25,9 @@ test_perm()
   ls.push_back({5, {1, 4}});
   ls.push_back({3, {2, 4}});
 
-  // We produce 720 permutations of the same 6 labels defined above.
-  // These six labels are incomparable, so has_better_or_equal should
-  // always return false, and insertion should always be successfull.
-  // The order in which we push labels should not be important, and
-  // that's what we test with permutations.
   do
     {
-      generic_permanent2<robed_label> P(1);
+      C<robed_label> P(1);
 
       // Insert the labels.
       for(const auto &l: ls)
@@ -41,7 +43,8 @@ test_perm()
         {
           // A candidate label.
           robed_label cl(l, 0);
-          assert(P[0].contains(cl));
+          auto i = find(P[0].begin(), P[0].end(), cl);
+          assert(i != P[0].end());
         }
     } while(std::next_permutation(ls.begin(), ls.end()));
 }
