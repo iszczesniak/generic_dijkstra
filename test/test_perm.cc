@@ -1,6 +1,4 @@
-#ifndef TEST_PERM_HPP
-#define TEST_PERM_HPP
-
+#include "generic_permanent.hpp"
 #include "generic_permanent2.hpp"
 #include "label_robe.hpp"
 #include "units.hpp"
@@ -48,4 +46,10 @@ test_perm()
     } while(std::next_permutation(ls.begin(), ls.end()));
 }
 
-#endif // TEST_PERM_HPP
+int
+main()
+{
+  test_perm<generic_permanent>();
+  test_perm<generic_permanent2>();
+  test_perm<generic_tentative>();
+}

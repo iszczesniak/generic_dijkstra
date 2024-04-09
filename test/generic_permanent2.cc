@@ -1,6 +1,5 @@
 #include "generic_permanent2.hpp"
 #include "label_robe.hpp"
-#include "test_perm.hpp"
 
 using robed_label = label_robe<SU>;
 using label = robed_label::label_type;
@@ -21,5 +20,4 @@ int
 main()
 {
   boe();
-  test_perm<generic_permanent2>();
 }
