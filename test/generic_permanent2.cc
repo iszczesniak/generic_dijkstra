@@ -35,5 +35,6 @@ boe_su()
 int
 main()
 {
-  boe();
+  boe_cu();
+  boe_su();
 }
