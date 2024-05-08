@@ -14,9 +14,6 @@ struct generic_label: weight<Weight>, resources<Resources>
     weight<Weight>(w), resources<Resources>(r)
   {
   }
-
-  // The default implementation offers the lexicographic comparison.
-  auto operator <=> (const generic_label &) const = default;
 };
 
 // The "better or equal" function.
@@ -60,6 +57,27 @@ boe(const C<Label> &c, const Label &j)
     }
 
   return false;
+}
+
+template <typename Weight, typename Resources>
+constexpr auto
+operator <=> (const generic_label<Weight, Resources> &i,
+              const generic_label<Weight, Resources> &j)
+{
+  // Label i should go before (be less than) j if it has smaller cost.
+  if (get_weight(j) < get_weight(j))
+    return std::strong_ordering::less;
+  if (get_weight(j) > get_weight(j))
+    return std::strong_ordering::greater;
+
+  // Now we know the costs are equal, so the resources have to decide.
+  // Label i should go before (be less than) j as per > for resources.
+  if (get_resources(i) > get_resources(j))
+    return std::strong_ordering::less;
+  if (get_resources(i) < get_resources(j))
+    return std::strong_ordering::less;
+
+  return std::strong_ordering::equal;
 }
 
 template <typename Weight, typename Resources>
