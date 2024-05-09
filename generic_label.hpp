@@ -14,6 +14,8 @@ struct generic_label: weight<Weight>, resources<Resources>
     weight<Weight>(w), resources<Resources>(r)
   {
   }
+
+  bool operator == (const generic_label &) const = default;
 };
 
 // The "better or equal" function.
@@ -59,6 +61,7 @@ boe(const C<Label> &c, const Label &j)
   return false;
 }
 
+// If i < j, then i is better than j.
 template <typename Weight, typename Resources>
 constexpr auto
 operator <=> (const generic_label<Weight, Resources> &i,
