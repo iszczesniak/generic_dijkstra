@@ -15,15 +15,18 @@ struct label_robe: generic_label<unsigned, Units>, key<unsigned>
   {
   }
 
-  constexpr auto operator == (const label_robe &l) const
+  // We delegate == and <=> to label_type.  We do not want the default
+  // implementations, because the key should not take part.
+  constexpr bool operator == (const label_robe &l) const
   {
-    return label_type::operator==(l);
+    return static_cast<const label_type &>(*this)
+      == static_cast<const label_type &>(l);
   }
-  
-  // We delegate <=> to label_type.
+
   constexpr auto operator <=> (const label_robe &l) const
   {
-    return label_type::operator<=>(l);
+    return static_cast<const label_type &>(*this)
+      <=> static_cast<const label_type &>(l);
   }
 };
 
