@@ -32,7 +32,7 @@ struct generic_label: weight<Weight>, resources<Resources>
     if (get_resources(*this) > get_resources(j))
       return std::strong_ordering::less;
     if (get_resources(*this) < get_resources(j))
-      return std::strong_ordering::less;
+      return std::strong_ordering::greater;
 
     return std::strong_ordering::equal;
   }

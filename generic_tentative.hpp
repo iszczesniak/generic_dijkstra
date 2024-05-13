@@ -167,7 +167,7 @@ private:
         if (i < j)
           break;
 
-        // Check whether l is better than or equal to i.
+        // Check whether j is better than or equal to i.
         if (boe(j, i))
           {
             // We want to remove label i, and we're going to use
