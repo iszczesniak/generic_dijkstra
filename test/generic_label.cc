@@ -257,7 +257,7 @@ test_relations()
 
       // Row 2.
       label lj2(get_weight(li), rj);
-      if (get_resources(li) < rj)
+      if (get_resources(li) > rj)
         assert(is_less(li, lj2));
       else
         assert(is_greater(li, lj2));
@@ -272,6 +272,7 @@ test_relations()
 // Test transitivity of <.
 // *****************************************************************
 
+// Generate labels that are worse than li.
 auto
 worse_labels(const label &li, const CU &omega)
 {
@@ -300,7 +301,7 @@ worse_labels(const label &li, const CU &omega)
       s.emplace(get_weight(li) + 1, rj);
 
       // Row 2.
-      if (get_resources(li) < rj)
+      if (get_resources(li) > rj)
         s.emplace(get_weight(li), rj);
     }
 
@@ -318,6 +319,7 @@ test_transitivity()
   for(const auto &lj: worse_labels(li, omega))
     for(const auto &lk: worse_labels(lj, omega))
       {
+        // Less for labels, i.e., <, means li is better than lj.
         assert(is_less(li, lj));
         assert(is_less(lj, lk));
         assert(is_less(li, lk));
@@ -574,6 +576,23 @@ test_intran_boe_incomp()
   assert(test_case("e", "de", "|>"));
 }
 
+void
+test_vector_boe_cu()
+{
+  using label = generic_label<unsigned, CU>;
+
+  vector<label> v;
+
+  label l1(0, {0, 5});
+  assert(!boe(v, l1));
+  v.push_back(l1);
+  assert(boe(v, l1));
+
+  label l2(0, {1, 4});
+  assert(l1 < l2);
+  assert(boe(v, l2));
+}
+
 int
 main()
 {
@@ -585,4 +604,6 @@ main()
   test_relations();
   test_transitivity();
   test_intran_boe_incomp();
+
+  test_vector_boe_cu();
 }
