@@ -22,7 +22,7 @@
 // is transitive).  Since it is needed in the inheritance list of
 // generic_permanent2, we cannot define it as a member-type, and have
 // to define it here.
-struct cmp
+struct generic_permanent2_cmp
 {
   template <typename Label>
   bool
@@ -43,14 +43,14 @@ struct cmp
 
 // The container type for storing permanent generic labels.  A key can
 // have many labels or none, so we store them in a sorted container.
-template <typename Label>
-struct generic_permanent2: std::vector<std::set<Label, cmp>>
+template <typename Label, typename Callable = generic_permanent2_cmp>
+struct generic_permanent2: std::vector<std::set<Label, Callable>>
 {
   // The label type.
   using label_type = Label;
 
   // The base type.
-  using base = std::vector<std::set<label_type, cmp>>;
+  using base = std::vector<std::set<label_type, Callable>>;
   // The size type of the base.
   using size_type = typename base::size_type;
 
@@ -79,9 +79,9 @@ struct generic_permanent2: std::vector<std::set<Label, cmp>>
 /**
  * Is there in P a label that is better than or equal to label j?
  */
-template <typename Label>
+template <typename Label, typename Callable>
 bool
-has_better_or_equal(const generic_permanent2<Label> &P,
+has_better_or_equal(const generic_permanent2<Label, Callable> &P,
                     const Label &j)
 {
   // We have to iterate from the beginning and cannot use lower_bound
@@ -89,8 +89,8 @@ has_better_or_equal(const generic_permanent2<Label> &P,
   // include the resources of j.
   for (const auto &i: P[get_key(j)])
     {
-      // We can break the loop once we know that cmp()(j, i) holds.
-      // It holds in two cases:
+      // We can break the loop once we know that Callable()(j, i)
+      // holds.  It holds in two cases:
       //
       // * the resources of j and i are equal, but the cost of j is
       //   smaller than the cost of i,
@@ -98,8 +98,8 @@ has_better_or_equal(const generic_permanent2<Label> &P,
       // * the resources of i cannot include the resources of j.
       //
       // For any label i2 that follows i in the container, relation
-      // cmp()(j, i2) holds because cmp is transitive, and labels in
-      // the container are sorted according to cmp.
+      // Callable()(j, i2) holds because Callable is transitive, and
+      // labels in the container are sorted according to Callable.
       //
       // This is the order of resources defined by <:
       //
@@ -119,7 +119,7 @@ has_better_or_equal(const generic_permanent2<Label> &P,
       // * overlap with the resources of i2,
       //
       // * precede the resource of i2.
-      if (cmp()(j, i))
+      if (Callable()(j, i))
         break;
 
       // Is label i better than or equal to label j?
