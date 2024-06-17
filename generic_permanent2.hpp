@@ -28,12 +28,16 @@ struct cmp
   bool
   operator()(const Label &a, const Label &b) const
   {
+    auto s = get_resources(a) <=> get_resources(b);
+
     // Label a should go before label b, i.e., (a, b) == true, if
     // label a compares lexicographically better: resources are
     // compared first with >, and the cost next with <.
-    return get_resources(a) > get_resources(b) ||
-           get_resources(a) == get_resources(b) &&
-           get_weight(a) < get_weight(b);
+    //
+    // We can't use std::tie because it uses <, and we need > and <.
+    return s == std::strong_ordering::greater ||
+      s == std::strong_ordering::equal &&
+      get_weight(a) < get_weight(b);
   }
 };
 
