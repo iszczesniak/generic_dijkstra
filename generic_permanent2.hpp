@@ -19,12 +19,14 @@
 // of non-decreasing cost are inserted at the back.
 
 // This functor establishes the required lexicographic ordering (that
-// is transitive).  Since it is needed in the inheritance list of
-// generic_permanent2, we cannot define it as a member-type, and have
-// to define it here.
+// is transitive).  Even though this type is integral to
+// generic_permanent2, we cannot define it as its member-type, because
+// it is needed in the inheritance list of generic_permanent2.  Also,
+// we need to specialize this type for accounting, and it's easier to
+// do when it's non-member.
+template <typename Label>
 struct generic_permanent2_cmp
 {
-  template <typename Label>
   bool
   operator()(const Label &a, const Label &b) const
   {
@@ -43,14 +45,16 @@ struct generic_permanent2_cmp
 
 // The container type for storing permanent generic labels.  A key can
 // have many labels or none, so we store them in a sorted container.
-template <typename Label, typename Callable = generic_permanent2_cmp>
-struct generic_permanent2: std::vector<std::set<Label, Callable>>
+template <typename Label>
+struct generic_permanent2:
+  std::vector<std::set<Label, generic_permanent2_cmp<Label>>>
 {
   // The label type.
   using label_type = Label;
+  using cmp_type = generic_permanent2_cmp<label_type>;
 
   // The base type.
-  using base = std::vector<std::set<label_type, Callable>>;
+  using base = std::vector<std::set<label_type, cmp_type>>;
   // The size type of the base.
   using size_type = typename base::size_type;
 
@@ -79,9 +83,9 @@ struct generic_permanent2: std::vector<std::set<Label, Callable>>
 /**
  * Is there in P a label that is better than or equal to label j?
  */
-template <typename Label, typename Callable>
+template <typename Label>
 bool
-has_better_or_equal(const generic_permanent2<Label, Callable> &P,
+has_better_or_equal(const generic_permanent2<Label> &P,
                     const Label &j)
 {
   // We have to iterate from the beginning and cannot use lower_bound
@@ -119,7 +123,7 @@ has_better_or_equal(const generic_permanent2<Label, Callable> &P,
       // * overlap with the resources of i2,
       //
       // * precede the resource of i2.
-      if (Callable()(j, i))
+      if (generic_permanent2_cmp<Label>()(j, i))
         break;
 
       // Is label i better than or equal to label j?
