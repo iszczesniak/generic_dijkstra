@@ -19,33 +19,42 @@
 // of non-decreasing cost are inserted at the back.
 
 // This functor establishes the required lexicographic ordering (that
-// is transitive).  Since it is needed in the inheritance list of
-// generic_permanent2, we cannot define it as a member-type, and have
-// to define it here.
-struct cmp
+// is transitive).  Even though this type is integral to
+// generic_permanent2, we cannot define it as its member-type, because
+// it is needed in the inheritance list of generic_permanent2.  Also,
+// we need to specialize this type for accounting, and it's easier to
+// do when it's non-member.
+template <typename Label>
+struct generic_permanent2_cmp
 {
-  template <typename Label>
   bool
   operator()(const Label &a, const Label &b) const
   {
+    auto s = get_resources(a) <=> get_resources(b);
+
     // Label a should go before label b, i.e., (a, b) == true, if
     // label a compares lexicographically better: resources are
     // compared first with >, and the cost next with <.
-    return get_resources(a) > get_resources(b) ||
-           get_weight(a) < get_weight(b);
+    //
+    // We can't use std::tie because it uses <, and we need > and <.
+    return s == std::strong_ordering::greater ||
+      s == std::strong_ordering::equal &&
+      get_weight(a) < get_weight(b);
   }
 };
 
 // The container type for storing permanent generic labels.  A key can
 // have many labels or none, so we store them in a sorted container.
 template <typename Label>
-struct generic_permanent2: std::vector<std::set<Label, cmp>>
+struct generic_permanent2:
+  std::vector<std::set<Label, generic_permanent2_cmp<Label>>>
 {
   // The label type.
   using label_type = Label;
+  using cmp_type = generic_permanent2_cmp<label_type>;
 
   // The base type.
-  using base = std::vector<std::set<label_type, cmp>>;
+  using base = std::vector<std::set<label_type, cmp_type>>;
   // The size type of the base.
   using size_type = typename base::size_type;
 
@@ -84,8 +93,8 @@ has_better_or_equal(const generic_permanent2<Label> &P,
   // include the resources of j.
   for (const auto &i: P[get_key(j)])
     {
-      // We can break the loop once we know that cmp()(j, i) holds.
-      // It holds in two cases:
+      // We can break the loop once we know that Callable()(j, i)
+      // holds.  It holds in two cases:
       //
       // * the resources of j and i are equal, but the cost of j is
       //   smaller than the cost of i,
@@ -93,8 +102,8 @@ has_better_or_equal(const generic_permanent2<Label> &P,
       // * the resources of i cannot include the resources of j.
       //
       // For any label i2 that follows i in the container, relation
-      // cmp()(j, i2) holds because cmp is transitive, and labels in
-      // the container are sorted according to cmp.
+      // Callable()(j, i2) holds because Callable is transitive, and
+      // labels in the container are sorted according to Callable.
       //
       // This is the order of resources defined by <:
       //
@@ -114,7 +123,7 @@ has_better_or_equal(const generic_permanent2<Label> &P,
       // * overlap with the resources of i2,
       //
       // * precede the resource of i2.
-      if (cmp()(j, i))
+      if (generic_permanent2_cmp<Label>()(j, i))
         break;
 
       // Is label i better than or equal to label j?
