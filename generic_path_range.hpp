@@ -3,6 +3,8 @@
 
 #include "graph_interface.hpp"
 
+#include <functional>
+
 // Iterates over the labels of a path.
 template <typename Permanent, typename Functor>
 struct generic_path_iterator
@@ -12,64 +14,73 @@ struct generic_path_iterator
 
   // The permanent labels.  In this we dig for the labels.
   const Permanent &m_P;
-  // The functor that was used to created labels in m_P.
+  // The functor that was used to create labels in m_P.
   const Functor &m_f;
   // The label we currently point to.  The label is stored in m_P.
-  const label_type *m_lp;
+  std::reference_wrapper<const label_type> m_l;
 
   generic_path_iterator(const Permanent &P, const Functor &f,
                         const label_type &l):
-    m_P(P), m_f(f), m_lp(&l)
+    m_P(P), m_f(f), m_l(l)
   {
   }
 
   const label_type &
   operator * ()
   {
-    return *m_lp;
+    return m_l;
   }
 
-  /**
-   * Find the previous label of the path.
-   */
+  // Find the label that precedes label m_l, assuming there is one.
+  //
+  //          Find:                   Given:
+  //          label pl                label m_l
+  // () ----- edge pe ----> (s) ----- edge e ----> ()
+
   auto &
   operator ++ ()
   {
-    // This is the label we process.
-    const auto &il = *m_lp;
-    // This is the edge of the label.
-    const auto &ie = get_edge(il);
-    // The source vertex of the edge.
-    const auto &is = get_source(ie);
+    // The edge of label m_l.
+    const auto &e = get_edge(m_l.get());
+    // The source of edge e.
+    const auto &s = get_source(e);
 
-    // Find the labels at vertex is.
-    const auto &jls = m_P[get_key(is)];
-    assert(!jls.empty());
+    // These are the labels for the source of label m_l.
+    const auto &labels = m_P[get_key(s)];
+    assert(!labels.empty());
 
-    // We look for a preceeding label.
-    for(const auto &jl: jls)
+    // Here we keep track of what we found.
+    const label_type *ptr = nullptr;
+
+    // Now we iterate over the labels to see which label pl was used
+    // to produce label m_l.
+    for (const auto &pl: labels)
       {
-        // The candidate labels.
-        const auto &ls = m_f(jl, ie);
+        // The edge of label pl.
+        const auto &pe = get_edge(pl);
 
-        int counter = 0;
+        // The target of pe is the same as the source of e.
+        assert(get_target(pe) == get_source(e));
 
-        for(const auto &l: ls)
-          if (l == il)
+        // Candidate labels.
+        auto cls = m_f(pl, e);
+        assert(cls.size());
+
+        for(const auto &cl: cls)
+          if (cl == m_l)
             {
-              // This is the next label iterator.
-              m_lp = &jl;
-              ++counter;
+              // Exactly one of the candidate labels must equal to
+              // label m_l, so ptr must be nullptr.
+              assert(ptr == nullptr);
+              ptr = &pl;
             }
-
-        assert(counter == 1);
-
-        return *this;
       }
 
-    // We should never get here!
-    assert(false);
+    m_l = *ptr;
+
+    return *this;
   }
+
 };
 
 template <typename Permanent, typename Functor>
@@ -77,7 +88,8 @@ bool
 operator == (const generic_path_iterator<Permanent, Functor> &i1,
              const generic_path_iterator<Permanent, Functor> &i2)
 {
-  return *(i1.m_lp) == *(i2.m_lp);
+  // With C++26, I shall say: i1.m_l == i2.m_l
+  return i1.m_l.get() == i2.m_l.get();
 }
 
 template <typename Permanent, typename Functor>
