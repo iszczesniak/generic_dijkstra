@@ -64,7 +64,6 @@ struct generic_path_iterator
 
         // Candidate labels.
         auto cls = m_f(pl, e);
-        assert(cls.size());
 
         for(const auto &cl: cls)
           if (cl == m_l)
