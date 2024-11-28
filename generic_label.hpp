@@ -21,14 +21,16 @@ struct generic_label: weight<Weight>, resources<Resources>
   auto
   operator <=> (const generic_label &j) const
   {
-    // Label i should go before (be less than) j if it has smaller cost.
+    // Label i should go before (be less than) j if it has smaller
+    // cost.
     if (get_weight(*this) < get_weight(j))
       return std::strong_ordering::less;
     if (get_weight(*this) > get_weight(j))
       return std::strong_ordering::greater;
 
-    // Now we know the costs are equal, so the resources have to decide.
-    // Label i should go before (be less than) j as per > for resources.
+    // Now we know the costs are equal, so the resources have to
+    // decide.  Label i should go before (be less than) j as per > for
+    // resources.
     if (get_resources(*this) > get_resources(j))
       return std::strong_ordering::less;
     if (get_resources(*this) < get_resources(j))
