@@ -78,7 +78,7 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     // Remove the labels that are worse than or equal to l.  We want
     // to remove those labels now, before we insert l, because we're
-    // using the boe (better or equal) funtion for comparison.
+    // using the boe (better or equal) function for comparison.
     purge_worse_or_equal(vd, l);
 
     // Insert the new label to the set.
