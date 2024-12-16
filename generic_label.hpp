@@ -10,8 +10,10 @@
 template <typename Weight, typename Resources>
 struct generic_label: weight<Weight>, resources<Resources>
 {
-  generic_label(Weight w, Resources r):
-    weight<Weight>(w), resources<Resources>(r)
+  template <typename... P>
+  generic_label(Weight w, P... p):
+    weight<Weight>(w),
+    resources<Resources>(std::forward<P>(p)...)
   {
   }
 
