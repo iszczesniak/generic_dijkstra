@@ -37,18 +37,14 @@ struct generic_tentative: std::vector<std::set<Label>>
     {
       // We compare the first elements of the sets, because they are
       // the best the sets offer, i.e. the elements in the sets are
-      // sorted with <.  We need to compare also a and b, because we
-      // need to differentiate between the elements of the queue that
-      // compare equivalent, so that we can add and remove specific
-      // keys.
+      // sorted with <.
 
-      return std::tie(*m_r.operator[](a).begin(), a) <
-        std::tie(*m_r.operator[](b).begin(), b);
+      return *m_r.operator[](a).begin() < *m_r.operator[](b).begin();
     }
   };
 
   // The set of keys that serves as the priority queue.
-  std::set<size_type, cmp> m_pq;
+  std::multiset<size_type, cmp> m_pq;
 
   // The constructor builds a vector of data for each vertex.
   generic_tentative(size_type count): base_type(count), m_pq(*this)
@@ -78,7 +74,8 @@ struct generic_tentative: std::vector<std::set<Label>>
 
     // Remove the labels that are worse than or equal to l.  We want
     // to remove those labels now, before we insert l, because we're
-    // using the boe (better or equal) function for comparison.
+    // removing the worse or equal labels, and so we would remove
+    // label l too.
     purge_worse_or_equal(vd, l);
 
     // Insert the new label to the set.
@@ -96,14 +93,12 @@ struct generic_tentative: std::vector<std::set<Label>>
     // * it's not the only label in the set, but we knew that it would
     //   be first, and so we removed the key before.
     //
-    // If the label is inserted in the set after the first element,
-    // then there is no need to add the key into the queue, because
-    // there already is one for the first label in the set.
+    // If the label is inserted in the set after the first element
+    // (and so i != vd.end()), then there is no need to add the key
+    // into the queue, because there already is one for the first
+    // label in the set.
     if (i == vd.begin())
-      {
-        auto [i, status] = m_pq.insert(key);
-        assert(status);
-      }
+      m_pq.insert(key);
 
     // The key must be in the queue.
     assert(m_pq.contains(key));
@@ -132,10 +127,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     auto nh = vd.extract(vd.begin());
     // Insert the key again if the set is not empty.
     if (!vd.empty())
-      {
-        auto [i, status] = m_pq.insert(key);
-        assert(status);
-      }
+      m_pq.insert(key);
 
     // There are no labels in vd or the key is in m_pq.  If there are
     // no labels, then we cannot make sure the key is not in the
