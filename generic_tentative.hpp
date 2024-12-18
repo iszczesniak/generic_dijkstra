@@ -13,12 +13,12 @@
 //
 // For a given key, the labels are stored in a set sorted with <.
 template <typename Label>
-struct generic_tentative: std::vector<std::set<Label>>
+struct generic_tentative: std::vector<std::multiset<Label>>
 {
   // The label type.
   using label_type = Label;
   // The type of data a vertex has.
-  using vd_type = std::set<label_type>;
+  using vd_type = std::multiset<label_type>;
   // The type of the vector of vertex data.
   using base_type = std::vector<vd_type>;
   // The size type of the base type.
@@ -79,9 +79,7 @@ struct generic_tentative: std::vector<std::set<Label>>
     purge_worse_or_equal(vd, l);
 
     // Insert the new label to the set.
-    auto [i, s] = vd.insert(std::forward<T>(l));
-    // Make sure the insertion was successful.
-    assert(s);
+    auto i = vd.insert(std::forward<T>(l));
 
     // Insert the key to the priority queue only if the label ended up
     // at the beginning of the set, which can happen for one of two
