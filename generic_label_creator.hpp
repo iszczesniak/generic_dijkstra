@@ -6,7 +6,6 @@
 struct generic_label_creator
 {
   template <typename Label, typename Edge>
-
   auto
   operator()(const Label &l, const Edge &e) const
   {
