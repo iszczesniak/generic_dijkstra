@@ -87,8 +87,8 @@ bool
 operator == (const generic_path_iterator<Permanent, Functor> &i1,
              const generic_path_iterator<Permanent, Functor> &i2)
 {
-  // With C++26, I shall say: i1.m_l == i2.m_l
-  return i1.m_l.get() == i2.m_l.get();
+  // With C++26, I shall say: get_edge(i1.m_l) == get_edge(i2.m_l);
+  return get_edge(i1.m_l.get()) == get_edge(i2.m_l.get());
 }
 
 template <typename Permanent, typename Functor>
@@ -102,26 +102,26 @@ struct generic_path_range
   // The functor that was used to created labels in m_P.
   const Functor &m_f;
   // The label we start with.
-  const label_type &m_l;
+  const label_type &m_last;
   // The initial label of the search, at which we end the itaration.
-  const label_type &m_initial;
+  const label_type &m_init;
 
   generic_path_range(const Permanent &P, const Functor &f,
-                     const label_type &l, const label_type &initial):
-    m_P(P), m_f(f), m_l(l), m_initial(initial)
+                     const label_type &last, const label_type &init):
+    m_P(P), m_f(f), m_last(last), m_init(init)
   {
   }
 
   auto
   begin() const
   {
-    return generic_path_iterator(m_P, m_f, m_l);
+    return generic_path_iterator(m_P, m_f, m_last);
   }
 
   auto
   end() const
   {
-    return generic_path_iterator(m_P, m_f, m_initial);
+    return generic_path_iterator(m_P, m_f, m_init);
   }
 };
 
