@@ -6,25 +6,37 @@
 #include <tuple>
 #include <vector>
 
-// The container type for storing the generic tentative labels.  We
-// keep the labels separate for every key because functions
+// The container type for storing the generic tentative labels.  The
+// tentative labels are pushed into the container and popped from it.
+// The container pops the smallest label (as compared with <).
+//
+// We keep the labels separate for every key because functions
 // has_better_or_equal and purge_worse should go through labels for a
 // specific key only, not through all labels for all keys.
 //
-// For a given key, the labels are stored in a set sorted with <.
+// We keep track of the smallest labels by the priority queue of keys.
+// The keys are sorted by the comparing the smallest labels the keys
+// offer.
+//
+// For a given key, we store labels in a set because we do not allow a
+// vertex to have multiple labels that are equal. The order of the
+// labels is established by <.
 template <typename Label>
-struct generic_tentative: std::vector<std::multiset<Label>>
+struct generic_tentative: std::vector<std::set<Label>>
 {
   // The label type.
   using label_type = Label;
   // The type of data a vertex has.
-  using vd_type = std::multiset<label_type>;
+  using vd_type = std::set<label_type>;
   // The type of the vector of vertex data.
   using base_type = std::vector<vd_type>;
   // The size type of the base type.
   using size_type = typename base_type::size_type;
 
-  // The functor structure for comparing the labels in the queue.
+  // The functor structure for comparing the keys in the queue.  The
+  // keys are sorted by the labels the keys refer to.  For a given
+  // key, its smallest label (the first in base_type::operator[key])
+  // is compared.
   struct cmp
   {
     base_type &m_r;
@@ -35,19 +47,27 @@ struct generic_tentative: std::vector<std::multiset<Label>>
 
     bool operator()(const size_type &a, const size_type &b) const
     {
-      // We compare the first elements of the sets, because they are
-      // the best the sets offer, i.e. the elements in the sets are
-      // sorted with <.
-
-      return *m_r.operator[](a).begin() < *m_r.operator[](b).begin();
+      // It is not enough to compare just the labels, and therefore we
+      // need to compare keys too.  If we compared the labels only,
+      // then the keys would have to be stored in a multiset, because
+      // there can exist equal labels for different keys.  Inserting a
+      // key would not be a problem, but removing one would be if for
+      // some other key an equal label existed: by removing the key,
+      // we could remove the other key, because thier labels compared
+      // equal.
+      return std::tie(*m_r.operator[](a).begin(), a) <
+        std::tie(*m_r.operator[](b).begin(), b);
     }
   };
 
-  // The set of keys that serves as the priority queue.
-  std::multiset<size_type, cmp> m_pq;
+  // The set of keys that serves as the priority queue.  The keys are
+  // stored in a set, because there is no need to store them in a
+  // multiset: cmp compares unique pairs.  A pair of a label and a key
+  // is unique, because even if labels, the keys would differ.
+  std::set<size_type, cmp> m_pq(*this);
 
   // The constructor builds a vector of data for each vertex.
-  generic_tentative(size_type count): base_type(count), m_pq(*this)
+  generic_tentative(size_type count): base_type(count)
   {
   }
 
@@ -66,10 +86,12 @@ struct generic_tentative: std::vector<std::multiset<Label>>
     // which the key in the priority queue is referring, we have to
     // remove the key from the queue.  Otherwise we would corrupt the
     // queue.
-    if (!vd.empty() && l < *vd.begin())
+    if (!vd.empty())
       {
         assert(m_pq.contains(key));
-        m_pq.erase(key);
+
+        if (l < *vd.begin())
+          m_pq.erase(key);
       }
 
     // Remove the labels that are worse than or equal to l.  We want
@@ -79,7 +101,9 @@ struct generic_tentative: std::vector<std::multiset<Label>>
     purge_worse_or_equal(vd, l);
 
     // Insert the new label to the set.
-    auto i = vd.insert(std::forward<T>(l));
+    auto [i, s] = vd.insert(std::forward<T>(l));
+    // The insertion must have been successful.
+    assert(s);
 
     // Insert the key to the priority queue only if the label ended up
     // at the beginning of the set, which can happen for one of two
