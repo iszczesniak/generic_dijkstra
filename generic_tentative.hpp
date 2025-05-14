@@ -64,10 +64,10 @@ struct generic_tentative: std::vector<std::set<Label>>
   // stored in a set, because there is no need to store them in a
   // multiset: cmp compares unique pairs.  A pair of a label and a key
   // is unique, because even if labels, the keys would differ.
-  std::set<size_type, cmp> m_pq(*this);
+  std::set<size_type, cmp> m_pq;
 
   // The constructor builds a vector of data for each vertex.
-  generic_tentative(size_type count): base_type(count)
+  generic_tentative(size_type count): base_type(count), m_pq(*this)
   {
   }
 
