@@ -87,8 +87,7 @@ bool
 operator == (const generic_path_iterator<Permanent, Functor> &i1,
              const generic_path_iterator<Permanent, Functor> &i2)
 {
-  // With C++26, I shall say: get_edge(i1.m_l) == get_edge(i2.m_l);
-  return get_edge(i1.m_l.get()) == get_edge(i2.m_l.get());
+  return get_edge(i1.m_l) == get_edge(i2.m_l);
 }
 
 template <typename Permanent, typename Functor>
